@@ -4,4 +4,4 @@ This folder contain the dashboard of our database, allowing you to track all dat
 
 ## TODO
 
-[ ] create the dashboard that connects in real time with the API
+- [ ] create the dashboard that connects in real time with the API

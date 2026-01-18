@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Ahen-Studio/skypy-db/blob/main/LICENSE" target="_blank">
-      <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
+  <a href="https://github.com/chroma-core/chroma/blob/master/LICENSE" target="_blank">
+      <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License">
   </a> |
   <a>
         <img src="https://img.shields.io/github/downloads/Ahen-Studio/skypy-db/total" alt=Download>
@@ -36,7 +36,7 @@ pip install skypydb # python client
 
 - Customization: Create custom schemas to visualize data in the dashboard
 
-- Free & Open Source: MIT Licensed
+- Free & Open Source: Apache 2.0 Licensed
 
 ## API
 
@@ -82,4 +82,4 @@ For example, you can use Skypy-db to log information from your Python applicatio
 
 ## License
 
-[MIT](./LICENSE)
+[Apache 2.0](./LICENSE)

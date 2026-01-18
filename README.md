@@ -49,11 +49,11 @@ from datetime import datetime
 # setup skypydb client.
 client = skypydb.Client(path="./data/skypy.db")
 
-# Create collection. get_collection, get_or_create_collection, delete_collection also available.
-collection = client.create_collection("all-my-documents")
+# Create table. get_table, delete_table are also available.
+table = client.create_table("all-my-documents")
 
-# Add docs to the collection.
-collection.add(
+# Add docs to the table.
+table.add(
     documents=[
         {
             "user_id": None,
@@ -65,7 +65,7 @@ collection.add(
 )
 
 # Query/search results. You can also .get by the id of the document
-results = collection.query(
+results = table.query(
     query_texts=["This is a document"],
     n_results=1,
 )

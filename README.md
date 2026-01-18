@@ -24,7 +24,27 @@
 git clone https://github.com/Ahen-Studio/skypy-db.git # python client
 ```
 
+```bash
+cd skypy-db
+```
+
+```bash
+pip install -r requirements.txt # install dependencies
+```
+
+## Features
+
+- Simple: Fully-typed, fully-tested, fully-documented
+
+- Accessible: Dashboard to visualize real-time data
+
+- Customization: Create custom schemas to visualize data in the dashboard
+
+- Free & Open Source: MIT Licensed
+
 ## API
+
+The API is only 4 functions:
 
 ```python
 ```

@@ -30,95 +30,86 @@ pip install skypydb # python client
 
 ## Features
 
-- Simple: Fully-typed, fully-tested, fully-documented
+- Simple: fully-documented
+
+- Table: create, update, delete data from a table
 
 - Observable: Dashboard with real-time data, metrics, and query inspection
-
-- Vector embeddings: Built-in embeddings and vector search
 
 - Free & Open Source: MIT Licensed
 
 ## TODO
 
 - [ ] code the database backend
-- [ ] code the CLI tool to interact with the database without initializing it in code
 - [ ] Create the dashboard using Reflex
+- [ ] write the documentation
+- [ ] improve user data security
+- [ ] code a custom cli
+
+## What's next!
+
+- create a declarative schema system to customize the tables
+
+- Add the ability to delete specific data in a table
+
+- Add the ability to update specific data in a table
 
 ## API
 
-The API is only 4 functions:
-
-- example without vector embeddings
-
 ```python
 import skypydb
 
 # setup skypydb client.
 client = skypydb.Client(path="./data/skypy.db")
 
-# Create table. get_table, delete_table are also available.
-table = client.create_table("all-my-documents")
+# config to make custom table.
+config = {
+    "all-my-documents": {
+        "title": "str",
+        "user_id": str,
+        "content": str,
+        "id": "auto"
+    },
+    "all-my-documents1": {
+        "title": "str",
+        "user_id": str,
+        "content": str,
+        "id": "auto"
+    },
+    "all-my-documents2": {
+        "title": "str",
+        "user_id": str,
+        "content": str,
+        "id": "auto"
+    },
+}
 
-# Add docs to the table.
+# Create tables. get_table_from_config(config, table_name="all-my-documents"), delete_table_from_config(config, table_name="all-my-documents") are also available.
+table = client.create_table_from_config(config)# Create all the tables present in the config.
+#table = client.get_table_from_config(config, table_name="all-my-documents")
+#table = client.delete_table_from_config(config, table_name="all-my-documents")
+
+# Add data to a table.
+
+# Retrieve the table before adding any data.
+table = client.get_table_from_config(config, table_name="all-my-documents")
+
 table.add(
-    documents=[
-        {
-            "user_id": "user123",
-            "message": "this is a document",
-            "details": None,
-            "ids": "auto"
-        }
-    ]
+    title=["document"],
+    user_id=["user123"],
+    content=["this is a document"],
+    id=["auto"]# ids are automatically created by the backend.
 )
 
-# Query results. You can also .get by the id of the document
-results = table.query(
-    query_texts=["This is a document"]# find the perfect match table 
-)
-```
-
-- example with vector embeddings
-
-```python
-import skypydb
-
-# setup skypydb client.
-client = skypydb.Client(path="./data/skypy.db")
-
-# Create table. get_table, delete_table are also available.
-table = client.create_table("all-my-documents")
-
-# setup the vector embeddings model.
-vector = skypydb.Vector("all-MiniLM-L6-v2")
-
-# Add docs to the table.
-table.add(
-    documents=[
-        {
-            "user_id": "user123",
-            "message": "this is a document",
-            "details": None,
-            "ids": "auto",
-            "vector": True
-        }
-    ]
-)
-
-# Search results. You can also .get by the id of the document
-results = table.query(
-    query_texts=["This is a document"],
-    n_results=1,# finds the table with an embedding model
+# Search results. You can also search the data by the id of the document.
+results = table.search(
+    index="user123",
+    title=["document"]# Search the corresponding data by their title.
+    #id=["***"]
 )
 ```
 
 Learn more on our [Docs](https://ahen.mintlify.app/)
-
-## Use case
-
-For example, you can use Skypy-db to log information from your Python application.
-
-1. Create a custom schema and add the logic to your code.
-2. view your logs in real time on the dashboard.
 
 ## License
 

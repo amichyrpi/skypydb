@@ -70,9 +70,13 @@ class Table:
                     row_data[key] = value[i] if i < len(value) else value[-1]
                 else:
                     row_data[key] = value
-            
-            # Insert row
-            row_id = self.db.insert_data(self.table_name, row_data, generate_id=True)
+
+            # Validate data against table config
+            validated_data = self.db.validate_data_with_config(self.table_name, row_data)
+
+            # Insert row with validated data
+            row_id = self.db.insert_data(self.table_name, validated_data, generate_id=True)
+
             inserted_ids.append(row_id)
         
         return inserted_ids

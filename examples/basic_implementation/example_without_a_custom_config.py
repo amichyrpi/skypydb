@@ -2,7 +2,7 @@ import skypydb
 from skypydb.errors import TableAlreadyExistsError
 
 # setup skypydb client.
-client = skypydb.Client(path="./data/skypy.db")
+client = skypydb.Client(path="./data/skypy.db", auto_start_dashboard=False)
 
 # Create table. get_table, delete_table are also available.
 try:
@@ -22,5 +22,5 @@ table.add(
     id=["auto"]# ids are automatically created by the backend
 )
 
-# Keep the program running so the dashboard stays active
-client.wait()
+# Start the Dashboard (blocking mode keeps it running)
+client.start_dashboard(block=True)

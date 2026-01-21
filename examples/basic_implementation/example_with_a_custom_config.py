@@ -42,3 +42,6 @@ table.add(
     content=["this is a document"],
     id=["auto"]# ids are automatically created by the backend.
 )
+
+# Keep the program running so the dashboard stays active
+client.wait()

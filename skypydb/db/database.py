@@ -117,6 +117,7 @@ class Database:
         """
 
         existing_columns = set(self.get_table_columns(table_name))
+        
         cursor = self.conn.cursor()
 
         for column in columns:
@@ -126,7 +127,10 @@ class Database:
         self.conn.commit()
 
     def insert_data(
-        self, table_name: str, data: Dict[str, Any], generate_id: bool = True
+        self, 
+        table_name: str, 
+        data: Dict[str, Any], 
+        generate_id: bool = True
     ) -> str:
         """
         Insert data into a table.
@@ -172,7 +176,9 @@ class Database:
         return data["id"]
 
     def search(
-        self, table_name: str, index: Optional[str] = None, **filters
+        self, table_name: str, 
+        index: Optional[str] = None, 
+        **filters
     ) -> List[Dict[str, Any]]:
         """
         Search for data in a table.
@@ -225,6 +231,7 @@ class Database:
         query = f"SELECT * FROM [{table_name}] WHERE {where_clause}"
 
         cursor = self.conn.cursor()
+        
         cursor.execute(query, params)
 
         # Convert rows to dictionaries
@@ -461,7 +468,9 @@ class Database:
         self.conn.commit()
 
     def validate_data_with_config(
-        self, table_name: str, data: Dict[str, Any]
+        self,
+        table_name: str,
+        data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Validate data against the table's configuration.
@@ -533,6 +542,7 @@ class Database:
         """
 
         cursor = self.conn.cursor()
+
         cursor.execute("DELETE FROM _skypy_config WHERE table_name = ?", (table_name,))
         self.conn.commit()
 

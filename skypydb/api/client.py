@@ -23,6 +23,7 @@ class Client:
         dashboard_port: int = 3000,
         auto_start_dashboard: bool = True,
         encryption_key: Optional[str] = None,
+        salt: Optional[bytes] = None,
         encrypted_fields: Optional[list] = None,
     ):
         """
@@ -35,6 +36,7 @@ class Client:
             encryption_key: Optional encryption key for data encryption at rest.
                            If provided, sensitive data will be encrypted.
                            Generate a secure key with: EncryptionManager.generate_key()
+            salt: Required, non-empty salt for PBKDF2 when encryption is enabled.
             encrypted_fields: Optional list of field names to encrypt.
                              If None and encryption is enabled, all fields except
                              'id' and 'created_at' will be encrypted.
@@ -61,7 +63,7 @@ class Client:
 
         self.path = path
         self.dashboard_port = dashboard_port
-        self.db = Database(path, encryption_key=encryption_key, encrypted_fields=encrypted_fields)
+        self.db = Database(path, encryption_key=encryption_key, salt=salt, encrypted_fields=encrypted_fields)
         self._dashboard_thread: Optional[threading.Thread] = None
         self._dashboard_server = None
 

@@ -63,7 +63,9 @@ from skypydb.security import EncryptionManager
 
 # Generate a secure encryption key
 encryption_key = EncryptionManager.generate_key()
+salt = EncryptionManager.generate_salt()
 print(encryption_key) # don't show this key to anyone
+print(salt) # don't show this salt to anyone
 ```
 
 - Use the encryption key to encrypt sensitive data
@@ -79,11 +81,18 @@ load_dotenv()
 
 # Load encryption key from environment
 encryption_key = os.getenv("ENCRYPTION_KEY") # create a encryption key and make it available in .env file before using it, don't show this key to anyone
+salt_key = os.getenv("SALT_KEY") # create a salt key and make it available in .env file before using it, don't show this salt to anyone
+
+# transform salt key to bytes
+if salt_key is None:
+    raise ValueError("SALT_KEY missing")
+salt_bytes = salt_key.encode("utf-8")
 
 # Create encrypted database
 client = skypydb.Client(
     path="./data/secure.db",
     encryption_key=encryption_key,
+    salt=salt_bytes,
     encrypted_fields=["password", "ssn", "credit_card"]  # Optional: encrypt only sensitive fields
 )
 

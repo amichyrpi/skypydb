@@ -23,6 +23,7 @@ class Database:
         self,
         path: str,
         encryption_key: Optional[str] = None,
+        salt: Optional[bytes] = None,
         encrypted_fields: Optional[List[str]] = None,
     ):
         """
@@ -32,6 +33,7 @@ class Database:
             path: Path to SQLite database file
             encryption_key: Optional encryption key for data encryption.
                            If provided, data will be encrypted at rest.
+            salt: Required, non-empty salt for PBKDF2HMAC when encryption is enabled.
             encrypted_fields: Optional list of field names to encrypt.
                              If None and encryption is enabled, all fields except
                              'id' and 'created_at' will be encrypted.
@@ -43,7 +45,7 @@ class Database:
         self.conn.row_factory = sqlite3.Row
         
         # Initialize encryption manager
-        self.encryption = EncryptionManager(encryption_key=encryption_key)
+        self.encryption = EncryptionManager(encryption_key=encryption_key, salt=salt)
         self.encrypted_fields = encrypted_fields
         
         self._ensure_config_table()

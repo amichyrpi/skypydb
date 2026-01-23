@@ -9,6 +9,9 @@
 </p>
 
 <p align="center">
+  <a href="https://pypi.org/project/skypydb" target="_blank">
+      <img src="https://img.shields.io/pypi/v/skypydb" alt="PyPI">
+  </a> |
   <a href="https://github.com/Ahen-Studio/skypy-db/blob/main/LICENSE" target="_blank">
       <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
   </a> |

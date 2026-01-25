@@ -287,7 +287,9 @@ class Database:
         # Add additional filters (AND conditions)
         for column, value in filters.items():
             # Handle list values - use IN clause
-            if isinstance(value, list) and len(value) > 0:
+            if isinstance(value, list):
+                if not value:
+                    raise ValueError(f"Empty list provided for filter '{column}'")
                 placeholders = ", ".join(["?" for _ in value])
                 conditions.append(f"[{column}] IN ({placeholders})")
                 params.extend([str(v) for v in value])

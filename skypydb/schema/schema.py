@@ -197,7 +197,6 @@ class Schema:
         return list(self.tables.keys())
 
 
-# 
 def defineTable(
     columns: Dict[str, Validator],
 ) -> TableDefinition:

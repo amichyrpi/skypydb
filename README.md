@@ -1,12 +1,12 @@
-<h1><div align="center">
+<div align="center">
  <img alt="Skypy" width="auto" height="auto" src="https://github.com/amichyrpi/skypy-db/blob/main/docs/logo/dark.svg#gh-light-mode-only">
  <img alt="Skypy" width="auto" height="auto" src="https://github.com/amichyrpi/skypy-db/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
-</div></h1>
+</div>
 
-<p align="center">
+<div align="center">
     <b>Skypy - Open Source Reactive Database</b>. <br />
     The better way to build Python logging system!
-</p>
+</div>
 
 <div align="center">
 

@@ -5,7 +5,6 @@ Client API for Skypydb.
 import importlib
 import importlib.util
 import os
-from types import ModuleType
 from typing import Dict, Optional
 from ..db.database import Database
 from ..errors import TableAlreadyExistsError, TableNotFoundError
@@ -22,7 +21,6 @@ class Client:
 
     def __init__(
         self,
-        path: str = "./db/_generated/skypydb.db",
         encryption_key: Optional[str] = None,
         salt: Optional[bytes] = None,
         encrypted_fields: Optional[list] = None,
@@ -58,14 +56,17 @@ class Client:
                 encrypted_fields=["content", "email", "password"]
             )
         """
-        self.path = path
+        
+        # constant to define the path to the database file
+        DB_PATH = "./db/_generated/skypydb.db"
         
         # Ensure the directory exists
-        db_dir = os.path.dirname(self.path)
+        db_dir = os.path.dirname(DB_PATH)
         if db_dir and not os.path.exists(db_dir):
             os.makedirs(db_dir, exist_ok=True)
 
-        self.db = Database(path, encryption_key=encryption_key, salt=salt, encrypted_fields=encrypted_fields)
+        self.path = DB_PATH
+        self.db = Database(DB_PATH, encryption_key=encryption_key, salt=salt, encrypted_fields=encrypted_fields)
 
 
     # create a table

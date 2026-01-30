@@ -165,6 +165,8 @@ class Vector_Client:
 
         # Use collection-specific embedding function if provided
         if embedding_function is not None:
+            # Custom embedding functions per collection not yet supported
+            # Uses client's default embedding function
             pass
 
         # Create and cache collection instance
@@ -263,7 +265,9 @@ class Vector_Client:
 
 
     # list all collections present in the database
-    def list_collections(self) -> List[Collection]:
+    def list_collections(
+        self,
+    ) -> List[Collection]:
         """
         List all collections in the database.
 
@@ -297,7 +301,10 @@ class Vector_Client:
 
 
     # delete a specific collection and all its data
-    def delete_collection(self, name: str) -> None:
+    def delete_collection(
+        self,
+        name: str,
+    ) -> None:
         """
         Delete a collection and all its data.
 
@@ -323,7 +330,9 @@ class Vector_Client:
 
 
     # reset the database by deleting all collections
-    def reset(self) -> bool:
+    def reset(
+        self,
+    ) -> bool:
         """
         Reset the database by deleting all collections.
 
@@ -342,7 +351,9 @@ class Vector_Client:
 
 
     # check if the database is alive
-    def heartbeat(self) -> int:
+    def heartbeat(
+        self,
+    ) -> int:
         """
         Check if the database is alive.
 
@@ -360,7 +371,9 @@ class Vector_Client:
 
     # get the current embedding function
     @property
-    def embedding_function(self) -> Callable[[List[str]], List[List[float]]]:
+    def embedding_function(
+        self,
+    ) -> Callable[[List[str]], List[List[float]]]:
         """
         Get the current embedding function.
         """
@@ -385,7 +398,9 @@ class Vector_Client:
 
 
     # close the database connection
-    def close(self) -> None:
+    def close(
+        self,
+    ) -> None:
         """
         Close the database connection.
 
@@ -395,3 +410,33 @@ class Vector_Client:
 
         self._db.close()
         self._collections.clear()
+
+
+    # support context manager protocol
+    def __enter__(
+        self,
+    ) -> "Vector_Client":
+        """
+        Support context manager protocol.
+        """
+        
+        return self
+    
+    def __exit__(
+    def __exit__(
+        self,
+        exc_type,
+        exc_val,
+        exc_tb,
+    ) -> bool:
+        """
+        Close connection on context exit.
+        """
+        
+        self.close()
+        return False
+        """
+        Close connection on context exit.
+        """
+        
+        self.close()

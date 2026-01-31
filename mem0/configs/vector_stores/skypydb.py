@@ -12,8 +12,6 @@ class SkypyDbConfig(BaseModel):
 
     collection_name: str = Field("mem0", description="Default name for the collection")
     path: Optional[str] = Field(None, description="Path to the database directory")
-    host: Optional[str] = Field(None, description="Database connection remote host")
-    port: Optional[int] = Field(None, description="Database connection remote port")
     embedding_model: str = Field("mxbai-embed-large", description="Ollama embedding model")
     ollama_base_url: str = Field("http://localhost:11434", description="Ollama API base URL")
 

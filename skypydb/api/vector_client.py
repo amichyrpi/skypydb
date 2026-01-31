@@ -45,8 +45,6 @@ class VectorClient:
     def __init__(
         self,
         path: Optional[str] = None,
-        host: Optional[str] = None,
-        port: Optional[int] = None,
         embedding_model: str = "mxbai-embed-large",
         ollama_base_url: str = "http://localhost:11434",
     ):
@@ -59,8 +57,6 @@ class VectorClient:
 
         Args:
             path: Path to the database directory. Defaults to ./db/_generated/vector.db
-            host: Optional host for remote connection (reserved for future use)
-            port: Optional port for remote connection (reserved for future use)
             embedding_model: Ollama model to use for embeddings (default: mxbai-embed-large)
             ollama_base_url: Base URL for Ollama API (default: http://localhost:11434)
 
@@ -86,8 +82,6 @@ class VectorClient:
             os.makedirs(db_dir, exist_ok=True)
 
         self.path = path
-        self.host = host
-        self.port = port
 
         # Set up embedding function
         self._embedding_function = OllamaEmbedding(

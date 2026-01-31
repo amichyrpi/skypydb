@@ -24,8 +24,6 @@ class SkypyDB(VectorStoreBase):
         self,
         collection_name: str,
         client: Optional[skypydb.VectorClient] = None,
-        host: Optional[str] = None,
-        port: Optional[int] = None,
         path: Optional[str] = None,
         embedding_model: str = "mxbai-embed-large",
         ollama_base_url: str = "http://localhost:11434",
@@ -36,8 +34,6 @@ class SkypyDB(VectorStoreBase):
         Args:
             collection_name (str): Name of the collection.
             client (skypydb.Client, optional): Existing skypydb client instance. Defaults to None.
-            host (str, optional): Host address for skypydb server. Defaults to None.
-            port (int, optional): Port for skypydb server. Defaults to None.
             path (str, optional): Path for local skypydb database. Defaults to None.
             embedding_model (str, optional): Embedding model for vectorization. Defaults to "mxbai-embed-large".
             ollama_base_url (str, optional): Base URL for Ollama API. Defaults to "http://localhost:11434".
@@ -50,8 +46,6 @@ class SkypyDB(VectorStoreBase):
 
             self.client = skypydb.VectorClient(
                 path=path,
-                host=host,
-                port=port,
                 embedding_model=embedding_model,
                 ollama_base_url=ollama_base_url,
             )

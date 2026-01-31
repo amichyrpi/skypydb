@@ -661,6 +661,27 @@ class VectorDatabase:
         return deleted_count
 
 
+    # count items in a collection
+    def count(self, collection_name: str) -> int:
+        """
+        Count items in a collection.
+
+        Args:
+            collection_name: Name of the collection
+
+        Returns:
+            Number of items in the collection
+        """
+
+        if not self.collection_exists(collection_name):
+            raise ValueError(f"Collection '{collection_name}' not found")
+
+        cursor = self.conn.cursor()
+
+        cursor.execute(f"SELECT COUNT(*) FROM [vec_{collection_name}]")
+        return cursor.fetchone()[0]
+
+
     # get all items from a collection
     def _get_all_items(self, collection_name: str) -> List[Dict[str, Any]]:
         """

@@ -2,8 +2,10 @@
 Collection class for managing vector collections.
 """
 
-from typing import Any, Dict, List, Optional
-from ..db.vector_database import VectorDatabase
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..db.vector_database import VectorDatabase
 
 
 # main class for managing vector collections
@@ -36,7 +38,7 @@ class Collection:
 
     def __init__(
         self,
-        db: VectorDatabase,
+        db: "VectorDatabase",
         name: str,
         metadata: Optional[Dict[str, Any]] = None,
     ):
@@ -308,3 +310,37 @@ class Collection:
             where=where,
             where_document=where_document,
         )
+
+
+    # count the number of items in the collection
+    def count(self) -> int:
+        """
+        Count the number of items in the collection.
+
+        Returns:
+            Number of items in the collection
+
+        Example:
+            print(f"Collection has {collection.count()} items")
+        """
+
+        return self._db.count(self._name)
+
+
+    # get the first few items in the collection
+    def peek(self, limit: int = 10) -> Dict[str, List[Any]]:
+        """
+        Get a sample of items from the collection.
+
+        Args:
+            limit: Maximum number of items to return (default: 10)
+
+        Returns:
+            Dictionary with sample items
+
+        Example:
+            sample = collection.peek(5)
+            print(f"Sample IDs: {sample['ids']}")
+        """
+
+        return self.get(limit=limit)

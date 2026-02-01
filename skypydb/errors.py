@@ -67,7 +67,10 @@ class DatabaseError(SkypydbError):
     """
 
     CODE = "SKY103"
-    default_message = "Database operation failed."
+    default_message = (
+        "Database operation failed. This may indicate a connectivity issue, "
+        "invalid query, or transaction problem. Check database logs and configuration."
+    )
 
 
 # search errors handling

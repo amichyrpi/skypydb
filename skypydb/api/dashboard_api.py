@@ -415,6 +415,8 @@ class VectorAPI:
                 "query": query_text,
                 "error": str(error)
             }
+        finally:
+            vdb.close()
 
 
     # apply pagination to vector results

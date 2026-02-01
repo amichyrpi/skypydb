@@ -1,14 +1,10 @@
 """
 Cli for Skypydb using Typer.
-
-Commands:
-- init: Initialize project with encryption keys and project structure
-- launch: Launch the dashboard
-- dev: Interactive menu to choose actions
 """
 
 import base64
 import os
+import subprocess
 from pathlib import Path
 import typer
 import questionary
@@ -220,30 +216,45 @@ class SkypyCLI:
 
         print("[bold cyan]Launching Skypydb dashboard.[/bold cyan]\n")
 
+        # Get the dashboard directory
+        dashboard_dir = Path(__file__).parent.parent / "dashboard" / "dashboard"
+
+        # error fallback if dashboard is not found
+        if not dashboard_dir.exists():
+            print(f"[red]Error: Dashboard not found at {dashboard_dir}[/red]")
+            raise typer.Exit(code=1)
+
         # Set environment variables for dashboard
         if path is not None:
-            os.environ["SKYPYDB_PATH"] = path
+            os.environ["SKYPYDB_PATH"] = str(path)
         os.environ["SKYPYDB_PORT"] = str(port)
 
-        from ..dashboard.dashboard.dashboard import app
+        # Check if npm is available
+        npm_cmd = "npm"
 
         try:
-            import uvicorn
-        except ImportError as exc:
-            print(f"[red]Error: Uvicorn is required to run the dashboard: {exc}[/red]")
+            subprocess.run([npm_cmd, "--version"], capture_output=True, check=True, shell=True)
+        # error fallback if npm is not found
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            print("[red]Error: npm is required to run the dashboard. Please install Node.js and npm.[/red]")
+            raise typer.Exit(code=1)
+
+        print(f"[green]Starting dashboard at [bold]http://127.0.0.1:{port}[/bold][/green]")
+        print(f"[dim]Dashboard directory: {dashboard_dir}[/dim]\n")
+
+        try:
+            # Run npm dev in the dashboard directory
+            subprocess.run(
+                [npm_cmd, "run", "dev"],
+                cwd=dashboard_dir,
+                env=os.environ,
+                check=True,
+                shell=True
+            )
+        # error fallback if the dashboard fails to start
+        except subprocess.CalledProcessError as exc:
+            print(f"[red]Error: Dashboard failed to start: {exc}[/red]")
             raise typer.Exit(code=1) from exc
-
-        print(f"[green]Dashboard is running at [bold]http://127.0.0.1:{port}[/bold][/green]")
-
-        # set config for dashboard
-        config = uvicorn.Config(
-            app,
-            host="127.0.0.1",
-            port=port,
-            log_level="warning"
-        )
-        server = uvicorn.Server(config)
-        server.run()
 
 
 # Typer commands

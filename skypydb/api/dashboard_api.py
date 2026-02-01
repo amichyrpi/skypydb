@@ -182,7 +182,7 @@ class TableAPI:
         try:
             return {
                 "name": table_name,
-                "row_count": db.get_row_count(table_name),
+                "row_count": db.get_all_data(table_name),
                 "columns": db.get_table_columns(table_name),
                 "config": db.get_table_config(table_name)
             }
@@ -227,20 +227,8 @@ class TableAPI:
         db = DatabaseConnection.get_main()
 
         try:
-            # Use database-level pagination to avoid loading all rows into memory
-            total = db.get_table_row_count(table_name)
-            data_page = db.get_data(table_name, limit=limit, offset=offset)
-
-            # Preserve the same response structure as _paginate
-            end = offset + limit if limit else total
-
-            return {
-                "data": data_page,
-                "total": total,
-                "limit": limit,
-                "offset": offset,
-                "has_more": end < total
-            }
+            all_data = db.get_all_data(table_name)
+            return self._paginate(all_data, limit, offset)
         finally:
             db.close()
 

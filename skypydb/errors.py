@@ -29,8 +29,12 @@ class SkypydbError(Exception):
             formatted_message = f"[{self.CODE}] {self.message}"
         else:
             # Use a class-specific default message when provided, otherwise fall back
-            # to the generic default_message defined on the base class.
-            default_msg = getattr(self, "default_message", self.__class__.__name__)
+            # to a generic, user-friendly message when no default_message is defined.
+            default_msg = getattr(
+                self,
+                "default_message",
+                self.__class__.__name__,
+            )
             formatted_message = f"[{self.CODE}] {default_msg}"
 
         super().__init__(formatted_message)

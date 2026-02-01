@@ -383,6 +383,8 @@ class VectorAPI:
             return self._paginate(results, limit, offset)
         except Exception as error:
             return self._empty_result(error)
+        finally:
+            vdb.close()
 
 
     # search for similar documents using vector similarity

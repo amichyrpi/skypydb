@@ -244,12 +244,13 @@ class SkypyCLI:
 
         try:
             # Run npm dev in the dashboard directory
+            # Run npm dev in the dashboard directory
             subprocess.run(
                 [npm_cmd, "run", "dev"],
                 cwd=dashboard_dir,
                 env=os.environ,
-                check=True,
-                shell=True
+                check=True
+            )
             )
         # error fallback if the dashboard fails to start
         except subprocess.CalledProcessError as exc:

@@ -1,21 +1,22 @@
 """
-Cli for Skypydb using Typer.
+Cli for Skypydb.
 """
 
 import base64
-import os
-import subprocess
 from pathlib import Path
+from typing import Optional
 import typer
 import questionary
 from rich import print
+from skypydb.cli.start_dashboard import start_dashboard
 from skypydb.security import EncryptionManager
 from skypydb import __version__
 
 
-# Initialize Typer app
+# initialize the cli app
 app = typer.Typer(
-    name="Skypydb Cli - Open Source Reactive Database"
+    name="skypydb",
+    help="Skypydb CLI - Open Source Reactive and Vector Embedding Database"
 )
 
 
@@ -48,327 +49,176 @@ class SkypyCLI:
         self.cwd = cwd
 
 
-    # clear the terminal screen
-    def clear_screen(
+    # launch the dashboard
+    def launch_dashboard(
         self,
+        api_port: int = 8000,
+        dashboard_port: int = 3000,
+        db_path: Optional[str] = None,
+        vector_db_path: Optional[str] = None,
     ) -> None:
         """
-        Clear the terminal screen.
-        """
-
-        os.system("cls" if os.name == "nt" else "clear")
-
-
-    # get user choice for the menu
-    def get_user_choice(
-        self,
-        options: list[tuple[str, str]],
-    ) -> str:
-        """
-        Get user choice.
-
+        Launch the dashboard.
+        
         Args:
-            options: List of (key, description) tuples
- 
-        Returns:
-            The selected key
+            api_port: Port for the API server
+            dashboard_port: Port for the dashboard frontend
+            db_path: Path to the main database file
+            vector_db_path: Path to the vector database file
         """
 
-        self.clear_screen()
+        start_dashboard(
+            api_port=api_port,
+            dashboard_port=dashboard_port,
+            db_path=db_path,
+            vector_db_path=vector_db_path,
+        )
 
-        choices = [
-            questionary.Choice(title=description, value=key)
-            for key, description in options
-        ]
 
-        selection = questionary.select(
-            "What would you like to do?",
-            choices=choices,
-            qmark="?",
-            pointer="❯",
-        ).ask()
+    # initialize project with encryption keys and project structure
+    def init_project(self) -> None:
+        """
+        Initialize project with encryption keys and project structure.
+        """
 
-        if selection is None:
-            print("\n[yellow]Exiting.[/yellow]")
-            raise typer.Exit(code=0)
+        # create project structure
+        self._create_project_structure()
 
-        return selection
+        # generate and save encryption keys
+        self._generate_encryption_keys()
+
+        # update .gitignore
+        self._update_gitignore()
+
+        # print success messages
+        self._print_success_messages()
 
 
     # create project structure
-    def create_project_structure(
-        self,
-    ) -> None:
+    def _create_project_structure(self) -> None:
         """
         Create the project directory structure.
         """
 
-        # Create skypydb folder if it doesn't exist
+        # Create db folder
         skypydb_dir = self.cwd / self.skypydb_folder
-
         if not skypydb_dir.exists():
             skypydb_dir.mkdir(exist_ok=True)
-            print(f"[green]✓ Created {self.skypydb_folder}/[/green]")
-        else:
-            print(f"[yellow]→ {self.skypydb_folder}/ already exists[/yellow]")
-        
-        # Create schema.py file if it doesn't exist
-        schema_file = skypydb_dir / self.schema_file_name
 
-        if not schema_file.exists():
-            schema_file.write_text("", encoding="utf-8")
-            print(f"[green]✓ Created {self.skypydb_folder}/{self.schema_file_name}[/green]")
-        else:
-            print(f"[yellow]→ {self.skypydb_folder}/{self.schema_file_name} already exists[/yellow]")
-
-        # Create _generated folder if it doesn't exist
+        # Create _generated folder
         generated_dir = skypydb_dir / self.generated_folder
-
         if not generated_dir.exists():
             generated_dir.mkdir(exist_ok=True)
-            print(f"[green]✓ Created {self.skypydb_folder}/{self.generated_folder}/[/green]")
-        else:
-            print(f"[yellow]→ {self.skypydb_folder}/{self.generated_folder}/ already exists[/yellow]")
 
-        # Update .gitignore if it exists, otherwise create it
-        gitignore_path = self.cwd / self.gitignore_path
-        gitignore_entry = self.gitignore_entry
-
-        gitignore_exists = gitignore_path.exists()
-        gitignore_content = (
-            gitignore_path.read_text(encoding="utf-8") if gitignore_exists else ""
-        )
-
-        if gitignore_entry not in gitignore_content.splitlines():
-            if gitignore_content and not gitignore_content.endswith("\n"):
-                gitignore_content += "\n"
-            gitignore_content += gitignore_entry + "\n"
-            gitignore_path.write_text(gitignore_content, encoding="utf-8")
-            action = "Updated" if gitignore_exists else "Created"
-            print(f"[green]✓ {action} .gitignore with {gitignore_entry}[/green]")
+        # Create schema.py file
+        schema_file = skypydb_dir / self.schema_file_name
+        if not schema_file.exists():
+            schema_file.write_text("", encoding="utf-8")
 
 
-    # Initialize project with encryption keys and project structure.
-    def init_project(
-        self,
-        overwrite: bool = False,
-    ) -> None:
+    # generate and save encryption keys
+    def _generate_encryption_keys(self) -> None:
         """
-        Initialize project with encryption keys and project structure.
-        
-        Args:
-            overwrite: Whether to overwrite existing files
+        Generate and save encryption keys to .env.local.
         """
-        
-        self.clear_screen()
-        
-        print("[bold cyan]Initializing Skypydb project.[/bold cyan]\n")
-        
-        # Create project structure
-        self.create_project_structure()
-        
-        # Generate encryption keys
+
+        # generate encryption key and encode the salt key with base64
         encryption_key = EncryptionManager.generate_key()
         salt_key = EncryptionManager.generate_salt()
-        # encode salt key into a string
         salt_b64 = base64.b64encode(salt_key).decode("utf-8")
-        
+
+        # save encryption key and salt key to .env.local
         env_path = self.cwd / self.env_file_name
-        
-        # Check if .env.local already exists
-        if env_path.exists() and not overwrite:
-            print(f"\n[yellow]'{self.env_file_name}' already exists.[/yellow]")
-            overwrite = typer.confirm("Do you want to overwrite it?", default=False)
-            if not overwrite:
-                print("[yellow]✗ Initialization cancelled.[/yellow]")
-                return
-        
-        # Write content into the .env.local file
-        content = ("ENCRYPTION_KEY=" + encryption_key + "\n" + "SALT_KEY=" + salt_b64 + "\n")
+        content = f"ENCRYPTION_KEY={encryption_key}\nSALT_KEY={salt_b64}\n"
         env_path.write_text(content, encoding="utf-8")
 
-        print(f"[green]✓ Created {self.env_file_name} with ENCRYPTION_KEY and SALT_KEY[/green]")
-        print("\n[bold green]✓ Your project is now ready![/bold green]")
 
-
-    # launch the dashboard
-    def launch_dashboard(
-        self,
-        port: int = typer.Option(
-            3000,
-            "--port",
-            "-p",
-            help="Port for the dashboard",
-        ),
-        path: str = typer.Option(
-            None,
-            "--path",
-            help="Path to the database",
-        ),
-    ) -> None:
+    # update .gitignore
+    def _update_gitignore(self) -> None:
         """
-        Launch the Skypydb dashboard.
-
-        Args:
-            port: Port number for the dashboard
-            path: Path to the database file
+        Add .env.local to .gitignore.
         """
 
-        print("[bold cyan]Launching Skypydb dashboard.[/bold cyan]\n")
+        # generate .gitignore if not exists
+        gitignore_path = self.cwd / self.gitignore_path
+        content = gitignore_path.read_text(encoding="utf-8") if gitignore_path.exists() else ""
 
-        # Get the dashboard directory
-        dashboard_dir = Path(__file__).parent.parent / "dashboard" / "dashboard"
-
-        # error fallback if dashboard is not found
-        if not dashboard_dir.exists():
-            print(f"[red]Error: Dashboard not found at {dashboard_dir}[/red]")
-            raise typer.Exit(code=1)
-
-        # Set environment variables for dashboard
-        if path is not None:
-            os.environ["SKYPYDB_PATH"] = str(path)
-        os.environ["SKYPYDB_PORT"] = str(port)
-
-        # Check if npm is available
-        npm_cmd = "npm"
-
-        try:
-            subprocess.run([npm_cmd, "--version"], capture_output=True, check=True)
-        # error fallback if npm is not found
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            print("[red]Error: npm is required to run the dashboard. Please install Node.js and npm.[/red]")
-            raise typer.Exit(code=1)
-
-        print(f"[green]Starting dashboard at [bold]http://127.0.0.1:{port}[/bold][/green]")
-        print(f"[dim]Dashboard directory: {dashboard_dir}[/dim]\n")
-
-        try:
-            # Run npm dev in the dashboard directory
-            # Run npm dev in the dashboard directory
-            subprocess.run(
-                [npm_cmd, "run", "dev"],
-                cwd=dashboard_dir,
-                env=os.environ,
-                check=True
-            )
-        # error fallback if the dashboard fails to start
-        except subprocess.CalledProcessError as exc:
-            print(f"[red]Error: Dashboard failed to start: {exc}[/red]")
-            raise typer.Exit(code=1) from exc
+        # add .env.local to .gitignore if not exists
+        if self.gitignore_entry not in content.splitlines():
+            content = f"{content.rstrip()}\n{self.gitignore_entry}\n" if content else f"{self.gitignore_entry}\n"
+            gitignore_path.write_text(content, encoding="utf-8")
 
 
-# Typer commands
-# Command to launch the dashboard and initialize a new project
+    # print success messages
+    def _print_success_messages(self) -> None:
+        """
+        Print the success messages after project initialization.
+        """
+
+        print("[green]✔ Initialized project[/green]")
+        print("[green]✔ Provisioned encryption keys and saved its:[/green]")
+        print("    encryption key as ENCRYPTION_KEY")
+        print("    salt key as SALT_KEY")
+        print(f" to {self.env_file_name}")
+        print(f'[green]  Added "{self.env_file_name}" to {self.gitignore_path}[/green]\n')
+        print(f"Write your Skypydb functions in {self.skypydb_folder}\\{self.schema_file_name}")
+        print("Give us feedback at https://github.com/Ahen-Studio/skypy-db/issues")
+
+
+# start skypydb development mode
 @app.command()
 def dev() -> None:
     """
-    Show interactive menu.
+    Start Skypydb development mode.
     """
-    
-    # Create CLI instance
+
     cli = SkypyCLI()
-    
-    # Clear screen before displaying menu
-    cli.clear_screen()
-    
-    menu_options = [
-        ("init", "Initialize project"),
-        ("launch", "Launch dashboard"),
-        ("exit", "Exit"),
+
+    # Show welcome prompt
+    choices = [
+        questionary.Choice(title="create a new project", value="create"),
+        questionary.Choice(title="launch the dashboard", value="dashboard"),
+        questionary.Choice(title="no thanks", value="exit"),
     ]
-    
-    while True:
-        # Retrieve the user's choice
-        choice = cli.get_user_choice(menu_options)
-        
-        # Handle user choice
-        if choice == "init":
-            cli.init_project()
-            typer.pause()
-        elif choice == "launch":
-            cli.launch_dashboard()
-        elif choice == "exit":
-            cli.clear_screen()
-            print("[bold cyan]Goodbye![/bold cyan]")
-            break
+
+    selection = questionary.select(
+        "Welcome to Skypydb! Would you like to create a new project?",
+        choices=choices,
+        qmark="?",
+        pointer="❯",
+    ).ask()
+
+    if selection is None or selection == "exit":
+        print("\n[yellow]Exiting.[/yellow]")
+        raise typer.Exit(code=0)
+
+    if selection == "create":
+        cli.init_project()
+
+    if selection == "dashboard":
+        cli.launch_dashboard()
 
 
-# Command to initialize a new Skypydb project
-@app.command()
-def init(
-    overwrite: bool = typer.Option(
-        False,
-        "--overwrite",
-        "-o",
-        help="Overwrite existing .env.local file",
-    ),
-) -> None:
+# show the skypydb version and exit
+def _version_callback(value: bool) -> None:
     """
-    Initialize a new Skypydb project with encryption keys and project structure.
-    
-    This command will create:
-    - skypydb/ directory with schema.py file
-    - _generated/ directory
-    - .env.local file with ENCRYPTION_KEY and SALT_KEY
-    - Update .gitignore with .env.local if it exists, otherwise create it
+    Show the skypydb version and exit.
     """
-    
-    cli = SkypyCLI()
-    cli.init_project(overwrite=overwrite)
-    typer.pause()
 
-
-# Command to launch the dashboard
-@app.command()
-def launch(
-    port: int = typer.Option(
-        3000,
-        "--port",
-        "-p",
-        help="Port for the dashboard",
-    ),
-    path: str = typer.Option(
-        None,
-        "--path",
-        help="Path to the database",
-    ),
-) -> None:
-    """
-    Launch the Skypydb dashboard.
-    
-    Args:
-        port: Port number for the dashboard (default: 3000)
-        path: Path to the database file
-    """
-    
-    cli = SkypyCLI()
-    cli.launch_dashboard(port=port, path=path)
-
-
-# show the skypydb version
-def _version_callback(
-    value: bool
-) -> None:
     if value:
         print(f"skypydb {__version__}")
         raise typer.Exit()
 
 
+# callback for cli app
 @app.callback()
 def main_callback(
-    version: bool = typer.Option(
-        False,
-        "--version",
-        help="Show version and exit",
-        is_eager=True,
-        callback=_version_callback,
-    ),
-) -> None:
+    version: bool = typer.Option(False, "--version", help="Show version and exit", is_eager=True, callback=_version_callback)) -> None:
     """
-    Skypydb Cli.
+    Skypydb CLI - Open Source Reactive and Vector Embedding Database.
     """
-    
-    return
+
+    pass
 
 
 # Main loop
@@ -376,9 +226,8 @@ def main() -> None:
     """
     Main entry point for the CLI.
     """
-    
-    app()
 
+    app()
 
 if __name__ == "__main__":
     main()

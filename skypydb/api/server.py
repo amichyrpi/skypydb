@@ -1,7 +1,5 @@
 """
 Skypydb API Server
-
-This FastAPI server provides REST endpoints for the dashboard.
 """
 
 import os
@@ -14,7 +12,7 @@ import uvicorn
 # Add parent directory to path to import skypydb
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dashboard_api import DashboardAPI
+from skypydb.api.dashboard_api import DashboardAPI
 
 app = FastAPI(
     title="SkypyDB Dashboard API",
@@ -25,7 +23,7 @@ app = FastAPI(
 # Enable CORS for the Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js dev server
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

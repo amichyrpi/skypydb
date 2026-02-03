@@ -19,5 +19,7 @@ class Utils:
         Returns:
             List of embedding vectors
         """
+        
+        self.embeddingfn = EmbeddingsFn()
 
-        return self.embed(texts)
+        return self.embeddingfn.embed(texts)

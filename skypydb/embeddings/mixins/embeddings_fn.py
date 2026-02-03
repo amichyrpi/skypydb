@@ -2,8 +2,12 @@
 Module containing the EmbeddingsFn class, which is used to generate embeddings for a list of texts.
 """
 
-from typing import List
+from typing import (
+    List,
+    Callable
+)
 from skypydb.embeddings.mixins import SysGet
+from skypydb.embeddings import OllamaEmbedding
 
 class EmbeddingsFn:
     def embed(
@@ -20,10 +24,12 @@ class EmbeddingsFn:
             List of embedding vectors
         """
 
+        self.sysget = SysGet()
+
         embeddings = []
 
         for text in texts:
-            embedding = self._get_embedding(text)
+            embedding = self.sysget._get_embedding(text)
             embeddings.append(embedding)
 
             # Cache the dimension from the first embedding
@@ -33,6 +39,7 @@ class EmbeddingsFn:
         return embeddings
 
     def get_embedding_function(
+        self,
         model: str = "mxbai-embed-large",
         base_url: str = "http://localhost:11434",
     ) -> Callable[[List[str]], List[List[float]]]:

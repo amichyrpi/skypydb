@@ -9,7 +9,7 @@ from skypydb.embeddings.mixins import (
     SysGet
 )
 
-class OllamaEmbeddings(EmbeddingsFn):
+class OllamaEmbedding(EmbeddingsFn, Utils, SysGet):
     def __init__(
         self,
         model: str = "mxbai-embed-large",

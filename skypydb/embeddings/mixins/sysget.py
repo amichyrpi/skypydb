@@ -30,10 +30,12 @@ class SysGet:
             ValueError: If embedding generation fails
         """
 
-        url = f"{self.base_url}/api/embeddings"
+        self.embedder = OllamaEmbedding()
+
+        url = f"{self.embedder.base_url}/api/embeddings"
 
         data = json.dumps({
-            "model": self.model,
+            "model": self.embedder.model,
             "prompt": text
         }).encode("utf-8")
 
@@ -52,14 +54,14 @@ class SysGet:
                 if embedding is None:
                     raise ValueError(
                         f"No embedding returned from Ollama. "
-                        f"Make sure model '{self.model}' is an embedding model."
+                        f"Make sure model '{self.embedder.model}' is an embedding model."
                     )
                 
                 return embedding
 
         except urllib.error.URLError as e:
             raise ConnectionError(
-                f"Cannot connect to Ollama at {self.base_url}. "
+                f"Cannot connect to Ollama at {self.embedder.base_url}. "
                 f"Make sure Ollama is running. If you haven't installed it go to https://ollama.com/download and install it. Error: {e}"
             )
         except json.JSONDecodeError as e:

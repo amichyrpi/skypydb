@@ -143,13 +143,22 @@ schema = defineSchema({
 
 ```python
 import skypydb
+from skypydb.errors import TableAlreadyExistsError
 
 # Create a client
 client = skypydb.Client()
 
 # Create tables from the schema
 # This reads the schema from skypydb/schema.py and creates all tables
-tables = client.create_table()
+try:
+    tables = client.create_table()
+# if the tables already exists the programe get them instead
+except TableAlreadyExistsError:
+    tables = {
+        "success": client.get_table("success"),
+        "warning": client.get_table("warning"),
+        "error": client.get_table("error"),
+    }
 
 # Access your tables
 success_table = tables["success"]
@@ -187,12 +196,16 @@ error_table.add(
 - after adding data to your database you can search specific data using the search method
 
 ```python
+# Search results by filter
 user_success_logs = success_table.search(
-    index="by_user",
     user_id="user123"
 )
-for user_success_log in user_success_logs:
-    print(user_success_log)
+
+if not user_success_logs:
+    print("No results found.")
+else:
+    for user_success_log in user_success_logs:
+        print(user_success_log)
 ```
 
 - you can also delete specific data from your database using the delete method

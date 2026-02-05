@@ -49,8 +49,6 @@ class ReactiveDatabase(
             encrypted_fields: Optional List of field names to encrypt
         """
 
-        super().__init__()
-
         self.path = path
 
         # create directory if needed

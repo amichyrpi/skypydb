@@ -10,7 +10,7 @@
 
 <div align="center">
 
-[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)
+[![Python](https://img.shields.io/badge/Python-33aaff?logo=python&logoColor=fff)](#)
 [![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](#)
 [![PyPI](https://img.shields.io/pypi/v/skypydb.svg)](https://pypi.org/project/skypydb/)
 [![License](https://img.shields.io/github/license/Ahen-Studio/skypy-db)](https://github.com/Ahen-Studio/skypy-db/blob/main/LICENSE)

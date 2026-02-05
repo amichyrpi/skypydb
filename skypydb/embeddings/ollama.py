@@ -28,8 +28,6 @@ class OllamaEmbedding(
             base_url: Base URL for Ollama API (default: http://localhost:11434)
         """
 
-        super().__init__()
-
         self.model = model
         self.base_url = base_url.rstrip("/")
         self._dimension: Optional[int] = None

@@ -2,7 +2,7 @@
 Skypydb - Open Source Reactive and Vector Embedding Database for Python.
 """
 
-from skypydb.api.client import Client
+from skypydb.api.reactive_client import ReactiveClient
 from skypydb.api.vector_client import VectorClient
 from skypydb.api.collection import Collection
 from skypydb.errors import (
@@ -25,7 +25,7 @@ from skypydb.embeddings import (
 __version__ = "0.1.10"
 
 __all__ = [
-    "Client",
+    "ReactiveClient",
     "VectorClient",
     "Collection",
     "SkypydbError",

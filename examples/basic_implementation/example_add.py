@@ -2,10 +2,10 @@ import skypydb
 from skypydb.errors import TableAlreadyExistsError
 
 # Create a client
-client = skypydb.Client()
+client = skypydb.ReactiveClient()
 
 # Create tables from the schema
-# This reads the schema from skypydb/schema.py and creates all tables
+# This reads the schema from db/schema.py and creates all tables
 try:
     tables = client.create_table()
 # if the tables already exists the programe get them instead

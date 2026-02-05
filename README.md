@@ -47,7 +47,7 @@ pip install skypydb # python client
 
 ## TODO
 
-- [ ] Continue the refactoring on the api folder, the cli folder, the server folder and the dashboard folder.
+- [ ] Continue the refactoring on the cli folder, the server folder and the dashboard folder.
 - [ ] Create the dashboard using Next.js and shadcn-ui
 - [ ] update the documentation
 
@@ -148,10 +148,10 @@ import skypydb
 from skypydb.errors import TableAlreadyExistsError
 
 # Create a client
-client = skypydb.Client()
+client = skypydb.ReactiveClient()
 
 # Create tables from the schema
-# This reads the schema from skypydb/schema.py and creates all tables
+# This reads the schema from db/schema.py and creates all tables
 try:
     tables = client.create_table()
 # if the tables already exists the programe get them instead
@@ -342,7 +342,7 @@ if salt_key is None:
 salt_bytes = salt_key.encode("utf-8")
 
 # Create encrypted database
-client = skypydb.Client(
+client = skypydb.ReactiveClient(
     encryption_key=encryption_key,
     salt=salt_bytes,
     encrypted_fields=["message"]  # Optional: encrypt only sensitive fields

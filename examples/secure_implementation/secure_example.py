@@ -16,7 +16,7 @@ if salt_key is None:
 salt_bytes = salt_key.encode("utf-8")
 
 # Create encrypted database
-client = skypydb.Client(
+client = skypydb.ReactiveClient(
     encryption_key=encryption_key,
     salt=salt_bytes,
     encrypted_fields=["message"]  # Optional: encrypt only sensitive fields

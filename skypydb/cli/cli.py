@@ -104,11 +104,13 @@ class SkypyCLI:
             api_command,
             cwd=str(self.cwd)
         )
+        dashboard_process = None
 
         try:
-            next_bin = dashboard_dir / "node_modules" / ".bin" / "next.cmd"
+            next_dir = dashboard_dir / "node_modules" / ".bin"
+            next_bin = next_dir / "next"
             if not next_bin.exists():
-                print("[yellow]Installing dashboard dependencies (npm install).[/yellow]")
+                print("[yellow]Installing dashboard dependencies.[/yellow]")
                 install_process = subprocess.Popen(
                     [npm_path,
                     "install"
@@ -131,8 +133,10 @@ class SkypyCLI:
         except KeyboardInterrupt:
             print("\n[yellow]Shutting down servers.[/yellow]")
         finally:
-            api_process.terminate()
-            dashboard_process.terminate()
+            if api_process.poll() is None:
+                api_process.terminate()
+            if dashboard_process and dashboard_process.poll() is None:
+                dashboard_process.terminate()
 
     def init_project(self) -> None:
         """

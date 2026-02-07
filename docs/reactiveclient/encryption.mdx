@@ -1,0 +1,97 @@
+---
+title: Encrypt data on the table
+description: "Skypydb support encryption for handling sensitive data"
+---
+
+<Note>You can use the cli to automatically generate encryption keys</Note>
+
+<Steps titleSize="h3">
+  <Step title="Generate encryption keys">
+    ```python Python
+    # you can generate a secure encryption key and salt using the cli
+    # or generate a secure encryption key and salt using the this example code
+
+    from skypydb.security import EncryptionManager
+
+    # Generate a secure encryption key
+    encryption_key = EncryptionManager.generate_key()
+    salt = EncryptionManager.generate_salt()
+    print(encryption_key) # don't show this key to anyone
+    print(salt) # don't show this salt to anyone
+    ```
+  </Step>
+
+  <Step title="Save keys">
+    after generating those keys you will need to save them in a .env.local file, here is an example of how you should write the file:
+
+    ```Text Text
+    ENCRYPTION_KEY=your_key
+    SALT_KEY=your_key
+    ```
+  </Step>
+
+  <Step title="Encrypt you data">
+    Skypydb will encrypt your data with you encryption key and salt key.
+
+    ```python Python
+    import os
+    import skypydb
+    from skypydb.errors import TableAlreadyExistsError
+    from dotenv import load_dotenv
+
+    # Load environment variables from .env file
+    load_dotenv(".env.local")
+
+    # Load encryption key from environment
+    encryption_key = os.getenv("ENCRYPTION_KEY") # create a encryption key and make it available in .env file before using it, don't show this key to anyone
+    salt_key = os.getenv("SALT_KEY") # create a salt key and make it available in .env file before using it, don't show this salt to anyone
+
+    # transform salt key to bytes
+    if salt_key is None:
+        raise ValueError("SALT_KEY missing")
+    salt_bytes = salt_key.encode("utf-8")
+
+    # Create encrypted database
+    client = skypydb.ReactiveClient(
+        encryption_key=encryption_key,
+        salt=salt_bytes,
+        encrypted_fields=["message"]  # Optional: encrypt only sensitive fields
+    )
+
+    # All operations work the same - encryption is transparent!
+    try:
+        tables = client.create_table()
+    # if the tables already exists the programe get them instead
+    except TableAlreadyExistsError:
+        tables = {
+            "success": client.get_table("success"),
+            "warning": client.get_table("warning"),
+            "error": client.get_table("error"),
+        }
+
+    # Access your tables
+    success_table = tables["success"]
+    warning_table = tables["warning"]
+    error_table = tables["error"]
+
+    # Automatically encrypted
+    success_table.add(
+        component="AuthService",
+        action="login",
+        message="User logged in successfully", # only this field is encrypted if encrypted_fields is not None
+        user_id="user123"
+    )
+
+    # Data is automatically decrypted when retrieved
+    user_success_logs = success_table.search(
+        user_id="user123"
+    )
+
+    if not user_success_logs:
+        print("No results found.")
+    else:
+        for user_success_log in user_success_logs:
+            print(user_success_log)
+    ```
+  </Step>
+</Steps>

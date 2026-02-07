@@ -97,7 +97,7 @@ from skypydb.schema.values import v
 # Define the schema with all tables
 schema = defineSchema({
     
-    # Table pour les logs de succès
+    # Table for success logs
     "success": defineTable({
         "component": v.string(),
         "action": v.string(),
@@ -110,7 +110,7 @@ schema = defineSchema({
     .index("by_user", ["user_id"])
     .index("by_component_and_action", ["component", "action"]),
 
-    # Table pour les logs d'avertissement
+    # Table for warning logs
     "warning": defineTable({
         "component": v.string(),
         "action": v.string(),
@@ -123,7 +123,7 @@ schema = defineSchema({
     .index("by_user", ["user_id"])
     .index("by_component_and_action", ["component", "action"]),
 
-    # Table pour les logs d'erreur
+    # Table for error logs
     "error": defineTable({
         "component": v.string(),
         "action": v.string(),

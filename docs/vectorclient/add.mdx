@@ -1,0 +1,35 @@
+---
+title: Add vector data to a collection
+description: "Add vector data to a collection require an embedding model"
+---
+
+Skypydb support all the Ollama embedding model, to use the vector part of our database you will need to download [Ollama](https://ollama.com/download) and install an embedding model.
+
+By default Skypydb use [mxbai-embed-large](https://ollama.com/library/mxbai-embed-large).
+
+<Steps titleSize="h3">
+  <Step title="Create a collection">
+    To add data to a collection you will need to create a collection:
+
+    ```python Python
+    # Create a client
+    client = skypydb.VectorClient()
+
+    # Create a collection
+    collection = client.get_or_create_collection("my-documents")
+    ```
+  </Step>
+
+  <Step title="Add data to a collection">
+    We can now add data to our collection.
+
+    ```python Python
+    # Add documents (automatically embedded using Ollama)
+    collection.add(
+        documents=["This is document1", "This is document2"],
+        metadatas=[{"source": "notion"}, {"source": "google-docs"}],
+        ids=["doc1", "doc2"]
+    )
+    ```
+  </Step>
+</Steps>

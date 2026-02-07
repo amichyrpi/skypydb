@@ -1,0 +1,25 @@
+---
+title: Query a collection
+description: "Query a collection for similar result"
+---
+
+<Steps titleSize="h3">
+  <Step title="Query a collection">
+    To query a collection assuming their is already data in the collection:
+
+    ```python Python
+    # Query for similar documents
+    results = collection.query(
+        query_texts=["This is a query document"],
+        n_results=2
+    )
+
+    # Access results
+    if not results:
+        print("No results found.")
+    else:
+        for i, doc_id in enumerate(results["ids"][0]):
+            print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
+    ```
+  </Step>
+</Steps>

@@ -1,0 +1,69 @@
+---
+title: Mem0 integrations
+description: "Skypydb is compatible with mem0 for adding memory to an LLM"
+---
+
+Skypydb supports mem0 via a third-party implementation.
+
+To use skypydb with mem0, you will need to modify some files in the mem0 source code.
+
+See the Mem0 component section for more information:
+
+## Use Skypydb with Mem0
+
+<Steps titleSize="h3">
+  <Step title="Install Skypydb with Mem0">
+    <CodeGroup>
+    ```bash pip
+    pip install skypydb[mem0]
+    ```
+
+    ```bash uv
+    uv pip install skypydb[mem0]
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="basic usage">
+    ```python Python
+    from mem0 import Memory
+
+    # Local mem0 config
+    config = {
+        "vector_store": {
+            "provider": "skypydb",
+            "config": {
+                "collection_name": "memory",
+                "path": "db/_generated/mem0_vector.db"
+            }
+        },
+        "llm": {
+            "provider": "ollama",
+            "config": {
+                "model": "llama3.1:latest",
+                "temperature": 0.3,
+                "max_tokens": 1024,
+                "ollama_base_url": "http://localhost:11434",
+            },
+        },
+        "embedder": {
+            "provider": "ollama",
+            "config": {
+                "model": "mxbai-embed-large"
+            }
+        }
+    }
+
+    m = Memory.from_config(config)
+
+    # Add memories
+    m.add("I love Python programming", user_id="user1")
+    m.add("My favorite color is blue", user_id="user1")
+
+    # Search memories
+    results = m.search("What programming language do I like?", user_id="user1")
+
+    print(results)
+    ```
+  </Step>
+</Steps>

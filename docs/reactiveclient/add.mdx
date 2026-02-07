@@ -1,0 +1,62 @@
+---
+title: Add data to a table
+description: "To add data to a table you will need to create a table"
+---
+
+<Steps titleSize="h3">
+  <Step title="Create tables">
+    assuming you already create a schema file in the db/ folder we can create a table:
+
+    ```python Python
+    # Create tables from the schema
+    # This reads the schema from db/schema.py and creates all tables
+    try:
+        tables = client.create_table()
+    # if the tables already exists the programe get them instead
+    except TableAlreadyExistsError:
+        tables = {
+            "success": client.get_table("success"),
+            "warning": client.get_table("warning"),
+            "error": client.get_table("error"),
+        }
+    ```
+  </Step>
+
+  <Step title="Add data to a table">
+    We can now add data to our tables.
+
+    ```python Python
+    # Access your tables
+    success_table = tables["success"]
+    warning_table = tables["warning"]
+    error_table = tables["error"]
+
+    # Insert data
+    # Insert success logs
+    success_table.add(
+        component="AuthService",
+        action="login",
+        message="User logged in successfully",
+        user_id="user123"
+    )
+
+    # Insert warning logs
+    warning_table.add(
+        component="AuthService",
+        action="login_attempt",
+        message="Multiple failed login attempts",
+        user_id="user456",
+        details="5 failed attempts in 5 minutes"
+    )
+
+    # Insert error logs
+    error_table.add(
+        component="DatabaseService",
+        action="connection",
+        message="Connection timeout",
+        user_id="system",
+        details="Timeout after 30 seconds"
+    )
+    ```
+  </Step>
+</Steps>

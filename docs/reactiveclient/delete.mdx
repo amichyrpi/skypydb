@@ -1,0 +1,25 @@
+---
+title: Delete data from a table
+description: "Delete data in a table"
+---
+
+<Danger>This is a destructive operation, and cannot be undone.</Danger>
+
+<Steps titleSize="h3">
+  <Step title="Delete data">
+    assuming you already create a table and already add data to it we can now delete data from the table:
+
+    ```python Python
+    # Access your tables
+    success_table = tables["success"]
+    warning_table = tables["warning"]
+    error_table = tables["error"]
+
+    # delete data on the table assuming they are already data in the table.
+    success_table.delete(
+        component="AuthService",
+        user_id="user123"
+    )
+    ```
+  </Step>
+</Steps>

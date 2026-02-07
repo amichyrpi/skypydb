@@ -4,6 +4,7 @@ Module containing the SysGet class, which is used to get a table.
 
 from skypydb.errors import TableNotFoundError
 from skypydb.table.table import Table
+from skypydb.api.mixins.reactive.schema_loader import load_schema
 
 class SysGet:
     def get_table(
@@ -46,7 +47,7 @@ class SysGet:
             users_table = tables["users"]
         """
 
-        schema = self._load_schema()
+        schema = load_schema()
 
         created_tables = {}
         table_names = schema.get_all_table_names()

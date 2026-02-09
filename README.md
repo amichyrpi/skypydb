@@ -1,10 +1,10 @@
 <div align="center">
- <img alt="Skypy" width="auto" height="auto" src="https://github.com/amichyrpi/skypy-db/blob/main/docs/logo/dark.svg#gh-light-mode-only">
- <img alt="Skypy" width="auto" height="auto" src="https://github.com/amichyrpi/skypy-db/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
+ <img alt="Skypydb" width="auto" height="auto" src="https://github.com/amichyrpi/skypy-db/blob/main/docs/logo/dark.svg#gh-light-mode-only">
+ <img alt="Skypydb" width="auto" height="auto" src="https://github.com/amichyrpi/skypy-db/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
 </div>
 
 <p align="center">
-    <b>Skypy - Open Source Reactive and Vector Embeddings Database</b>. <br />
+    <b>Skypydb - Open Source Reactive and Vector Embeddings Database</b>. <br />
     The better way to build Python logging system! And adding memory to a LLM.
 </p>
 
@@ -20,13 +20,10 @@
 ```bash
 pip install skypydb # python database
 # or download from the source
-# git clone https://github.com/Ahen-Studio/skypy-db.git
-# cd skypy-db
+# git clone https://github.com/Ahen-Studio/skypydb.git
+# cd skypydb
 # pip install -r requirements.txt
 ```
-
-> [!NOTE]
-> The dashboard is on [the-skypydb-dashboard](https://github.com/Ahen-Studio/the-skypydb-dashboard)
 
 ## Features
 

@@ -25,6 +25,9 @@ pip install skypydb # python database
 # pip install -r requirements.txt
 ```
 
+> [!NOTE]
+> The dashboard is on [the-skypydb-dashboard](https://github.com/Ahen-Studio/the-skypydb-dashboard)
+
 ## Features
 
 - Simple: fully-documented and easy to debug with detailed error messages

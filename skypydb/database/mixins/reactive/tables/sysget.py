@@ -107,7 +107,7 @@ class SysGet:
             schema: SysSchema instance containing table definitions
 
         Returns:
-            Dictionary mapping table names to Table instances
+            Dictionary mapping table names to table name strings
 
         Example:
             tables = client.get_or_create_table()

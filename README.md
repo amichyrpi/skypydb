@@ -47,6 +47,10 @@ pip install skypydb # python database
 
 - Cross-platform: Windows, Linux, MacOS
 
+## TODO
+
+- [ ] Modify the dashboard API management: When creating a new database file, a link folder must be created beside the database file if it doesn't already exist, and a binary file containing the file type (reactive or vector) must be generated in the link folder. This generation is done by searching for column names in the database file, for example, "embedding id". The dashboard API will search the binary file in the root directory where the "skypydb dev" command is executed and will expose the type and path to the server.
+
 ## What's next!
 
 - give us ideas!

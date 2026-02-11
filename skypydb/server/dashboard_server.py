@@ -96,8 +96,8 @@ class DatabaseConnection:
         Discover database link metadata from current working directory.
         """
 
-        self.database_linker = DatabaseLinker()
-        return self.database_linker.discover_database_links(Path.cwd())
+        database_linker = DatabaseLinker()
+        return database_linker.discover_database_links(Path.cwd())
 
     @staticmethod
     def _require_existing(path: str, label: str) -> None:

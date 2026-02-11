@@ -7,7 +7,7 @@ from typing import Dict
 from skypydb.database.vector_db import VectorDatabase
 from skypydb.embeddings.ollama import OllamaEmbedding
 from skypydb.api.collection import Collection
-from skypydb.server.db_link import ensure_db_link_metadata
+from skypydb.database.database_linker import DatabaseLinker
 from skypydb.api.mixins.vector import (
     SysCreate,
     SysGet,
@@ -64,12 +64,14 @@ class VectorClient(
             base_url=ollama_base_url
         )
 
+        self.database_linker = DatabaseLinker()
+
         # initialize vector database
         self._db = VectorDatabase(
             path=DB_PATH,
             embedding_function=self._embedding_function
         )
-        ensure_db_link_metadata(DB_PATH, db_type="vector")
+        self.database_linker.ensure_db_link_metadata(DB_PATH, db_type="vector")
 
         # cache for collection instances
         self._collections: Dict[str, Collection] = {}

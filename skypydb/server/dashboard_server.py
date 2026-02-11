@@ -14,7 +14,7 @@ from typing import (
 from dataclasses import dataclass
 from skypydb.database.reactive_db import ReactiveDatabase
 from skypydb.database.vector_db import VectorDatabase
-from skypydb.server.db_link import discover_database_links
+from skypydb.database.database_linker import DatabaseLinker
 
 @dataclass
 class TableInfo:
@@ -90,12 +90,15 @@ class DatabaseConnection:
         return str(default_path)
 
     @staticmethod
-    def discover_links() -> List[Dict[str, str]]:
+    def discover_links(
+        self
+    ) -> List[Dict[str, str]]:
         """
         Discover database link metadata from current working directory.
         """
 
-        return discover_database_links(Path.cwd())
+        self.database_linker = DatabaseLinker()
+        return self.database_linker.discover_database_links(Path.cwd())
 
     @staticmethod
     def _require_existing(path: str, label: str) -> None:

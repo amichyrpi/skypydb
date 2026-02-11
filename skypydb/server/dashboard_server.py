@@ -91,7 +91,6 @@ class DatabaseConnection:
 
     @staticmethod
     def discover_links() -> List[Dict[str, str]]:
-    ) -> List[Dict[str, str]]:
         """
         Discover database link metadata from current working directory.
         """

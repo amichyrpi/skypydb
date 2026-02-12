@@ -38,11 +38,7 @@
 
 | Stable  | Supported          |
 | ------- | ------------------ |
-| 1.0.0   | :white_check_mark: |
-
-| Beta    | Supported          |
-| ------- | ------------------ |
-| 0.1.0   | :x:                |
+| 1.0.2   | :x:                |
 
 ## Reporting a Vulnerability
 

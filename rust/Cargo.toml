@@ -1,6 +1,6 @@
 [package]
 name = "skypydb"
-version = "0.1.0"
+version = "1.0.2"
 edition = "2021"
 description = "Rust port of the skypydb reactive and vector database client"
 repository = "https://github.com/Ahen-Studio/skypydb"

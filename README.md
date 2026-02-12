@@ -58,7 +58,8 @@ cargo add skypydb # rust client
 
 ## TODO
 
-- [ ] Code a rust client
+- [ ] Test the rust client
+- [x] Code a rust client
 
 ## What's next!
 

@@ -112,8 +112,9 @@ async fn init_project() -> Result<()> {
     download_dashboard_folder(&generated_dir).await?;
 
     println!("Initialized project.");
+    println!("Downloaded dashboard folder to {}", generated_dir.display());
     println!("Write your Skypydb schema in {}", schema_file.display());
-    println!("Use `skypydbrust dashboard` to run the dashboard API server.");
+    println!("Give us feedback at https://github.com/Ahen-Studio/skypy-db/issues");
 
     Ok(())
 }

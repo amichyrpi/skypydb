@@ -44,6 +44,8 @@ cargo add skypydb # rust client
 
 - Security, Input Validation: AES-256-GCM encryption for data at rest with selective field encryption, automatic protection against SQL injection attacks
 
+- Logger Service: all public vector database operations are logged to `skypydb/logger/log.txt` and current database state snapshots are stored in `skypydb/logger/dbstat.sqlite3`.
+
 - CLI: command line interface to initialize your database and launch the dashboard with one simple command
 
 - Observable: Dashboard with real-time data, metrics, and query inspection
@@ -223,6 +225,7 @@ success_table.delete(
 ### Vector
 
 - Use the vector API to perform vector operations on your database, it is useful for adding memory to an LLM.
+- The vector database path is fixed to `skypydb/vector.db` in the current Python client.
 
 ```python
 import skypydb

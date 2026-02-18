@@ -1,51 +1,37 @@
-"""
-Collection class for managing vector collections.
-"""
+﻿"""Collection wrapper for vector operations."""
 
-from typing import (
-    Any,
-    Dict,
-    Optional,
-    TYPE_CHECKING
-)
+from typing import Any, Dict, Optional, TYPE_CHECKING
+
 from skypydb.api.mixins.vector.collection import (
-    SysAdd,
-    SysGet,
-    SysQuery,
-    SysUpdate,
-    SysDelete,
-    Utils
+    AddItemsMixin,
+    CollectionInfoMixin,
+    DeleteItemsMixin,
+    GetItemsMixin,
+    QueryItemsMixin,
+    UpdateItemsMixin,
 )
 
 if TYPE_CHECKING:
     from skypydb.database.vector_db import VectorDatabase
 
+
 class Collection(
-    SysAdd,
-    SysGet,
-    SysQuery,
-    SysUpdate,
-    SysDelete,
-    Utils
+    AddItemsMixin,
+    GetItemsMixin,
+    QueryItemsMixin,
+    UpdateItemsMixin,
+    DeleteItemsMixin,
+    CollectionInfoMixin,
 ):
-    """
-    Represents a vector collection in the database.
-    """
+    """Represents a vector collection in the database."""
 
     def __init__(
         self,
         db: "VectorDatabase",
         name: str,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ):
-        """
-        Initialize collection.
-
-        Args:
-            db: VectorDatabase instance
-            name: Name of the collection
-            metadata: Optional collection metadata
-        """
+        """Create a collection wrapper bound to a single `VectorDatabase` instance."""
 
         self._db = db
         self._name = name

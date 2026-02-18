@@ -2,135 +2,130 @@
 Custom exceptions for Skypydb.
 """
 
-class SkypydbError(Exception):
-    """
-    Base exception for all Skypydb errors.
-    """
+from abc import abstractmethod
+from overrides import overrides, EnforceOverrides
 
-    CODE = "SKY001"
-    default_message = "An unexpected error occurred in Skypydb."
+class SkypydbError(Exception, EnforceOverrides):
+    """Base exception for all Skypydb errors."""
 
-    # initialize the SkypydbError instance for handling and formatting error messages
-    def __init__(
-        self,
-        message=None,
-    ):
-        """
-        Initialize the SkypydbError instance.
+    def code(self) -> int:
+        """Return an base error code."""
+        return 500
 
-        Args:
-            message (str, optional): The error message. Defaults to None.
-        """
+    def message(self) -> str:
+        return ", ".join(self.args)
 
-        self.message = message
-
-        if self.message:
-            formatted_message = f"[{self.CODE}] {self.message}"
-        else:
-            # use a class-specific default message when provided, otherwise fall back
-            # to a generic, user-friendly message when no default_message is defined.
-            default_msg = getattr(
-                self,
-                "default_message",
-                "An unexpected error occurred.",
-            )
-            formatted_message = f"[{self.CODE}] {default_msg}"
-
-        super().__init__(formatted_message)
+    @classmethod
+    @abstractmethod
+    def name(cls) -> str:
+        """Return the error name"""
+        pass
 
 class TableNotFoundError(SkypydbError):
-    """
-    Raised when a table is not found.
-    """
+    @overrides
+    def code(self) -> int:
+        return 404
 
-    CODE = "SKY101"
-    default_message = "Table not found."
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return "Table not found."
 
 class TableAlreadyExistsError(SkypydbError):
-    """
-    Raised when trying to create a table that already exists.
-    """
+    @overrides
+    def code(self) -> int:
+        return 502
 
-    CODE = "SKY102"
-    default_message = "Table already exists."
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return "Table already exists."
 
 class DatabaseError(SkypydbError):
-    """
-    Raised when a database-level operation fails.
-    """
+    @overrides
+    def code(self) -> int:
+        return 513
 
-    CODE = "SKY103"
-    default_message = (
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return (
         "Database operation failed. This may indicate a connectivity issue, "
         "invalid query, or transaction problem. Check database logs and configuration."
     )
 
 class InvalidSearchError(SkypydbError):
-    """
-    Raised when search parameters are invalid.
-    """
+    @overrides
+    def code(self) -> int:
+        return 501
 
-    CODE = "SKY201"
-    default_message = (
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return (
         "One or more search parameters are invalid. "
         "Check parameter names, types, and value ranges for your search query."
     )
 
 class SecurityError(SkypydbError):
-    """
-    Raised when a security operation fails.
-    """
+    @overrides
+    def code(self) -> int:
+        return 302
 
-    CODE = "SKY301"
-    default_message = (
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return (
         "Security operation failed. Possible authentication or authorization issue; "
         "see logs for details."
     )
 
 class ValidationError(SkypydbError):
-    """
-    Raised when input validation fails.
-    """
+    @overrides
+    def code(self) -> int:
+        return 507
 
-    CODE = "SKY302"
-    default_message = "Input validation failed."
-
-class EncryptionError(SkypydbError):
-    """
-    Raised when encryption/decryption operations fail.
-    """
-
-    CODE = "SKY303"
-    default_message = "Encryption or decryption operation failed."
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return "Input validation failed."
 
 class CollectionNotFoundError(SkypydbError):
-    """
-    Raised when a vector collection is not found.
-    """
+    @overrides
+    def code(self) -> int:
+        return 404
 
-    CODE = "SKY401"
-    default_message = "Collection not found."
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return "Collection not found."
 
 class CollectionAlreadyExistsError(SkypydbError):
-    """
-    Raised when trying to create a collection that already exists.
-    """
+    @overrides
+    def code(self) -> int:
+        return 402
 
-    CODE = "SKY402"
-    default_message = "Collection already exists."
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return "Collection already exists."
 
 class EmbeddingError(SkypydbError):
-    """
-    Raised when embedding generation fails.
-    """
+    @overrides
+    def code(self) -> int:
+        return 503
 
-    CODE = "SKY403"
-    default_message = "Embedding generation failed."
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return "Embedding generation failed."
 
 class VectorSearchError(SkypydbError):
-    """
-    Raised when vector similarity search fails.
-    """
+    @overrides
+    def code(self) -> int:
+        return 509
 
-    CODE = "SKY404"
-    default_message = "Vector similarity search failed."
+    @classmethod
+    @overrides
+    def name(cls) -> str:
+        return "Vector similarity search failed."

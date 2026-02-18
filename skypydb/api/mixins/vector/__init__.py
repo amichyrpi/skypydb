@@ -1,17 +1,15 @@
-"""
-Vector mixins API client module for Skypydb
-"""
+﻿"""Top-level vector mixins for the public `VectorClient` API."""
 
-from skypydb.api.mixins.vector.syscreate import SysCreate
-from skypydb.api.mixins.vector.sysget import SysGet
-from skypydb.api.mixins.vector.syslist import SysList
-from skypydb.api.mixins.vector.sysdelete import SysDelete
-from skypydb.api.mixins.vector.utils import Utils
+from skypydb.api.mixins.vector.create_collection import CreateCollectionMixin
+from skypydb.api.mixins.vector.delete_collection import DeleteCollectionMixin
+from skypydb.api.mixins.vector.get_collection import GetCollectionMixin
+from skypydb.api.mixins.vector.list_collections import ListCollectionsMixin
+from skypydb.utils.client_utilities import ClientUtilitiesMixin
 
 __all__ = [
-    "SysCreate",
-    "SysGet",
-    "SysList",
-    "SysDelete",
-    "Utils"
+    "CreateCollectionMixin",
+    "DeleteCollectionMixin",
+    "GetCollectionMixin",
+    "ListCollectionsMixin",
+    "ClientUtilitiesMixin",
 ]

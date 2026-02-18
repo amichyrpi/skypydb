@@ -1,6 +1,4 @@
-"""
-Security constants module for Skypydb.
-"""
+"""Security constants module for Skypydb."""
 
 import re
 

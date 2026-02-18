@@ -10,4 +10,4 @@ client = skypydb.vecClient(
 )
 
 # Create a vector database or get it if it already exists
-vectordb = client.get_or_create_vecdb("my-videos")
+vectordb = client.get_or_create_collection("my-videos")

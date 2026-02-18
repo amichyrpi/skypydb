@@ -10,7 +10,7 @@ client = skypydb.vecClient(
 )
 
 # Create a collection
-vectordb = client.create_vecdb("my-videos")
+vectordb = client.create_collection("my-videos")
 
 # Firts add data to your vector database
 # Add data to your vector database

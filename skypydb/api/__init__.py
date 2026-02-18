@@ -1,13 +1,10 @@
-"""
-API module.
-"""
+﻿"""Public API surface for vector client types."""
 
-from .reactive_client import ReactiveClient
-from .vector_client import VectorClient
-from .collection import Collection
+from skypydb.api.collection import Collection
+from skypydb.api.vector_client import vecClient
 
 __all__ = [
-    "ReactiveClient",
+    "Collection",
     "VectorClient",
-    "Collection"
+    "vecClient",
 ]

@@ -1,19 +1,17 @@
-"""
-Collection mixins API client module for Skypydb
-"""
+﻿"""Collection-level mixins for the public `Collection` API."""
 
-from skypydb.api.mixins.vector.collection.sysadd import SysAdd
-from skypydb.api.mixins.vector.collection.sysget import SysGet
-from skypydb.api.mixins.vector.collection.sysquery import SysQuery
-from skypydb.api.mixins.vector.collection.sysupdate import SysUpdate
-from skypydb.api.mixins.vector.collection.sysdelete import SysDelete
-from skypydb.api.mixins.vector.collection.utils import Utils
+from skypydb.api.mixins.vector.collection.add_items import AddItemsMixin
+from skypydb.api.mixins.vector.collection.delete_items import DeleteItemsMixin
+from skypydb.api.mixins.vector.collection.get_items import GetItemsMixin
+from skypydb.api.mixins.vector.collection.query_items import QueryItemsMixin
+from skypydb.api.mixins.vector.collection.update_items import UpdateItemsMixin
+from skypydb.api.mixins.vector.collection.collection_info import CollectionInfoMixin
 
 __all__ = [
-    "SysAdd",
-    "SysGet",
-    "SysQuery",
-    "SysUpdate",
-    "SysDelete",
-    "Utils"
+    "AddItemsMixin",
+    "DeleteItemsMixin",
+    "GetItemsMixin",
+    "QueryItemsMixin",
+    "UpdateItemsMixin",
+    "CollectionInfoMixin",
 ]

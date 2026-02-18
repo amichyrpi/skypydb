@@ -1,27 +1,18 @@
-"""
-Sentence Transformers embedding functions for vector operations.
-"""
+"""Sentence Transformers embedding functions for vector operations."""
 
-from typing import (
-    Any,
-    List,
-    Optional
-)
-from skypydb.embeddings.mixins import (
-    EmbeddingsFn,
-    Utils
-)
+from typing import Any, List, Optional
+from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
 
-class SentenceTransformerEmbedding(
-    EmbeddingsFn,
-    Utils
-):
+
+class SentenceTransformerEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
+    """Sentence Transformers embedding function."""
+
     def __init__(
         self,
         model: str = "all-MiniLM-L6-v2",
         device: Optional[str] = None,
         normalize_embeddings: bool = False,
-        dimension: Optional[int] = None
+        dimension: Optional[int] = None,
     ):
         """
         Initialize Sentence Transformers embedding function.
@@ -43,18 +34,27 @@ class SentenceTransformerEmbedding(
             raise ImportError(
                 "Sentence Transformers embedding provider requires the "
                 "`sentence-transformers` package. Install it with "
-                "`pip install sentence-transformers`."
+                "`pip install sentence-transformers[onnx]`."
             ) from exc
-        model_kwargs = {}
-        if self.device:
-            model_kwargs["device"] = self.device
-        self._model = SentenceTransformer(model_name_or_path=self.model, **model_kwargs)
+
+        try:
+            self._model = SentenceTransformer(
+                model_name_or_path=self.model,
+                device=self.device,
+                backend="onnx"
+            )
+        except Exception as exc:
+            error_text = str(exc).lower()
+            if "onnx" in error_text and "optimum" in error_text and "runtime" in error_text:
+                raise ImportError(
+                    "ONNX runtime backend is required for sentence-transformers. "
+                    "Install with `pip install sentence-transformers[onnx]`."
+                ) from exc
+            raise
 
     @staticmethod
     def _to_list(vector: Any) -> List[float]:
-        """
-        Convert a vector to a list of floats.
-        """
+        """Convert a vector to a list of floats."""
 
         if hasattr(vector, "tolist"):
             return list(vector.tolist())
@@ -62,18 +62,16 @@ class SentenceTransformerEmbedding(
 
     def embed(
         self,
-        texts: List[str]
+        texts: List[str],
     ) -> List[List[float]]:
-        """
-        Generate embeddings for a list of texts using Sentence Transformers.
-        """
+        """Generate embeddings for a list of texts using Sentence Transformers."""
 
         if not texts:
             return []
 
         vectors = self._model.encode(
             texts,
-            convert_to_numpy=False,
+            convert_to_numpy=True,
             normalize_embeddings=self.normalize_embeddings
         )
         embeddings = [self._to_list(vector) for vector in vectors]

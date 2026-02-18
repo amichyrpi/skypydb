@@ -1,11 +1,5 @@
-"""
-Database module.
-"""
+﻿"""Database package exports."""
 
-from .reactive_db import ReactiveDatabase
-from .vector_db import VectorDatabase
+from skypydb.database.vector_db import VectorDatabase
 
-__all__ = [
-    "ReactiveDatabase",
-    "VectorDatabase"
-]
+__all__ = ["VectorDatabase"]

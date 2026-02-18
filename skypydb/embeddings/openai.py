@@ -1,22 +1,12 @@
-"""
-OpenAI embedding functions for vector operations.
-"""
+"""OpenAI embedding functions for vector operations."""
 
 import os
-from typing import (
-    List,
-    Optional,
-    Any
-)
-from skypydb.embeddings.mixins import (
-    EmbeddingsFn,
-    Utils
-)
+from typing import Any, List, Optional
+from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
 
-class OpenAIEmbedding(
-    EmbeddingsFn,
-    Utils
-):
+class OpenAIEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
+    """OpenAI embedding function."""
+
     def __init__(
         self,
         api_key: Optional[str] = None,
@@ -25,7 +15,7 @@ class OpenAIEmbedding(
         organization: Optional[str] = None,
         project: Optional[str] = None,
         timeout: Optional[float] = None,
-        dimension: Optional[int] = None
+        dimension: Optional[int] = None,
     ):
         """
         Initialize OpenAI embedding function.
@@ -78,9 +68,7 @@ class OpenAIEmbedding(
         self,
         texts: List[str]
     ) -> List[List[float]]:
-        """
-        Generate embeddings for a list of texts using OpenAI API.
-        """
+        """Generate embeddings for a list of texts using OpenAI API."""
 
         if not texts:
             return []

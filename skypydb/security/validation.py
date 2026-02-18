@@ -1,36 +1,26 @@
-"""
-Input validation and sanitization module for Skypydb.
-"""
+﻿"""Input validation and sanitization module for Skypydb."""
 
+from skypydb.security.mixins.validation.sanitize_values import SanitizeValuesMixin
+from skypydb.security.mixins.validation.sql_injection_check import SQLInjectionCheckMixin
+from skypydb.security.mixins.validation.validate_inputs import ValidateInputsMixin
 from skypydb.security.constants import (
-    TABLE_NAME_PATTERN,
     COLUMN_NAME_PATTERN,
-    MAX_TABLE_NAME_LENGTH,
     MAX_COLUMN_NAME_LENGTH,
     MAX_STRING_LENGTH,
-    SQL_INJECTION_PATTERNS
+    MAX_TABLE_NAME_LENGTH,
+    SQL_INJECTION_PATTERNS,
+    TABLE_NAME_PATTERN,
 )
-from skypydb.security.mixins.validation.syscheck import SysCheck
-from skypydb.security.mixins.validation.syssanitize import SysSanitize
-from skypydb.security.mixins.validation.sysvalidation import SysValidation
 
-class InputValidator(
-    SysCheck,
-    SysSanitize,
-    SysValidation
-):
-    """
-    Validates and sanitizes user inputs to prevent security vulnerabilities.
-    """
 
-    # patterns for validation
+class InputValidator(ValidateInputsMixin, SQLInjectionCheckMixin, SanitizeValuesMixin):
+    """Validates and sanitizes user inputs to prevent SQL injection and malformed names."""
+
     TABLE_NAME_PATTERN = TABLE_NAME_PATTERN
     COLUMN_NAME_PATTERN = COLUMN_NAME_PATTERN
 
-    # maximum lengths
     MAX_TABLE_NAME_LENGTH = MAX_TABLE_NAME_LENGTH
     MAX_COLUMN_NAME_LENGTH = MAX_COLUMN_NAME_LENGTH
     MAX_STRING_LENGTH = MAX_STRING_LENGTH
 
-    # SQL injection patterns to detect
     SQL_INJECTION_PATTERNS = SQL_INJECTION_PATTERNS

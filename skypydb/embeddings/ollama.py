@@ -5,24 +5,17 @@ Ollama embedding functions for vector operations.
 import json
 import urllib.request
 import urllib.error
-from typing import (
-    List,
-    Optional
-)
-from skypydb.embeddings.mixins import (
-    Utils,
-    EmbeddingsFn
-)
+from typing import List, Optional
+from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
 
-class OllamaEmbedding(
-    EmbeddingsFn,
-    Utils
-):
+class OllamaEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
+    """Ollama embedding function."""
+
     def __init__(
         self,
         model: str = "mxbai-embed-large",
         base_url: str = "http://localhost:11434",
-        dimension: Optional[int] = None
+        dimension: Optional[int] = None,
     ):
         """
         Initialize Ollama embedding function.
@@ -38,7 +31,7 @@ class OllamaEmbedding(
 
     def _get_embedding(
         self,
-        text: str
+        text: str,
     ) -> List[float]:
         """
         Get embedding for a single text using Ollama API.
@@ -55,9 +48,7 @@ class OllamaEmbedding(
         """
 
         base_url = getattr(self, "base_url", "http://localhost:11434").rstrip("/")
-
         model = getattr(self, "model", "mxbai-embed-large")
-
         url = f"{base_url}/api/embeddings"
 
         data = json.dumps({
@@ -90,9 +81,7 @@ class OllamaEmbedding(
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid response from Ollama: {e}")
 
-    def get_dimension(
-        self
-    ) -> int:
+    def get_dimension(self) -> int:
         """
         Get the embedding dimension, generating a test embedding if needed.
 

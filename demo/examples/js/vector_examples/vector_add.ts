@@ -1,4 +1,4 @@
-import { vecClient } from "skypydb-js";
+import { vecClient } from "skypydb";
 
 async function main(): Promise<void> {
   // Create a client

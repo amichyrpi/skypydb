@@ -1,6 +1,7 @@
 """Module containing the EmbeddingsFn class, which is used to generate embeddings for a list of texts."""
 
 from typing import List, Optional
+from skypydb.embeddings.mixins.get_embeddings_function import _get_embedding
 
 class EmbeddingsFunction:
     def __init__(
@@ -15,16 +16,6 @@ class EmbeddingsFunction:
         """
 
         self._dimension = dimension
-
-    def _get_embedding(
-        self,
-        text: str,
-    ) -> List[float]:
-        """Get embedding for a single text."""
-
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement `_get_embedding`."
-        )
 
     def embed(
         self,
@@ -43,7 +34,7 @@ class EmbeddingsFunction:
         embeddings: List[List[float]] = []
 
         for text in texts:
-            embedding = self._get_embedding(text)
+            embedding = _get_embedding(self, text)
             embeddings.append(embedding)
             # cache the dimension from the first embedding
             if self._dimension is None:
@@ -69,6 +60,6 @@ class EmbeddingsFunction:
         """
 
         if self._dimension is None:
-            test_embedding = self._get_embedding("test")
+            test_embedding = _get_embedding(self, "test")
             self._dimension = len(test_embedding)
         return self._dimension

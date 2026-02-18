@@ -1,5 +1,7 @@
-﻿"""Skypydb - Open Source Vector Embedding Database for Python."""
+"""Skypydb - Open Source Vector Embedding Database for Python."""
 
+from skypydb.asyncapi.async_collection import AsyncCollection
+from skypydb.asyncapi.async_vector_client import AsyncvecClient
 from skypydb.api.collection import Collection
 from skypydb.api.vector_client import vecClient
 from skypydb.embeddings import (
@@ -19,7 +21,8 @@ from skypydb.security import (
 __version__ = "1.0.3"
 
 __all__ = [
-    "VectorClient",
+    "AsyncCollection",
+    "AsyncvecClient",
     "vecClient",
     "Collection",
     "SkypydbError",

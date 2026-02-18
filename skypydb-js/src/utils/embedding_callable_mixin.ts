@@ -1,4 +1,4 @@
-import type { EmbeddingMatrix } from "../../types";
+import type { EmbeddingMatrix } from "../types";
 
 export abstract class EmbeddingCallableMixin {
   abstract embed(texts: string[]): Promise<EmbeddingMatrix>;

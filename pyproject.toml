@@ -4,7 +4,7 @@ version = "1.0.3"
 authors = [{name = "Ahen Studio"}]
 description = "Open Source Vector Embeddings Database"
 readme = "README.md"
-license = "MIT"
+license = "Apache"
 requires-python = ">=3.9"
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [

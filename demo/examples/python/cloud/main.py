@@ -9,9 +9,9 @@ client = skypydbhttpclient.cloud(
 # client = skypydbhttpclient.cloud(api_url="http://localhost:8000")
 
 # Create a collection
-vectordb = client.create_vecdb("my-videos")
-# get_or_create_vecdb
-# get_vecdb
+vectordb = client.create_collection("my-videos")
+# get_or_create_collection
+# get_collection
 # works the same way as the local client
 
 # Add data to your vector database

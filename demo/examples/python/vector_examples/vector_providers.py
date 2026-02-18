@@ -1,5 +1,4 @@
 # Ollama provider
-
 import skypydb
 
 # Create a client
@@ -12,7 +11,6 @@ client = skypydb.vecClient(
 )
 
 # OpenAI provider
-
 import skypydb
 
 # Create a client
@@ -24,8 +22,7 @@ client = skypydb.vecClient(
     }
 )
 
-# Sentence Transformers
-
+# Sentence Transformers provider
 import skypydb
 
 # Create a client

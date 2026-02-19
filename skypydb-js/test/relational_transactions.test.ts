@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { callmutation, api as mutation_api } from "../src/mutation/callmutation";
+import {
+  callmutation,
+  api as mutation_api,
+} from "../src/mutation/callmutation";
 import { callquery, api as query_api } from "../src/query/callquery";
 import {
   cleanup_workspace,
@@ -7,7 +10,7 @@ import {
   resolve_result,
   src_import,
   write_skypydb_file,
-  type TempWorkspace
+  type TempWorkspace,
 } from "./relational_test_utils";
 
 let workspace: TempWorkspace;
@@ -29,7 +32,7 @@ export default defineSchema({
     amount: value.number()
   })
 });
-`.trim()
+`.trim(),
     );
 
     write_skypydb_file(
@@ -55,7 +58,7 @@ export const writeBatch = mutation({
 export const countLogs = query({
   handler: (ctx) => ctx.db.count("logs")
 });
-`.trim()
+`.trim(),
     );
   });
 
@@ -64,13 +67,15 @@ export const countLogs = query({
   });
 
   it("commits successful transaction and rolls back on error", async () => {
-    const first_count = await resolve_result(callmutation(mutation_api.transactions.writeBatch, { fail: false }));
+    const first_count = await resolve_result(
+      callmutation(mutation_api.transactions.writeBatch, { fail: false }),
+    );
     expect(first_count).toBe(2);
     expect(callquery(query_api.transactions.countLogs)).toBe(2);
 
-    expect(() => callmutation(mutation_api.transactions.writeBatch, { fail: true })).toThrow(
-      "forced failure"
-    );
+    expect(() =>
+      callmutation(mutation_api.transactions.writeBatch, { fail: true }),
+    ).toThrow("forced failure");
 
     expect(callquery(query_api.transactions.countLogs)).toBe(2);
   });

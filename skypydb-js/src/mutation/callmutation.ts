@@ -10,5 +10,6 @@ export function callmutation(reference: unknown, args?: unknown): unknown {
     return callmutation_runtime(reference, args);
   }
 
-  return (next_args?: unknown): unknown => callmutation_runtime(reference, next_args);
+  return (next_args?: unknown): unknown =>
+    callmutation_runtime(reference, next_args);
 }

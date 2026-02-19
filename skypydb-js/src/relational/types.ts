@@ -1,6 +1,18 @@
-import type { API_REF_MARKER, MUTATION_MARKER, QUERY_MARKER, SCHEMA_MARKER, TABLE_MARKER } from "./markers";
+import type {
+  API_REF_MARKER,
+  MUTATION_MARKER,
+  QUERY_MARKER,
+  SCHEMA_MARKER,
+  TABLE_MARKER,
+} from "./markers";
 
-export type ValueKind = "string" | "number" | "boolean" | "id" | "object" | "optional";
+export type ValueKind =
+  | "string"
+  | "number"
+  | "boolean"
+  | "id"
+  | "object"
+  | "optional";
 
 export type StringValueDefinition = {
   readonly kind: "string";
@@ -178,4 +190,3 @@ export type CompiledSchema = {
   table_signatures: Map<string, string>;
   schema_signature: string;
 };
-

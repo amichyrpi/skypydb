@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { callmutation, api as mutation_api } from "../src/mutation/callmutation";
+import {
+  callmutation,
+  api as mutation_api,
+} from "../src/mutation/callmutation";
 import { callquery, api as query_api } from "../src/query/callquery";
 import {
   cleanup_workspace,
@@ -7,7 +10,7 @@ import {
   resolve_result,
   src_import,
   write_skypydb_file,
-  type TempWorkspace
+  type TempWorkspace,
 } from "./relational_test_utils";
 
 let workspace: TempWorkspace;
@@ -31,7 +34,7 @@ export default defineSchema({
     note: value.optional(value.string())
   }).index("by_score", ["score"])
 });
-`.trim()
+`.trim(),
     );
 
     write_skypydb_file(
@@ -48,7 +51,7 @@ export const addItem = mutation({
 export const list = query({
   handler: (ctx, args) => ctx.db.get("items", args)
 });
-`.trim()
+`.trim(),
     );
   });
 
@@ -62,7 +65,7 @@ export const list = query({
       { title: "beta", score: 20, active: false, note: "group-b" },
       { title: "gamma", score: 30, active: true, note: "group-a" },
       { title: "delta", score: 40, active: false, note: "group-c" },
-      { title: "omega", score: 50, active: true, note: "group-c" }
+      { title: "omega", score: 50, active: true, note: "group-c" },
     ];
 
     for (const item of seed) {
@@ -70,53 +73,67 @@ export const list = query({
     }
 
     const eq_active = (await resolve_result(
-      callquery(query_api.filters.list, { where: { active: { $eq: true } } })
+      callquery(query_api.filters.list, { where: { active: { $eq: true } } }),
     )) as Array<Record<string, unknown>>;
     expect(eq_active.length).toBe(3);
 
     const ne_title = (await resolve_result(
-      callquery(query_api.filters.list, { where: { title: { $ne: "alpha" } } })
+      callquery(query_api.filters.list, { where: { title: { $ne: "alpha" } } }),
     )) as Array<Record<string, unknown>>;
     expect(ne_title.length).toBe(4);
 
     const range = (await resolve_result(
       callquery(query_api.filters.list, {
         where: {
-          $and: [{ score: { $gt: 15 } }, { score: { $lte: 40 } }]
+          $and: [{ score: { $gt: 15 } }, { score: { $lte: 40 } }],
         },
-        orderBy: [{ field: "score", direction: "asc" }]
-      })
+        orderBy: [{ field: "score", direction: "asc" }],
+      }),
     )) as Array<Record<string, unknown>>;
     expect(range.map((item) => item.score)).toEqual([20, 30, 40]);
 
     const in_result = (await resolve_result(
-      callquery(query_api.filters.list, { where: { title: { $in: ["alpha", "omega"] } } })
+      callquery(query_api.filters.list, {
+        where: { title: { $in: ["alpha", "omega"] } },
+      }),
     )) as Array<Record<string, unknown>>;
-    expect(in_result.map((item) => item.title).sort()).toEqual(["alpha", "omega"]);
+    expect(in_result.map((item) => item.title).sort()).toEqual([
+      "alpha",
+      "omega",
+    ]);
 
     const nin_result = (await resolve_result(
-      callquery(query_api.filters.list, { where: { score: { $nin: [10, 20, 30] } } })
+      callquery(query_api.filters.list, {
+        where: { score: { $nin: [10, 20, 30] } },
+      }),
     )) as Array<Record<string, unknown>>;
     expect(nin_result.length).toBe(2);
 
     const or_contains = (await resolve_result(
       callquery(query_api.filters.list, {
         where: {
-          $or: [{ title: { $contains: "ta" } }, { note: { $contains: "group-a" } }]
+          $or: [
+            { title: { $contains: "ta" } },
+            { note: { $contains: "group-a" } },
+          ],
         },
-        orderBy: [{ field: "title", direction: "asc" }]
-      })
+        orderBy: [{ field: "title", direction: "asc" }],
+      }),
     )) as Array<Record<string, unknown>>;
-    expect(or_contains.map((item) => item.title)).toEqual(["alpha", "beta", "delta", "gamma"]);
+    expect(or_contains.map((item) => item.title)).toEqual([
+      "alpha",
+      "beta",
+      "delta",
+      "gamma",
+    ]);
 
     const paged = (await resolve_result(
       callquery(query_api.filters.list, {
         orderBy: [{ field: "score", direction: "desc" }],
         limit: 2,
-        offset: 1
-      })
+        offset: 1,
+      }),
     )) as Array<Record<string, unknown>>;
     expect(paged.map((item) => item.score)).toEqual([40, 30]);
   });
 });
-

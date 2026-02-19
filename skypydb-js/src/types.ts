@@ -19,7 +19,11 @@ export type EmbeddingProviderName =
 
 export type EmbeddingFunction = (texts: string[]) => Promise<EmbeddingMatrix>;
 
-export type IncludeKeys = "embeddings" | "documents" | "metadatas" | "distances";
+export type IncludeKeys =
+  | "embeddings"
+  | "documents"
+  | "metadatas"
+  | "distances";
 
 export type WhereDocumentFilter = {
   $contains?: string;

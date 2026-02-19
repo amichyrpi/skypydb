@@ -6,8 +6,8 @@ async function main(): Promise<void> {
     embedding_provider: "ollama",
     embedding_model_config: {
       model: "mxbai-embed-large",
-      base_url: "http://localhost:11434"
-    }
+      base_url: "http://localhost:11434",
+    },
   });
 
   try {

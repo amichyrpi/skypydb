@@ -20,7 +20,10 @@ export class GetCollectionMixin extends CreateCollectionMixin {
     return collection;
   }
 
-  async get_or_create_collection(name: string, metadata?: Metadata): Promise<Collection> {
+  async get_or_create_collection(
+    name: string,
+    metadata?: Metadata,
+  ): Promise<Collection> {
     const collection_info = this._db.get_or_create_collection(name, metadata);
     const cached = this._collections.get(name);
     if (cached) {

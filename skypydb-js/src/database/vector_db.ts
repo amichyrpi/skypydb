@@ -11,14 +11,14 @@ import {
   GetCollectionMixin,
   GetItemsMixin,
   QueryItemsMixin,
-  UpdateItemsMixin
+  UpdateItemsMixin,
 } from "./mixins/vector";
 import type {
   CollectionInfo,
   EmbeddingFunction,
   GetResult,
   Metadata,
-  QueryResult
+  QueryResult,
 } from "../types";
 
 type OperationStatus = "success" | "error";
@@ -39,7 +39,10 @@ export class VectorDatabase extends DeleteItemsMixin {
   protected conn: Database.Database;
   private readonly logger_service: LoggerService;
 
-  constructor(path_value: string, embedding_function?: EmbeddingFunction | null) {
+  constructor(
+    path_value: string,
+    embedding_function?: EmbeddingFunction | null,
+  ) {
     super();
     this.path = path_value;
     fs.mkdirSync(path.dirname(path_value), { recursive: true });
@@ -57,7 +60,7 @@ export class VectorDatabase extends DeleteItemsMixin {
       details: { db_path: this.path },
       duration_ms: 0,
       refresh_snapshot: true,
-      operation_at: initialized_at
+      operation_at: initialized_at,
     });
   }
 
@@ -77,7 +80,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         details: args.details,
         collection: args.collection,
         duration_ms: args.duration_ms,
-        error: args.error
+        error: args.error,
       });
 
       if (args.refresh_snapshot) {
@@ -85,14 +88,14 @@ export class VectorDatabase extends DeleteItemsMixin {
           last_operation: args.operation,
           last_status: args.status,
           last_collection: args.collection,
-          last_operation_at: args.operation_at
+          last_operation_at: args.operation_at,
         });
       } else {
         this.logger_service.update_last_operation_only(
           args.operation,
           args.status,
           args.collection,
-          args.operation_at
+          args.operation_at,
         );
       }
     } catch (error) {
@@ -102,9 +105,10 @@ export class VectorDatabase extends DeleteItemsMixin {
 
   private _collection_has_metadata(collection_name: string): boolean {
     try {
-      const collection = GetCollectionMixin.prototype.get_collection.call(this, collection_name) as
-        | CollectionInfo
-        | null;
+      const collection = GetCollectionMixin.prototype.get_collection.call(
+        this,
+        collection_name,
+      ) as CollectionInfo | null;
       return (
         collection !== null &&
         Object.prototype.hasOwnProperty.call(collection, "metadata") &&
@@ -120,7 +124,11 @@ export class VectorDatabase extends DeleteItemsMixin {
     const operation_at = this._utcnow_iso();
 
     try {
-      CreateCollectionMixin.prototype.create_collection.call(this, name, metadata);
+      CreateCollectionMixin.prototype.create_collection.call(
+        this,
+        name,
+        metadata,
+      );
     } catch (error) {
       this._record_operation({
         operation: "create_collection",
@@ -130,7 +138,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -142,7 +150,7 @@ export class VectorDatabase extends DeleteItemsMixin {
       collection: name,
       duration_ms: this._duration_ms(start),
       refresh_snapshot: true,
-      operation_at
+      operation_at,
     });
   }
 
@@ -151,7 +159,10 @@ export class VectorDatabase extends DeleteItemsMixin {
     const operation_at = this._utcnow_iso();
 
     try {
-      const result = GetCollectionMixin.prototype.get_collection.call(this, name) as CollectionInfo | null;
+      const result = GetCollectionMixin.prototype.get_collection.call(
+        this,
+        name,
+      ) as CollectionInfo | null;
       this._record_operation({
         operation: "get_collection",
         status: "success",
@@ -159,7 +170,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         collection: name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       return result;
     } catch (error) {
@@ -171,7 +182,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -183,11 +194,21 @@ export class VectorDatabase extends DeleteItemsMixin {
     let created = false;
 
     try {
-      let result = GetCollectionMixin.prototype.get_collection.call(this, name) as CollectionInfo | null;
+      let result = GetCollectionMixin.prototype.get_collection.call(
+        this,
+        name,
+      ) as CollectionInfo | null;
       if (!result) {
-        CreateCollectionMixin.prototype.create_collection.call(this, name, metadata);
+        CreateCollectionMixin.prototype.create_collection.call(
+          this,
+          name,
+          metadata,
+        );
         created = true;
-        result = GetCollectionMixin.prototype.get_collection.call(this, name) as CollectionInfo | null;
+        result = GetCollectionMixin.prototype.get_collection.call(
+          this,
+          name,
+        ) as CollectionInfo | null;
       }
       if (!result) {
         throw new Error(`Collection '${name}' not found after get_or_create`);
@@ -200,7 +221,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         collection: name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: created,
-        operation_at
+        operation_at,
       });
       return result;
     } catch (error) {
@@ -212,7 +233,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -223,14 +244,16 @@ export class VectorDatabase extends DeleteItemsMixin {
     const operation_at = this._utcnow_iso();
 
     try {
-      const collections = GetCollectionMixin.prototype.list_collections.call(this) as CollectionInfo[];
+      const collections = GetCollectionMixin.prototype.list_collections.call(
+        this,
+      ) as CollectionInfo[];
       this._record_operation({
         operation: "list_collections",
         status: "success",
         details: { collections_count: collections.length },
         duration_ms: this._duration_ms(start),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       return collections;
     } catch (error) {
@@ -241,7 +264,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -252,7 +275,10 @@ export class VectorDatabase extends DeleteItemsMixin {
     const operation_at = this._utcnow_iso();
 
     try {
-      const count_value = CountItemsMixin.prototype.count.call(this, collection_name) as number;
+      const count_value = CountItemsMixin.prototype.count.call(
+        this,
+        collection_name,
+      ) as number;
       this._record_operation({
         operation: "count",
         status: "success",
@@ -260,7 +286,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       return count_value;
     } catch (error) {
@@ -272,7 +298,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -283,7 +309,7 @@ export class VectorDatabase extends DeleteItemsMixin {
     ids: string[],
     embeddings?: number[][],
     documents?: string[],
-    metadatas?: Metadata[]
+    metadatas?: Metadata[],
   ): Promise<string[]> {
     const start = process.hrtime.bigint();
     const operation_at = this._utcnow_iso();
@@ -295,7 +321,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         ids,
         embeddings,
         documents,
-        metadatas
+        metadatas,
       )) as string[];
       this._record_operation({
         operation: "add",
@@ -305,12 +331,12 @@ export class VectorDatabase extends DeleteItemsMixin {
           added_count: added_ids.length,
           embeddings_provided: embeddings !== undefined,
           documents_provided: documents !== undefined,
-          metadatas_provided: metadatas !== undefined
+          metadatas_provided: metadatas !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: true,
-        operation_at
+        operation_at,
       });
       return added_ids;
     } catch (error) {
@@ -321,13 +347,13 @@ export class VectorDatabase extends DeleteItemsMixin {
           ids_count: ids.length,
           embeddings_provided: embeddings !== undefined,
           documents_provided: documents !== undefined,
-          metadatas_provided: metadatas !== undefined
+          metadatas_provided: metadatas !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -338,7 +364,7 @@ export class VectorDatabase extends DeleteItemsMixin {
     ids: string[],
     embeddings?: number[][],
     documents?: string[],
-    metadatas?: Metadata[]
+    metadatas?: Metadata[],
   ): Promise<void> {
     const start = process.hrtime.bigint();
     const operation_at = this._utcnow_iso();
@@ -350,7 +376,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         ids,
         embeddings,
         documents,
-        metadatas
+        metadatas,
       );
       this._record_operation({
         operation: "update",
@@ -359,12 +385,12 @@ export class VectorDatabase extends DeleteItemsMixin {
           ids_count: ids.length,
           embeddings_provided: embeddings !== undefined,
           documents_provided: documents !== undefined,
-          metadatas_provided: metadatas !== undefined
+          metadatas_provided: metadatas !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: true,
-        operation_at
+        operation_at,
       });
     } catch (error) {
       this._record_operation({
@@ -374,13 +400,13 @@ export class VectorDatabase extends DeleteItemsMixin {
           ids_count: ids.length,
           embeddings_provided: embeddings !== undefined,
           documents_provided: documents !== undefined,
-          metadatas_provided: metadatas !== undefined
+          metadatas_provided: metadatas !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -393,7 +419,7 @@ export class VectorDatabase extends DeleteItemsMixin {
     n_results = 10,
     where?: Record<string, unknown>,
     where_document?: Record<string, string>,
-    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">
+    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">,
   ): Promise<QueryResult> {
     const start = process.hrtime.bigint();
     const operation_at = this._utcnow_iso();
@@ -408,9 +434,12 @@ export class VectorDatabase extends DeleteItemsMixin {
         n_results,
         where,
         where_document,
-        include
+        include,
       )) as QueryResult;
-      const returned_count = results.ids.reduce((total, row) => total + row.length, 0);
+      const returned_count = results.ids.reduce(
+        (total, row) => total + row.length,
+        0,
+      );
       this._record_operation({
         operation: "query",
         status: "success",
@@ -419,12 +448,12 @@ export class VectorDatabase extends DeleteItemsMixin {
           n_results,
           returned_count,
           has_where: where !== undefined,
-          has_where_document: where_document !== undefined
+          has_where_document: where_document !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       return results;
     } catch (error) {
@@ -435,13 +464,13 @@ export class VectorDatabase extends DeleteItemsMixin {
           query_count,
           n_results,
           has_where: where !== undefined,
-          has_where_document: where_document !== undefined
+          has_where_document: where_document !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -452,7 +481,7 @@ export class VectorDatabase extends DeleteItemsMixin {
     ids?: string[],
     where?: Record<string, unknown>,
     where_document?: Record<string, string>,
-    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">
+    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">,
   ): GetResult {
     const start = process.hrtime.bigint();
     const operation_at = this._utcnow_iso();
@@ -465,7 +494,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         ids,
         where,
         where_document,
-        include
+        include,
       ) as GetResult;
       this._record_operation({
         operation: "get",
@@ -474,12 +503,12 @@ export class VectorDatabase extends DeleteItemsMixin {
           ids_count,
           returned_count: results.ids.length,
           has_where: where !== undefined,
-          has_where_document: where_document !== undefined
+          has_where_document: where_document !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       return results;
     } catch (error) {
@@ -489,13 +518,13 @@ export class VectorDatabase extends DeleteItemsMixin {
         details: {
           ids_count,
           has_where: where !== undefined,
-          has_where_document: where_document !== undefined
+          has_where_document: where_document !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -505,7 +534,7 @@ export class VectorDatabase extends DeleteItemsMixin {
     collection_name: string,
     ids?: string[],
     where?: Record<string, unknown>,
-    where_document?: Record<string, string>
+    where_document?: Record<string, string>,
   ): number {
     const start = process.hrtime.bigint();
     const operation_at = this._utcnow_iso();
@@ -517,7 +546,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         collection_name,
         ids,
         where,
-        where_document
+        where_document,
       ) as number;
       this._record_operation({
         operation: "delete",
@@ -526,12 +555,12 @@ export class VectorDatabase extends DeleteItemsMixin {
           ids_count,
           deleted_count,
           has_where: where !== undefined,
-          has_where_document: where_document !== undefined
+          has_where_document: where_document !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: true,
-        operation_at
+        operation_at,
       });
       return deleted_count;
     } catch (error) {
@@ -541,13 +570,13 @@ export class VectorDatabase extends DeleteItemsMixin {
         details: {
           ids_count,
           has_where: where !== undefined,
-          has_where_document: where_document !== undefined
+          has_where_document: where_document !== undefined,
         },
         collection: collection_name,
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -566,7 +595,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         collection: name,
         duration_ms: this._duration_ms(start),
         refresh_snapshot: true,
-        operation_at
+        operation_at,
       });
     } catch (error) {
       this._record_operation({
@@ -577,7 +606,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }
@@ -605,7 +634,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         details: {},
         duration_ms: this._duration_ms(start),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       this.logger_service.close();
     } catch (error) {
@@ -616,7 +645,7 @@ export class VectorDatabase extends DeleteItemsMixin {
         duration_ms: this._duration_ms(start),
         error: String(error),
         refresh_snapshot: false,
-        operation_at
+        operation_at,
       });
       throw error;
     }

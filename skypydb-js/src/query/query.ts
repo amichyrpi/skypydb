@@ -18,6 +18,6 @@ export function query(config: QueryConfig): QueryDefinition {
   return {
     [QUERY_MARKER]: true,
     args: config.args,
-    handler: config.handler
+    handler: config.handler,
   };
 }

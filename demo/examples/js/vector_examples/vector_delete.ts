@@ -6,8 +6,8 @@ async function main(): Promise<void> {
     embedding_provider: "ollama",
     embedding_model_config: {
       model: "mxbai-embed-large",
-      base_url: "http://localhost:11434"
-    }
+      base_url: "http://localhost:11434",
+    },
   });
 
   try {
@@ -19,12 +19,12 @@ async function main(): Promise<void> {
     await vectordb.add({
       data: ["Video Theo1", "Video Theo2"], // data to add
       metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"] // unique ids for the data
+      ids: ["vid1", "vid2"], // unique ids for the data
     });
 
     // Delete data from your vector database
     await vectordb.delete({
-      by_ids: ["vid1", "vid2"]
+      by_ids: ["vid1", "vid2"],
       // by_metadatas: [{ source: "youtube" }, { source: "dailymotion" }] // delete by metadatas
       // by_data: ["Video Theo1", "Video Theo2"] // delete by data
     });

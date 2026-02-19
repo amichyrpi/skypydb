@@ -18,16 +18,13 @@ description: "Skypydb is an open-source reactive and vector embeddings database 
     uv pip install skypydb
     ```
     </CodeGroup>
+
   </Step>
 
-  <Step title="Create a Skypydb Client">
-    ```python Python
-    import skypydb
-    client = skypydb.ReactiveClient()
-    # or for vector embeddings
-    client = skypydb.VectorClient()
-    ```
-  </Step>
+<Step title="Create a Skypydb Client">
+  ```python Python import skypydb client = skypydb.ReactiveClient() # or for
+  vector embeddings client = skypydb.VectorClient() ```
+</Step>
 
   <Step title="Create tables">
     Tables are where you'll store your data. To create a table you will need to create a schema file. Example of a schema file to put in db/ directory:
@@ -43,7 +40,7 @@ description: "Skypydb is an open-source reactive and vector embeddings database 
 
     # Define the schema with all tables
     schema = defineSchema({
-        
+
         # Table for success logs
         "success": defineTable({
             "component": value.string(),
@@ -93,6 +90,7 @@ description: "Skypydb is an open-source reactive and vector embeddings database 
     tables = client.get_or_create_table()
     # if the tables already exists the programe get them instead
     ```
+
   </Step>
 
   <Step title="Add data to a table">
@@ -131,6 +129,7 @@ description: "Skypydb is an open-source reactive and vector embeddings database 
         details="Timeout after 30 seconds"
     )
     ```
+
   </Step>
 
   <Step title="Search data in the table">
@@ -153,6 +152,7 @@ description: "Skypydb is an open-source reactive and vector embeddings database 
         for user_success_log in user_success_logs:
             print(user_success_log)
     ```
+
   </Step>
 </Steps>
 

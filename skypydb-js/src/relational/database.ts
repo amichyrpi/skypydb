@@ -4,7 +4,11 @@ import { randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { ConstraintError, DatabaseError, ValidationError } from "../errors";
 import { InputValidator } from "../security/validation";
-import { apply_schema, assert_table_exists, compile_schema } from "./schema_manager";
+import {
+  apply_schema,
+  assert_table_exists,
+  compile_schema,
+} from "./schema_manager";
 import type {
   CompiledFieldDefinition,
   CompiledSchema,
@@ -19,10 +23,15 @@ import type {
   SchemaDefinition,
   UpdateOptions,
   ValueDefinition,
-  WhereClause
+  WhereClause,
 } from "./types";
 
-const READONLY_FORBIDDEN_METHODS = new Set(["insert", "update", "delete", "transaction"]);
+const READONLY_FORBIDDEN_METHODS = new Set([
+  "insert",
+  "update",
+  "delete",
+  "transaction",
+]);
 
 type SelectRow = Record<string, unknown> & {
   _id: string;
@@ -73,7 +82,10 @@ export class RelationalDatabase {
     this.connection.pragma("foreign_keys = ON");
   }
 
-  apply_schema(schema: SchemaDefinition, options: RuntimeSchemaOptions = {}): void {
+  apply_schema(
+    schema: SchemaDefinition,
+    options: RuntimeSchemaOptions = {},
+  ): void {
     const compiled = compile_schema(schema);
     apply_schema(this.connection, compiled, this.path, options);
     this.compiled_schema = compiled;
@@ -87,18 +99,24 @@ export class RelationalDatabase {
     const base: ReadonlyDbContext = {
       get: this.get.bind(this),
       first: this.first.bind(this),
-      count: this.count.bind(this)
+      count: this.count.bind(this),
     };
 
     return new Proxy(base as ReadonlyDbContext & Record<string, unknown>, {
       get: (target, property: string | symbol) => {
-        if (typeof property === "string" && READONLY_FORBIDDEN_METHODS.has(property)) {
+        if (
+          typeof property === "string" &&
+          READONLY_FORBIDDEN_METHODS.has(property)
+        ) {
           throw new ConstraintError(
-            "Query context is read-only. Write operations are only allowed in mutations."
+            "Query context is read-only. Write operations are only allowed in mutations.",
           );
         }
-        return Reflect.get(target as Record<string | symbol, unknown>, property);
-      }
+        return Reflect.get(
+          target as Record<string | symbol, unknown>,
+          property,
+        );
+      },
     });
   }
 
@@ -110,7 +128,7 @@ export class RelationalDatabase {
       insert: this.insert.bind(this),
       update: this.update.bind(this),
       delete: this.delete.bind(this),
-      transaction: this.transaction.bind(this)
+      transaction: this.transaction.bind(this),
     };
   }
 
@@ -119,18 +137,26 @@ export class RelationalDatabase {
     const parameters: unknown[] = [];
     const where_sql = this.build_where_sql(table, options.where, parameters);
     const order_by_sql = this.build_order_by_sql(table, options.orderBy);
-    const limit_offset_sql = this.build_limit_offset_sql(options.limit, options.offset, parameters);
+    const limit_offset_sql = this.build_limit_offset_sql(
+      options.limit,
+      options.offset,
+      parameters,
+    );
 
     const columns = [
       "_id",
       "_createdAt",
       "_updatedAt",
       "_extras",
-      ...[...table.fields.keys()].sort((left, right) => left.localeCompare(right))
+      ...[...table.fields.keys()].sort((left, right) =>
+        left.localeCompare(right),
+      ),
     ];
     const select_sql = `SELECT ${columns.map((column) => `[${column}]`).join(", ")} FROM [${table.name}] WHERE ${where_sql}${order_by_sql}${limit_offset_sql}`;
 
-    const rows = this.connection.prepare(select_sql).all(...parameters) as SelectRow[];
+    const rows = this.connection
+      .prepare(select_sql)
+      .all(...parameters) as SelectRow[];
     return rows.map((row) => this.decode_row(table, row));
   }
 
@@ -144,7 +170,9 @@ export class RelationalDatabase {
     const parameters: unknown[] = [];
     const where_sql = this.build_where_sql(table, options.where, parameters);
     const sql = `SELECT COUNT(*) AS count_value FROM [${table.name}] WHERE ${where_sql}`;
-    const row = this.connection.prepare(sql).get(...parameters) as { count_value?: number } | undefined;
+    const row = this.connection.prepare(sql).get(...parameters) as
+      | { count_value?: number }
+      | undefined;
     return Number(row?.count_value ?? 0);
   }
 
@@ -159,7 +187,9 @@ export class RelationalDatabase {
       "_createdAt",
       "_updatedAt",
       "_extras",
-      ...[...table.fields.keys()].sort((left, right) => left.localeCompare(right))
+      ...[...table.fields.keys()].sort((left, right) =>
+        left.localeCompare(right),
+      ),
     ];
     const placeholders = columns.map(() => "?").join(", ");
     const values = columns.map((column) => {
@@ -177,7 +207,9 @@ export class RelationalDatabase {
 
     try {
       this.connection
-        .prepare(`INSERT INTO [${table.name}] (${columns.map((column) => `[${column}]`).join(", ")}) VALUES (${placeholders})`)
+        .prepare(
+          `INSERT INTO [${table.name}] (${columns.map((column) => `[${column}]`).join(", ")}) VALUES (${placeholders})`,
+        )
         .run(...values);
       return row_id;
     } catch (error) {
@@ -188,26 +220,39 @@ export class RelationalDatabase {
   update(table_name: string, options: UpdateOptions): number {
     const table = this.table(table_name);
     if (!is_plain_object(options) || !is_plain_object(options.value)) {
-      throw new ValidationError("Update payload must contain a value dictionary.");
+      throw new ValidationError(
+        "Update payload must contain a value dictionary.",
+      );
     }
 
-    if ((options.id === undefined && options.where === undefined) || (options.id !== undefined && options.where !== undefined)) {
-      throw new ValidationError("Update requires exactly one of 'id' or 'where'.");
+    if (
+      (options.id === undefined && options.where === undefined) ||
+      (options.id !== undefined && options.where !== undefined)
+    ) {
+      throw new ValidationError(
+        "Update requires exactly one of 'id' or 'where'.",
+      );
     }
 
-    const target_ids = this.resolve_target_ids(table, options.id, options.where);
+    const target_ids = this.resolve_target_ids(
+      table,
+      options.id,
+      options.where,
+    );
     if (target_ids.length === 0) {
       return 0;
     }
 
     const now = new Date().toISOString();
-    const sorted_fields = [...table.fields.keys()].sort((left, right) => left.localeCompare(right));
+    const sorted_fields = [...table.fields.keys()].sort((left, right) =>
+      left.localeCompare(right),
+    );
     const set_chunks = sorted_fields.map((field) => `[${field}] = ?`);
     set_chunks.push("[_extras] = ?");
     set_chunks.push("[_updatedAt] = ?");
 
     const statement = this.connection.prepare(
-      `UPDATE [${table.name}] SET ${set_chunks.join(", ")} WHERE [_id] = ?`
+      `UPDATE [${table.name}] SET ${set_chunks.join(", ")} WHERE [_id] = ?`,
     );
 
     let updated = 0;
@@ -234,13 +279,21 @@ export class RelationalDatabase {
     if (!is_plain_object(options)) {
       throw new ValidationError("Delete options must be a dictionary.");
     }
-    if ((options.id === undefined && options.where === undefined) || (options.id !== undefined && options.where !== undefined)) {
-      throw new ValidationError("Delete requires exactly one of 'id' or 'where'.");
+    if (
+      (options.id === undefined && options.where === undefined) ||
+      (options.id !== undefined && options.where !== undefined)
+    ) {
+      throw new ValidationError(
+        "Delete requires exactly one of 'id' or 'where'.",
+      );
     }
 
     try {
       if (options.id !== undefined) {
-        const validated_id = this.validate_id_value(options.id, `${table.name}._id`);
+        const validated_id = this.validate_id_value(
+          options.id,
+          `${table.name}._id`,
+        );
         const result = this.connection
           .prepare(`DELETE FROM [${table.name}] WHERE [_id] = ?`)
           .run(validated_id);
@@ -304,7 +357,7 @@ export class RelationalDatabase {
   private resolve_target_ids(
     table: CompiledTableDefinition,
     id: string | undefined,
-    where: WhereClause | undefined
+    where: WhereClause | undefined,
   ): string[] {
     if (id !== undefined) {
       return [this.validate_id_value(id, `${table.name}._id`)];
@@ -321,32 +374,48 @@ export class RelationalDatabase {
   private prepare_record(
     table: CompiledTableDefinition,
     raw_value: Record<string, unknown>,
-    mode: "insert" | "replace"
+    mode: "insert" | "replace",
   ): PreparedRecord {
     if (!is_plain_object(raw_value)) {
-      throw new ValidationError(`Value for table '${table.name}' must be a dictionary.`);
+      throw new ValidationError(
+        `Value for table '${table.name}' must be a dictionary.`,
+      );
     }
 
     const values: Record<string, unknown> = {};
     const extras: Record<string, unknown> = {};
 
     for (const field of table.fields.values()) {
-      const has_key = Object.prototype.hasOwnProperty.call(raw_value, field.name);
+      const has_key = Object.prototype.hasOwnProperty.call(
+        raw_value,
+        field.name,
+      );
       if (!has_key || raw_value[field.name] === undefined) {
         if (field.optional) {
           values[field.name] = null;
           continue;
         }
-        throw new ConstraintError(`Missing required field '${table.name}.${field.name}'.`);
+        throw new ConstraintError(
+          `Missing required field '${table.name}.${field.name}'.`,
+        );
       }
-      values[field.name] = this.encode_field_value(field, raw_value[field.name], `${table.name}.${field.name}`);
+      values[field.name] = this.encode_field_value(
+        field,
+        raw_value[field.name],
+        `${table.name}.${field.name}`,
+      );
     }
 
     for (const [key, value] of Object.entries(raw_value)) {
       if (table.fields.has(key)) {
         continue;
       }
-      if (key === "_id" || key === "_createdAt" || key === "_updatedAt" || key === "_extras") {
+      if (
+        key === "_id" ||
+        key === "_createdAt" ||
+        key === "_updatedAt" ||
+        key === "_extras"
+      ) {
         continue;
       }
       InputValidator.validate_column_name(key);
@@ -354,8 +423,14 @@ export class RelationalDatabase {
     }
 
     const prepared: PreparedRecord = { values, extras };
-    if (mode === "insert" && Object.prototype.hasOwnProperty.call(raw_value, "_id")) {
-      prepared.generated_id = this.validate_id_value(raw_value._id, `${table.name}._id`);
+    if (
+      mode === "insert" &&
+      Object.prototype.hasOwnProperty.call(raw_value, "_id")
+    ) {
+      prepared.generated_id = this.validate_id_value(
+        raw_value._id,
+        `${table.name}._id`,
+      );
     }
 
     return prepared;
@@ -363,16 +438,26 @@ export class RelationalDatabase {
 
   private validate_id_value(value: unknown, path_name: string): string {
     if (typeof value !== "string" || value.length === 0) {
-      throw new ConstraintError(`Field '${path_name}' must be a non-empty string.`);
+      throw new ConstraintError(
+        `Field '${path_name}' must be a non-empty string.`,
+      );
     }
     return value;
   }
 
-  private encode_field_value(field: CompiledFieldDefinition, value: unknown, path_name: string): unknown {
+  private encode_field_value(
+    field: CompiledFieldDefinition,
+    value: unknown,
+    path_name: string,
+  ): unknown {
     return this.encode_definition_value(field.definition, value, path_name);
   }
 
-  private encode_definition_value(definition: ValueDefinition, value: unknown, path_name: string): unknown {
+  private encode_definition_value(
+    definition: ValueDefinition,
+    value: unknown,
+    path_name: string,
+  ): unknown {
     if (definition.kind === "optional") {
       if (value === undefined || value === null) {
         return null;
@@ -393,7 +478,9 @@ export class RelationalDatabase {
       }
       case "number": {
         if (typeof value !== "number" || !Number.isFinite(value)) {
-          throw new ConstraintError(`Field '${path_name}' must be a finite number.`);
+          throw new ConstraintError(
+            `Field '${path_name}' must be a finite number.`,
+          );
         }
         return value;
       }
@@ -409,7 +496,9 @@ export class RelationalDatabase {
         return id_value;
       }
       case "object": {
-        return JSON.stringify(this.normalize_object_definition(definition, value, path_name));
+        return JSON.stringify(
+          this.normalize_object_definition(definition, value, path_name),
+        );
       }
       default:
         return value;
@@ -419,33 +508,40 @@ export class RelationalDatabase {
   private normalize_object_definition(
     definition: Extract<ValueDefinition, { kind: "object" }>,
     value: unknown,
-    path_name: string
+    path_name: string,
   ): Record<string, unknown> {
     if (!is_plain_object(value)) {
       throw new ConstraintError(`Field '${path_name}' must be an object.`);
     }
 
     const normalized: Record<string, unknown> = {};
-    for (const [raw_key, child_definition] of Object.entries(definition.shape)) {
+    for (const [raw_key, child_definition] of Object.entries(
+      definition.shape,
+    )) {
       const key = InputValidator.validate_column_name(raw_key);
-      if (!Object.prototype.hasOwnProperty.call(value, key) || value[key] === undefined) {
+      if (
+        !Object.prototype.hasOwnProperty.call(value, key) ||
+        value[key] === undefined
+      ) {
         if (child_definition.kind === "optional") {
           normalized[key] = null;
           continue;
         }
-        throw new ConstraintError(`Missing required field '${path_name}.${key}'.`);
+        throw new ConstraintError(
+          `Missing required field '${path_name}.${key}'.`,
+        );
       }
       normalized[key] = this.normalize_object_value(
         child_definition,
         value[key],
-        `${path_name}.${key}`
+        `${path_name}.${key}`,
       );
     }
 
     for (const extra_key of Object.keys(value)) {
       if (!Object.prototype.hasOwnProperty.call(definition.shape, extra_key)) {
         throw new ConstraintError(
-          `Unknown nested field '${path_name}.${extra_key}' is not defined in schema.`
+          `Unknown nested field '${path_name}.${extra_key}' is not defined in schema.`,
         );
       }
     }
@@ -456,7 +552,7 @@ export class RelationalDatabase {
   private normalize_object_value(
     definition: ValueDefinition,
     value: unknown,
-    path_name: string
+    path_name: string,
   ): unknown {
     if (definition.kind === "optional") {
       if (value === undefined || value === null) {
@@ -477,7 +573,9 @@ export class RelationalDatabase {
     }
     if (definition.kind === "number") {
       if (typeof value !== "number" || !Number.isFinite(value)) {
-        throw new ConstraintError(`Field '${path_name}' must be a finite number.`);
+        throw new ConstraintError(
+          `Field '${path_name}' must be a finite number.`,
+        );
       }
       return value;
     }
@@ -520,17 +618,23 @@ export class RelationalDatabase {
     return value;
   }
 
-  private ensure_foreign_key_exists(table_name: string, id_value: string, path_name: string): void {
+  private ensure_foreign_key_exists(
+    table_name: string,
+    id_value: string,
+    path_name: string,
+  ): void {
     const validated_table = InputValidator.validate_table_name(table_name);
     if (!table_exists(this.connection, validated_table)) {
-      throw new ConstraintError(`Referenced table '${validated_table}' for '${path_name}' does not exist.`);
+      throw new ConstraintError(
+        `Referenced table '${validated_table}' for '${path_name}' does not exist.`,
+      );
     }
     const row = this.connection
       .prepare(`SELECT [_id] FROM [${validated_table}] WHERE [_id] = ?`)
       .get(id_value) as { _id: string } | undefined;
     if (!row) {
       throw new ConstraintError(
-        `Referenced id '${id_value}' for '${path_name}' does not exist in table '${validated_table}'.`
+        `Referenced id '${id_value}' for '${path_name}' does not exist in table '${validated_table}'.`,
       );
     }
   }
@@ -541,7 +645,7 @@ export class RelationalDatabase {
       _id: String(row._id),
       _createdAt: String(row._createdAt),
       _updatedAt: String(row._updatedAt),
-      _extras: extras
+      _extras: extras,
     };
 
     for (const field of table.fields.values()) {
@@ -576,7 +680,7 @@ export class RelationalDatabase {
   private build_where_sql(
     table: CompiledTableDefinition,
     where: WhereClause | undefined,
-    parameters: unknown[]
+    parameters: unknown[],
   ): string {
     if (!where || Object.keys(where).length === 0) {
       return "1 = 1";
@@ -591,8 +695,9 @@ export class RelationalDatabase {
         if (!Array.isArray(value)) {
           throw new ValidationError(`${key} must be an array.`);
         }
-        const nested_parts = value.map((entry) =>
-          `(${this.build_where_sql(table, entry as WhereClause, parameters)})`
+        const nested_parts = value.map(
+          (entry) =>
+            `(${this.build_where_sql(table, entry as WhereClause, parameters)})`,
         );
         if (nested_parts.length === 0) {
           chunks.push(key === "$and" ? "1 = 1" : "1 = 0");
@@ -603,10 +708,13 @@ export class RelationalDatabase {
       }
 
       const resolved = this.resolve_expression(table, key);
-      if (is_plain_object(value) && Object.keys(value).some((operator) => operator.startsWith("$"))) {
+      if (
+        is_plain_object(value) &&
+        Object.keys(value).some((operator) => operator.startsWith("$"))
+      ) {
         for (const [operator, operator_value] of Object.entries(value)) {
           chunks.push(
-            this.operator_sql(resolved, operator, operator_value, parameters)
+            this.operator_sql(resolved, operator, operator_value, parameters),
           );
         }
       } else {
@@ -625,7 +733,7 @@ export class RelationalDatabase {
     resolved: ResolvedExpression,
     operator: string,
     operator_value: unknown,
-    parameters: unknown[]
+    parameters: unknown[],
   ): string {
     const expression = resolved.expression;
     if (operator === "$contains") {
@@ -636,7 +744,10 @@ export class RelationalDatabase {
       return `CAST(${expression} AS TEXT) LIKE ?`;
     }
 
-    const normalized_value = this.normalize_filter_value(resolved.field, operator_value);
+    const normalized_value = this.normalize_filter_value(
+      resolved.field,
+      operator_value,
+    );
     if (operator === "$eq") {
       if (normalized_value === null) {
         return `${expression} IS NULL`;
@@ -684,29 +795,40 @@ export class RelationalDatabase {
     throw new ValidationError(`Unsupported where operator '${operator}'.`);
   }
 
-  private resolve_expression(table: CompiledTableDefinition, field_name: string): ResolvedExpression {
-    if (field_name === "_id" || field_name === "_createdAt" || field_name === "_updatedAt" || field_name === "_extras") {
+  private resolve_expression(
+    table: CompiledTableDefinition,
+    field_name: string,
+  ): ResolvedExpression {
+    if (
+      field_name === "_id" ||
+      field_name === "_createdAt" ||
+      field_name === "_updatedAt" ||
+      field_name === "_extras"
+    ) {
       return {
         expression: `[${field_name}]`,
-        field: null
+        field: null,
       };
     }
 
     if (table.fields.has(field_name)) {
       return {
         expression: `[${field_name}]`,
-        field: table.fields.get(field_name) ?? null
+        field: table.fields.get(field_name) ?? null,
       };
     }
 
     const validated = InputValidator.validate_column_name(field_name);
     return {
       expression: `json_extract([_extras], '$.${validated}')`,
-      field: null
+      field: null,
     };
   }
 
-  private normalize_filter_value(field: CompiledFieldDefinition | null, value: unknown): unknown {
+  private normalize_filter_value(
+    field: CompiledFieldDefinition | null,
+    value: unknown,
+  ): unknown {
     if (!field) {
       if (typeof value === "boolean") {
         return value ? 1 : 0;
@@ -726,7 +848,10 @@ export class RelationalDatabase {
     return value;
   }
 
-  private build_order_by_sql(table: CompiledTableDefinition, order_by: OrderByClause[] | undefined): string {
+  private build_order_by_sql(
+    table: CompiledTableDefinition,
+    order_by: OrderByClause[] | undefined,
+  ): string {
     if (!order_by || order_by.length === 0) {
       return "";
     }
@@ -745,7 +870,11 @@ export class RelationalDatabase {
     return ` ORDER BY ${parts.join(", ")}`;
   }
 
-  private build_limit_offset_sql(limit: number | undefined, offset: number | undefined, parameters: unknown[]): string {
+  private build_limit_offset_sql(
+    limit: number | undefined,
+    offset: number | undefined,
+    parameters: unknown[],
+  ): string {
     let sql = "";
     if (limit !== undefined) {
       if (!Number.isInteger(limit) || limit < 0) {
@@ -768,7 +897,10 @@ export class RelationalDatabase {
   }
 }
 
-function table_exists(connection: Database.Database, table_name: string): boolean {
+function table_exists(
+  connection: Database.Database,
+  table_name: string,
+): boolean {
   const row = connection
     .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?")
     .get(table_name);

@@ -9,7 +9,7 @@ export abstract class UpdateItemsMixin extends AddItemsMixin {
     ids: string[],
     embeddings?: EmbeddingMatrix,
     documents?: string[],
-    metadatas?: Metadata[]
+    metadatas?: Metadata[],
   ): Promise<void> {
     const validated = InputValidator.validate_table_name(collection_name);
     if (!this.collection_exists(validated)) {

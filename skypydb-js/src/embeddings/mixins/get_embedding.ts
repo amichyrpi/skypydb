@@ -6,7 +6,7 @@ type EmbeddingProviderLike = {
 
 export async function get_embedding(
   provider: unknown,
-  text: string
+  text: string,
 ): Promise<EmbeddingVector> {
   const candidate = provider as EmbeddingProviderLike;
 
@@ -15,7 +15,6 @@ export async function get_embedding(
   }
 
   throw new Error(
-    `${(candidate as { constructor?: { name?: string } }).constructor?.name ?? "Provider"} must implement _get_embedding.`
+    `${(candidate as { constructor?: { name?: string } }).constructor?.name ?? "Provider"} must implement _get_embedding.`,
   );
 }
-

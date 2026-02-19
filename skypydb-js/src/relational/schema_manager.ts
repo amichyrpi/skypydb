@@ -2,7 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import type Database from "better-sqlite3";
-import { ConstraintError, SchemaMismatchError, ValidationError } from "../errors";
+import {
+  ConstraintError,
+  SchemaMismatchError,
+  ValidationError,
+} from "../errors";
 import { InputValidator } from "../security/validation";
 import type {
   CompiledFieldDefinition,
@@ -12,10 +16,15 @@ import type {
   RuntimeSchemaOptions,
   SchemaDefinition,
   TableIndexDefinition,
-  ValueDefinition
+  ValueDefinition,
 } from "./types";
 
-const RESERVED_COLUMNS = new Set(["_id", "_createdAt", "_updatedAt", "_extras"]);
+const RESERVED_COLUMNS = new Set([
+  "_id",
+  "_createdAt",
+  "_updatedAt",
+  "_extras",
+]);
 
 type ExistingMetaRow = {
   table_name: string;
@@ -26,7 +35,9 @@ function hash_text(input: string): string {
   return createHash("sha256").update(input).digest("hex");
 }
 
-function is_optional(definition: ValueDefinition): definition is OptionalValueDefinition {
+function is_optional(
+  definition: ValueDefinition,
+): definition is OptionalValueDefinition {
   return definition.kind === "optional";
 }
 
@@ -38,12 +49,12 @@ function unwrap_optional(definition: ValueDefinition): {
     const nested = unwrap_optional(definition.inner);
     return {
       optional: true,
-      base_definition: nested.base_definition
+      base_definition: nested.base_definition,
     };
   }
   return {
     optional: false,
-    base_definition: definition
+    base_definition: definition,
   };
 }
 
@@ -51,12 +62,12 @@ function serialize_definition(definition: ValueDefinition): unknown {
   if (definition.kind === "optional") {
     return {
       kind: "optional",
-      inner: serialize_definition(definition.inner)
+      inner: serialize_definition(definition.inner),
     };
   }
   if (definition.kind === "object") {
     const entries = Object.entries(definition.shape).sort(([left], [right]) =>
-      left.localeCompare(right)
+      left.localeCompare(right),
     );
     const serialized_shape: Record<string, unknown> = {};
     for (const [key, value] of entries) {
@@ -64,40 +75,47 @@ function serialize_definition(definition: ValueDefinition): unknown {
     }
     return {
       kind: "object",
-      shape: serialized_shape
+      shape: serialized_shape,
     };
   }
   if (definition.kind === "id") {
     return {
       kind: "id",
-      table: definition.table
+      table: definition.table,
     };
   }
   return {
-    kind: definition.kind
+    kind: definition.kind,
   };
 }
 
-function sorted_indexes(indexes: TableIndexDefinition[]): TableIndexDefinition[] {
-  return [...indexes].sort((left, right) => left.name.localeCompare(right.name));
+function sorted_indexes(
+  indexes: TableIndexDefinition[],
+): TableIndexDefinition[] {
+  return [...indexes].sort((left, right) =>
+    left.name.localeCompare(right.name),
+  );
 }
 
-function table_signature(table_name: string, table: CompiledTableDefinition): string {
+function table_signature(
+  table_name: string,
+  table: CompiledTableDefinition,
+): string {
   const fields = [...table.fields.values()]
     .sort((left, right) => left.name.localeCompare(right.name))
     .map((field) => ({
       name: field.name,
       optional: field.optional,
-      definition: serialize_definition(field.definition)
+      definition: serialize_definition(field.definition),
     }));
   const indexes = sorted_indexes(table.indexes).map((index) => ({
     name: index.name,
-    columns: [...index.columns]
+    columns: [...index.columns],
   }));
   const canonical = JSON.stringify({
     table_name,
     fields,
-    indexes
+    indexes,
   });
   return hash_text(canonical);
 }
@@ -117,22 +135,27 @@ function sqlite_type_for_field(field: CompiledFieldDefinition): string {
   }
 }
 
-function create_table_sql(table_name: string, table: CompiledTableDefinition): string {
+function create_table_sql(
+  table_name: string,
+  table: CompiledTableDefinition,
+): string {
   const column_chunks: string[] = [
     "[_id] TEXT PRIMARY KEY",
     "[_createdAt] TEXT NOT NULL",
     "[_updatedAt] TEXT NOT NULL",
-    "[_extras] TEXT"
+    "[_extras] TEXT",
   ];
 
   const foreign_keys: string[] = [];
   for (const field of table.fields.values()) {
     const base = field.base_definition;
     const nullable = field.optional ? "" : " NOT NULL";
-    column_chunks.push(`[${field.name}] ${sqlite_type_for_field(field)}${nullable}`);
+    column_chunks.push(
+      `[${field.name}] ${sqlite_type_for_field(field)}${nullable}`,
+    );
     if (base.kind === "id") {
       foreign_keys.push(
-        `FOREIGN KEY ([${field.name}]) REFERENCES [${base.table}]([_id]) ON DELETE RESTRICT ON UPDATE CASCADE`
+        `FOREIGN KEY ([${field.name}]) REFERENCES [${base.table}]([_id]) ON DELETE RESTRICT ON UPDATE CASCADE`,
       );
     }
   }
@@ -141,18 +164,27 @@ function create_table_sql(table_name: string, table: CompiledTableDefinition): s
   return `CREATE TABLE [${table_name}] (${all_chunks.join(", ")})`;
 }
 
-function create_indexes(connection: Database.Database, table_name: string, indexes: TableIndexDefinition[]): void {
+function create_indexes(
+  connection: Database.Database,
+  table_name: string,
+  indexes: TableIndexDefinition[],
+): void {
   for (const index of sorted_indexes(indexes)) {
     const validated_name = InputValidator.validate_table_name(index.name);
     const index_name = `idx_${table_name}_${validated_name}`;
     const columns_sql = index.columns.map((column) => `[${column}]`).join(", ");
     connection
-      .prepare(`CREATE INDEX IF NOT EXISTS [${index_name}] ON [${table_name}] (${columns_sql})`)
+      .prepare(
+        `CREATE INDEX IF NOT EXISTS [${index_name}] ON [${table_name}] (${columns_sql})`,
+      )
       .run();
   }
 }
 
-function table_exists(connection: Database.Database, table_name: string): boolean {
+function table_exists(
+  connection: Database.Database,
+  table_name: string,
+): boolean {
   const row = connection
     .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?")
     .get(table_name);
@@ -176,7 +208,9 @@ function ensure_meta_tables(connection: Database.Database): void {
 }
 
 function existing_meta(connection: Database.Database): ExistingMetaRow[] {
-  return connection.prepare("SELECT table_name, table_signature FROM _skypydb_schema_meta").all() as ExistingMetaRow[];
+  return connection
+    .prepare("SELECT table_name, table_signature FROM _skypydb_schema_meta")
+    .all() as ExistingMetaRow[];
 }
 
 function backup_database_file(db_path: string): string | null {
@@ -198,7 +232,7 @@ function definition_has_valid_references(schema: CompiledSchema): void {
       }
       if (!schema.tables.has(field.base_definition.table)) {
         throw new ValidationError(
-          `Field '${table.name}.${field.name}' references unknown table '${field.base_definition.table}'.`
+          `Field '${table.name}.${field.name}' references unknown table '${field.base_definition.table}'.`,
         );
       }
     }
@@ -207,7 +241,7 @@ function definition_has_valid_references(schema: CompiledSchema): void {
 
 export function compile_schema(schema: SchemaDefinition): CompiledSchema {
   const table_entries = Object.entries(schema.tables).sort(([left], [right]) =>
-    left.localeCompare(right)
+    left.localeCompare(right),
   );
   const compiled_tables = new Map<string, CompiledTableDefinition>();
   const table_signatures = new Map<string, string>();
@@ -219,7 +253,9 @@ export function compile_schema(schema: SchemaDefinition): CompiledSchema {
     for (const [raw_field_name, definition] of Object.entries(table.fields)) {
       const field_name = InputValidator.validate_column_name(raw_field_name);
       if (RESERVED_COLUMNS.has(field_name)) {
-        throw new ValidationError(`Field name '${field_name}' is reserved in table '${table_name}'.`);
+        throw new ValidationError(
+          `Field name '${field_name}' is reserved in table '${table_name}'.`,
+        );
       }
 
       const unwrapped = unwrap_optional(definition);
@@ -227,7 +263,7 @@ export function compile_schema(schema: SchemaDefinition): CompiledSchema {
         name: field_name,
         definition,
         optional: unwrapped.optional,
-        base_definition: unwrapped.base_definition
+        base_definition: unwrapped.base_definition,
       });
     }
 
@@ -235,46 +271,54 @@ export function compile_schema(schema: SchemaDefinition): CompiledSchema {
       InputValidator.validate_table_name(index.name);
       if (index.columns.length === 0) {
         throw new ValidationError(
-          `Index '${index.name}' on table '${table_name}' must contain at least one column.`
+          `Index '${index.name}' on table '${table_name}' must contain at least one column.`,
         );
       }
       for (const column of index.columns) {
         const validated_column = InputValidator.validate_column_name(column);
         if (!fields.has(validated_column)) {
           throw new ValidationError(
-            `Index '${index.name}' on table '${table_name}' references unknown column '${validated_column}'.`
+            `Index '${index.name}' on table '${table_name}' references unknown column '${validated_column}'.`,
           );
         }
       }
       return {
         name: index.name,
-        columns: [...index.columns]
+        columns: [...index.columns],
       };
     });
 
     const compiled_table: CompiledTableDefinition = {
       name: table_name,
       fields,
-      indexes
+      indexes,
     };
     compiled_tables.set(table_name, compiled_table);
-    table_signatures.set(table_name, table_signature(table_name, compiled_table));
+    table_signatures.set(
+      table_name,
+      table_signature(table_name, compiled_table),
+    );
   }
 
   const canonical_schema = JSON.stringify(
-    [...table_signatures.entries()].sort(([left], [right]) => left.localeCompare(right))
+    [...table_signatures.entries()].sort(([left], [right]) =>
+      left.localeCompare(right),
+    ),
   );
   const compiled: CompiledSchema = {
     tables: compiled_tables,
     table_signatures,
-    schema_signature: hash_text(canonical_schema)
+    schema_signature: hash_text(canonical_schema),
   };
 
   definition_has_valid_references(compiled);
   return compiled;
 }
 
-function write_meta_state(connection: Database.Database, schema: CompiledSchema): void {
+function write_meta_state(
+  connection: Database.Database,
+  schema: CompiledSchema,
+): void {
   const now = new Date().toISOString();
 
   const upsert_meta = connection.prepare(`
@@ -293,7 +337,9 @@ function write_meta_state(connection: Database.Database, schema: CompiledSchema)
   if (table_names.length > 0) {
     const placeholders = table_names.map(() => "?").join(", ");
     connection
-      .prepare(`DELETE FROM _skypydb_schema_meta WHERE table_name NOT IN (${placeholders})`)
+      .prepare(
+        `DELETE FROM _skypydb_schema_meta WHERE table_name NOT IN (${placeholders})`,
+      )
       .run(...table_names);
   } else {
     connection.prepare("DELETE FROM _skypydb_schema_meta").run();
@@ -308,7 +354,7 @@ function write_meta_state(connection: Database.Database, schema: CompiledSchema)
         schema_signature = excluded.schema_signature,
         managed_tables = excluded.managed_tables,
         updated_at = excluded.updated_at
-      `
+      `,
     )
     .run(schema.schema_signature, JSON.stringify(table_names), now);
 }
@@ -323,19 +369,24 @@ export function apply_schema(
   connection: Database.Database,
   compiled_schema: CompiledSchema,
   db_path: string,
-  options: RuntimeSchemaOptions
+  options: RuntimeSchemaOptions,
 ): void {
   ensure_meta_tables(connection);
 
   const existing = existing_meta(connection);
-  const existing_signatures = new Map(existing.map((row) => [row.table_name, row.table_signature]));
+  const existing_signatures = new Map(
+    existing.map((row) => [row.table_name, row.table_signature]),
+  );
   const existing_tables = new Set(existing_signatures.keys());
 
   const desired_tables = new Set(compiled_schema.tables.keys());
   const changed_tables: string[] = [];
   const removed_tables: string[] = [];
 
-  for (const [table_name, signature] of compiled_schema.table_signatures.entries()) {
+  for (const [
+    table_name,
+    signature,
+  ] of compiled_schema.table_signatures.entries()) {
     const existing_signature = existing_signatures.get(table_name);
     if (existing_signature === undefined) {
       changed_tables.push(table_name);
@@ -361,7 +412,9 @@ export function apply_schema(
   const allow_destructive = options.allowDestructiveSchemaChanges === true;
 
   if (has_existing_schema && has_mismatch && !allow_destructive) {
-    throw new SchemaMismatchError(mismatch_message(changed_tables, removed_tables));
+    throw new SchemaMismatchError(
+      mismatch_message(changed_tables, removed_tables),
+    );
   }
 
   if (has_existing_schema && has_mismatch && allow_destructive) {
@@ -386,7 +439,10 @@ export function apply_schema(
   write_meta_state(connection, compiled_schema);
 }
 
-export function assert_table_exists(schema: CompiledSchema, table_name: string): CompiledTableDefinition {
+export function assert_table_exists(
+  schema: CompiledSchema,
+  table_name: string,
+): CompiledTableDefinition {
   const validated = InputValidator.validate_table_name(table_name);
   const table = schema.tables.get(validated);
   if (!table) {
@@ -394,4 +450,3 @@ export function assert_table_exists(schema: CompiledSchema, table_name: string):
   }
   return table;
 }
-

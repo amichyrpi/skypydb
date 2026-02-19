@@ -15,7 +15,7 @@ export class ListCollectionsMixin extends GetCollectionMixin {
       const collection = new Collection(
         this._db,
         collection_info.name,
-        collection_info.metadata
+        collection_info.metadata,
       );
       this._collections.set(collection_info.name, collection);
       collections.push(collection);

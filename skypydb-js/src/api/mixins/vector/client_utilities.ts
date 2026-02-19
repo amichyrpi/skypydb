@@ -1,4 +1,7 @@
-import { heartbeat_client, reset_client } from "../../../utils/client_utilities";
+import {
+  heartbeat_client,
+  reset_client,
+} from "../../../utils/client_utilities";
 import { DeleteCollectionMixin } from "./delete_collection";
 import type { VectorDatabase } from "../../../database/vector_db";
 

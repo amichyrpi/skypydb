@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { InputValidator, sanitize_input, validate_column_name, validate_table_name } from "../src/security";
+import {
+  InputValidator,
+  sanitize_input,
+  validate_column_name,
+  validate_table_name,
+} from "../src/security";
 import { ValidationError } from "../src/errors";
 
 describe("validation", () => {
@@ -22,8 +27,8 @@ describe("validation", () => {
     const config = {
       users: {
         name: "str",
-        age: "int"
-      }
+        age: "int",
+      },
     };
     expect(InputValidator.validate_config(config)).toEqual(config);
   });

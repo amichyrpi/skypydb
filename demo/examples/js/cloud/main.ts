@@ -4,7 +4,7 @@ async function main(): Promise<void> {
   // Create a client.
   const client = skypydbhttpclient.cloud({
     api_url: "ahen-studio.com/skypydb",
-    api_key: "your-api-key"
+    api_key: "your-api-key",
   });
   // You can also use a self-hosted server:
   // const client = skypydbhttpclient.cloud({ api_url: "http://localhost:8000" });
@@ -19,13 +19,13 @@ async function main(): Promise<void> {
   await vectordb.add({
     data: ["Video Theo1", "Video Theo2"], // data to add
     metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-    ids: ["vid1", "vid2"] // unique ids for the data
+    ids: ["vid1", "vid2"], // unique ids for the data
   });
 
   // Query for similar data
   const results = await vectordb.query({
     query_texts: ["This is a query"],
-    number_of_results: 2
+    number_of_results: 2,
   });
 
   // Access results

@@ -7,13 +7,15 @@ import type {
   EndpointDefinition,
   EndpointDescriptor,
   MutationDefinition,
-  QueryDefinition
+  QueryDefinition,
 } from "./types";
 
 const FUNCTION_FILE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts"];
 
 function is_typescript_function_file(file_name: string): boolean {
-  return FUNCTION_FILE_EXTENSIONS.some((extension) => file_name.endsWith(extension));
+  return FUNCTION_FILE_EXTENSIONS.some((extension) =>
+    file_name.endsWith(extension),
+  );
 }
 
 function should_ignore_file(relative_path: string): boolean {
@@ -27,7 +29,11 @@ function should_ignore_file(relative_path: string): boolean {
   return false;
 }
 
-function collect_files(base_dir: string, current_dir: string, out: string[]): void {
+function collect_files(
+  base_dir: string,
+  current_dir: string,
+  out: string[],
+): void {
   const entries = fs.readdirSync(current_dir, { withFileTypes: true });
   for (const entry of entries) {
     const absolute = path.join(current_dir, entry.name);
@@ -51,7 +57,9 @@ function collect_files(base_dir: string, current_dir: string, out: string[]): vo
 
 function endpoint_base_name(functions_dir: string, file_path: string): string {
   const relative = path.relative(functions_dir, file_path).replace(/\\/g, "/");
-  const without_extension = relative.replace(/\.[cm]?tsx?$/, "").replace(/\.[cm]?ts$/, "");
+  const without_extension = relative
+    .replace(/\.[cm]?tsx?$/, "")
+    .replace(/\.[cm]?ts$/, "");
   const parts = without_extension.split("/").filter((part) => part.length > 0);
   if (parts.at(-1) === "index") {
     parts.pop();
@@ -64,20 +72,22 @@ function is_query_definition(value: unknown): value is QueryDefinition {
 }
 
 function is_mutation_definition(value: unknown): value is MutationDefinition {
-  return typeof value === "object" && value !== null && MUTATION_MARKER in value;
+  return (
+    typeof value === "object" && value !== null && MUTATION_MARKER in value
+  );
 }
 
 function to_endpoint_descriptor(
   endpoint: string,
   definition: EndpointDefinition,
-  source_file: string
+  source_file: string,
 ): EndpointDescriptor {
   if (is_query_definition(definition)) {
     return {
       endpoint,
       kind: "query",
       definition,
-      source_file
+      source_file,
     };
   }
 
@@ -85,15 +95,17 @@ function to_endpoint_descriptor(
     endpoint,
     kind: "mutation",
     definition,
-    source_file
+    source_file,
   };
 }
 
-export function discover_endpoints(project_root = process.cwd()): Map<string, EndpointDescriptor> {
+export function discover_endpoints(
+  project_root = process.cwd(),
+): Map<string, EndpointDescriptor> {
   const functions_dir = path.join(project_root, "skypydb");
   if (!fs.existsSync(functions_dir)) {
     throw new FunctionResolutionError(
-      `Functions directory not found at '${functions_dir}'. Create a skypydb/ folder with query/mutation files.`
+      `Functions directory not found at '${functions_dir}'. Create a skypydb/ folder with query/mutation files.`,
     );
   }
 
@@ -112,17 +124,20 @@ export function discover_endpoints(project_root = process.cwd()): Map<string, En
       if (!is_query_definition(value) && !is_mutation_definition(value)) {
         continue;
       }
-      const endpoint = module_base.length > 0 ? `${module_base}.${export_name}` : export_name;
+      const endpoint =
+        module_base.length > 0 ? `${module_base}.${export_name}` : export_name;
       if (endpoints.has(endpoint)) {
         const existing = endpoints.get(endpoint);
         throw new FunctionResolutionError(
-          `Duplicate endpoint '${endpoint}' found in '${existing?.source_file}' and '${file_path}'.`
+          `Duplicate endpoint '${endpoint}' found in '${existing?.source_file}' and '${file_path}'.`,
         );
       }
-      endpoints.set(endpoint, to_endpoint_descriptor(endpoint, value, file_path));
+      endpoints.set(
+        endpoint,
+        to_endpoint_descriptor(endpoint, value, file_path),
+      );
     }
   }
 
   return endpoints;
 }
-

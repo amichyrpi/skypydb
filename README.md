@@ -71,7 +71,7 @@ cargo add skypydb # rust client
 - Skypydb uses standardized error codes to help you quickly identify and handle issues:
 
 | Code       | Error                        | Description                                                             |
-|------------|------------------------------|-------------------------------------------------------------------------|
+| ---------- | ---------------------------- | ----------------------------------------------------------------------- |
 | **SKY001** | SkypydbError                 | Base exception for all Skypydb errors                                   |
 | **SKY101** | TableNotFoundError           | Raised when attempting to access a table that doesn't exist             |
 | **SKY102** | TableAlreadyExistsError      | Raised when trying to create a table that already exists                |
@@ -110,7 +110,7 @@ from skypydb.schema.values import value
 
 # Define the schema with all tables
 schema = defineSchema({
-    
+
     # Table for success logs
     "success": defineTable({
         "component": value.string(),

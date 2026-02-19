@@ -10,8 +10,13 @@ export class AddItemsMixin {
     let { documents, data } = params;
 
     if (data !== undefined) {
-      if (documents !== undefined && JSON.stringify(documents) !== JSON.stringify(data)) {
-        throw new Error("Use either 'documents' or legacy 'data', not conflicting values for both.");
+      if (
+        documents !== undefined &&
+        JSON.stringify(documents) !== JSON.stringify(data)
+      ) {
+        throw new Error(
+          "Use either 'documents' or legacy 'data', not conflicting values for both.",
+        );
       }
       documents = data;
     }

@@ -5,7 +5,13 @@ export class GetItemsMixin extends AddItemsMixin {
   async get(params: GetParams = {}): Promise<GetResult> {
     const { ids, where, where_document, include, limit, offset } = params;
 
-    const results = this._db.get(this._name, ids, where, where_document, include);
+    const results = this._db.get(
+      this._name,
+      ids,
+      where,
+      where_document,
+      include,
+    );
 
     if (offset !== undefined || limit !== undefined) {
       const start = offset ?? 0;

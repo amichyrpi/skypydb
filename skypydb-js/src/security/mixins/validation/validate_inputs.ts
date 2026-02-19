@@ -4,7 +4,7 @@ import {
   MAX_COLUMN_NAME_LENGTH,
   MAX_STRING_LENGTH,
   MAX_TABLE_NAME_LENGTH,
-  TABLE_NAME_PATTERN
+  TABLE_NAME_PATTERN,
 } from "../../../security/constants";
 import { SanitizeValuesMixin } from "./sanitize_values";
 import { SQLInjectionCheckMixin } from "./sql_injection_check";
@@ -18,15 +18,19 @@ export class ValidateInputsMixin extends SQLInjectionCheckMixin {
       throw new ValidationError("Table name must be a string");
     }
     if (table_name.length > MAX_TABLE_NAME_LENGTH) {
-      throw new ValidationError(`Table name too long (max ${MAX_TABLE_NAME_LENGTH} characters)`);
+      throw new ValidationError(
+        `Table name too long (max ${MAX_TABLE_NAME_LENGTH} characters)`,
+      );
     }
     if (!TABLE_NAME_PATTERN.test(table_name)) {
       throw new ValidationError(
-        "Table name must start with a letter or underscore and contain only alphanumeric characters, underscores, and hyphens"
+        "Table name must start with a letter or underscore and contain only alphanumeric characters, underscores, and hyphens",
       );
     }
     if (this._contains_sql_injection(table_name)) {
-      throw new ValidationError("Table name contains potentially dangerous characters");
+      throw new ValidationError(
+        "Table name contains potentially dangerous characters",
+      );
     }
     return table_name;
   }
@@ -40,16 +44,18 @@ export class ValidateInputsMixin extends SQLInjectionCheckMixin {
     }
     if (column_name.length > MAX_COLUMN_NAME_LENGTH) {
       throw new ValidationError(
-        `Column name too long (max ${MAX_COLUMN_NAME_LENGTH} characters)`
+        `Column name too long (max ${MAX_COLUMN_NAME_LENGTH} characters)`,
       );
     }
     if (!COLUMN_NAME_PATTERN.test(column_name)) {
       throw new ValidationError(
-        "Column name must start with a letter or underscore and contain only alphanumeric characters and underscores"
+        "Column name must start with a letter or underscore and contain only alphanumeric characters and underscores",
       );
     }
     if (this._contains_sql_injection(column_name)) {
-      throw new ValidationError("Column name contains potentially dangerous characters");
+      throw new ValidationError(
+        "Column name contains potentially dangerous characters",
+      );
     }
     return column_name;
   }
@@ -60,12 +66,16 @@ export class ValidateInputsMixin extends SQLInjectionCheckMixin {
     }
     const max_len = max_length ?? MAX_STRING_LENGTH;
     if (value.length > max_len) {
-      throw new ValidationError(`String value too long (max ${max_len} characters)`);
+      throw new ValidationError(
+        `String value too long (max ${max_len} characters)`,
+      );
     }
     return value;
   }
 
-  static validate_data_dict(data: Record<string, unknown>): Record<string, unknown> {
+  static validate_data_dict(
+    data: Record<string, unknown>,
+  ): Record<string, unknown> {
     if (typeof data !== "object" || data === null || Array.isArray(data)) {
       throw new ValidationError("Data must be a dictionary");
     }
@@ -82,14 +92,22 @@ export class ValidateInputsMixin extends SQLInjectionCheckMixin {
       ) {
         validated[valid_key] = value;
       } else {
-        validated[valid_key] = SanitizeValuesMixin.sanitize_string(String(value));
+        validated[valid_key] = SanitizeValuesMixin.sanitize_string(
+          String(value),
+        );
       }
     }
     return validated;
   }
 
-  static validate_filter_dict(filters: Record<string, unknown>): Record<string, unknown> {
-    if (typeof filters !== "object" || filters === null || Array.isArray(filters)) {
+  static validate_filter_dict(
+    filters: Record<string, unknown>,
+  ): Record<string, unknown> {
+    if (
+      typeof filters !== "object" ||
+      filters === null ||
+      Array.isArray(filters)
+    ) {
       throw new ValidationError("Filters must be a dictionary");
     }
 
@@ -116,30 +134,53 @@ export class ValidateInputsMixin extends SQLInjectionCheckMixin {
       ) {
         validated[valid_key] = value;
       } else {
-        validated[valid_key] = SanitizeValuesMixin.sanitize_string(String(value));
+        validated[valid_key] = SanitizeValuesMixin.sanitize_string(
+          String(value),
+        );
       }
     }
     return validated;
   }
 
-  static validate_config(config: Record<string, unknown>): Record<string, unknown> {
-    if (typeof config !== "object" || config === null || Array.isArray(config)) {
+  static validate_config(
+    config: Record<string, unknown>,
+  ): Record<string, unknown> {
+    if (
+      typeof config !== "object" ||
+      config === null ||
+      Array.isArray(config)
+    ) {
       throw new ValidationError("Configuration must be a dictionary");
     }
 
     const validated: Record<string, unknown> = {};
     for (const [table_name, table_config] of Object.entries(config)) {
       const valid_table_name = this.validate_table_name(table_name);
-      if (typeof table_config !== "object" || table_config === null || Array.isArray(table_config)) {
-        throw new ValidationError(`Configuration for table '${table_name}' must be a dictionary`);
+      if (
+        typeof table_config !== "object" ||
+        table_config === null ||
+        Array.isArray(table_config)
+      ) {
+        throw new ValidationError(
+          `Configuration for table '${table_name}' must be a dictionary`,
+        );
       }
       const validated_table_config: Record<string, unknown> = {};
       for (const [column_name, column_type] of Object.entries(table_config)) {
         const valid_column_name = this.validate_column_name(column_name);
-        const valid_types: Array<unknown> = [String, Number, Boolean, "str", "int", "float", "bool", "auto"];
+        const valid_types: Array<unknown> = [
+          String,
+          Number,
+          Boolean,
+          "str",
+          "int",
+          "float",
+          "bool",
+          "auto",
+        ];
         if (!valid_types.includes(column_type)) {
           throw new ValidationError(
-            `Invalid type for column '${column_name}': ${String(column_type)}. Valid types are: ${valid_types.join(", ")}`
+            `Invalid type for column '${column_name}': ${String(column_type)}. Valid types are: ${valid_types.join(", ")}`,
           );
         }
         validated_table_config[valid_column_name] = column_type;

@@ -18,6 +18,6 @@ export function mutation(config: MutationConfig): MutationDefinition {
   return {
     [MUTATION_MARKER]: true,
     args: config.args,
-    handler: config.handler
+    handler: config.handler,
   };
 }

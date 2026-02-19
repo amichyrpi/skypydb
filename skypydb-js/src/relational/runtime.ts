@@ -1,5 +1,9 @@
 import path from "node:path";
-import { ConstraintError, FunctionResolutionError, ValidationError } from "../errors";
+import {
+  ConstraintError,
+  FunctionResolutionError,
+  ValidationError,
+} from "../errors";
 import { endpoint_from_reference } from "./api_proxy";
 import { RelationalDatabase } from "./database";
 import { discover_endpoints } from "./function_registry";
@@ -11,7 +15,7 @@ import type {
   QueryContext,
   QueryDefinition,
   RuntimeSchemaOptions,
-  ValueDefinition
+  ValueDefinition,
 } from "./types";
 
 function is_plain_object(value: unknown): value is Record<string, unknown> {
@@ -27,7 +31,7 @@ class RelationalRuntime {
   set_schema_options(options: RuntimeSchemaOptions = {}): void {
     this.schema_options = {
       ...this.schema_options,
-      ...options
+      ...options,
     };
   }
 
@@ -35,9 +39,13 @@ class RelationalRuntime {
     this.ensure_initialized();
     const descriptor = this.resolve_endpoint(reference, "query");
     const definition = descriptor.definition as QueryDefinition;
-    const validated_args = this.validate_args(definition.args, args, descriptor.endpoint);
+    const validated_args = this.validate_args(
+      definition.args,
+      args,
+      descriptor.endpoint,
+    );
     const context: QueryContext = {
-      db: this.get_database().create_readonly_context()
+      db: this.get_database().create_readonly_context(),
     };
     return definition.handler(context, validated_args);
   }
@@ -46,9 +54,13 @@ class RelationalRuntime {
     this.ensure_initialized();
     const descriptor = this.resolve_endpoint(reference, "mutation");
     const definition = descriptor.definition as MutationDefinition;
-    const validated_args = this.validate_args(definition.args, args, descriptor.endpoint);
+    const validated_args = this.validate_args(
+      definition.args,
+      args,
+      descriptor.endpoint,
+    );
     const context: MutationContext = {
-      db: this.get_database().create_mutation_context()
+      db: this.get_database().create_mutation_context(),
     };
     return definition.handler(context, validated_args);
   }
@@ -95,19 +107,23 @@ class RelationalRuntime {
     return this.database;
   }
 
-  private resolve_endpoint(reference: unknown, expected_kind: "query" | "mutation"): EndpointDescriptor {
+  private resolve_endpoint(
+    reference: unknown,
+    expected_kind: "query" | "mutation",
+  ): EndpointDescriptor {
     const endpoint = endpoint_from_reference(reference);
     const descriptor = this.endpoints.get(endpoint);
     if (!descriptor) {
       const known = [...this.endpoints.keys()].sort();
-      const preview = known.length === 0 ? "none" : known.slice(0, 12).join(", ");
+      const preview =
+        known.length === 0 ? "none" : known.slice(0, 12).join(", ");
       throw new FunctionResolutionError(
-        `Endpoint '${endpoint}' was not found. Known endpoints: ${preview}`
+        `Endpoint '${endpoint}' was not found. Known endpoints: ${preview}`,
       );
     }
     if (descriptor.kind !== expected_kind) {
       throw new FunctionResolutionError(
-        `Endpoint '${endpoint}' is a ${descriptor.kind}, not a ${expected_kind}.`
+        `Endpoint '${endpoint}' is a ${descriptor.kind}, not a ${expected_kind}.`,
       );
     }
     return descriptor;
@@ -116,7 +132,7 @@ class RelationalRuntime {
   private validate_args(
     args_definition: Record<string, ValueDefinition> | undefined,
     args: unknown,
-    endpoint: string
+    endpoint: string,
   ): unknown {
     if (!args_definition) {
       return args;
@@ -126,10 +142,14 @@ class RelationalRuntime {
       if (Object.keys(args_definition).length === 0) {
         return {};
       }
-      throw new ValidationError(`Endpoint '${endpoint}' requires an args object.`);
+      throw new ValidationError(
+        `Endpoint '${endpoint}' requires an args object.`,
+      );
     }
     if (!is_plain_object(args)) {
-      throw new ValidationError(`Endpoint '${endpoint}' args must be an object.`);
+      throw new ValidationError(
+        `Endpoint '${endpoint}' args must be an object.`,
+      );
     }
 
     const normalized: Record<string, unknown> = {};
@@ -141,20 +161,22 @@ class RelationalRuntime {
           continue;
         }
         throw new ValidationError(
-          `Missing required argument '${field_name}' for endpoint '${endpoint}'.`
+          `Missing required argument '${field_name}' for endpoint '${endpoint}'.`,
         );
       }
       normalized[field_name] = this.validate_arg_value(
         definition,
         args[field_name],
-        `${endpoint}.args.${field_name}`
+        `${endpoint}.args.${field_name}`,
       );
     }
 
     for (const provided_field of Object.keys(args)) {
-      if (!Object.prototype.hasOwnProperty.call(args_definition, provided_field)) {
+      if (
+        !Object.prototype.hasOwnProperty.call(args_definition, provided_field)
+      ) {
         throw new ValidationError(
-          `Unknown argument '${provided_field}' for endpoint '${endpoint}'.`
+          `Unknown argument '${provided_field}' for endpoint '${endpoint}'.`,
         );
       }
     }
@@ -162,7 +184,11 @@ class RelationalRuntime {
     return normalized;
   }
 
-  private validate_arg_value(definition: ValueDefinition, value: unknown, path_name: string): unknown {
+  private validate_arg_value(
+    definition: ValueDefinition,
+    value: unknown,
+    path_name: string,
+  ): unknown {
     if (definition.kind === "optional") {
       if (value === null || value === undefined) {
         return undefined;
@@ -182,7 +208,9 @@ class RelationalRuntime {
     }
     if (definition.kind === "number") {
       if (typeof value !== "number" || !Number.isFinite(value)) {
-        throw new ValidationError(`Argument '${path_name}' must be a finite number.`);
+        throw new ValidationError(
+          `Argument '${path_name}' must be a finite number.`,
+        );
       }
       return value;
     }
@@ -194,7 +222,9 @@ class RelationalRuntime {
     }
     if (definition.kind === "id") {
       if (typeof value !== "string" || value.length === 0) {
-        throw new ValidationError(`Argument '${path_name}' must be a non-empty string id.`);
+        throw new ValidationError(
+          `Argument '${path_name}' must be a non-empty string id.`,
+        );
       }
       return value;
     }
@@ -210,17 +240,23 @@ class RelationalRuntime {
             normalized[key] = undefined;
             continue;
           }
-          throw new ValidationError(`Missing required argument '${path_name}.${key}'.`);
+          throw new ValidationError(
+            `Missing required argument '${path_name}.${key}'.`,
+          );
         }
         normalized[key] = this.validate_arg_value(
           nested_definition,
           value[key],
-          `${path_name}.${key}`
+          `${path_name}.${key}`,
         );
       }
       for (const provided_key of Object.keys(value)) {
-        if (!Object.prototype.hasOwnProperty.call(definition.shape, provided_key)) {
-          throw new ValidationError(`Unknown argument '${path_name}.${provided_key}'.`);
+        if (
+          !Object.prototype.hasOwnProperty.call(definition.shape, provided_key)
+        ) {
+          throw new ValidationError(
+            `Unknown argument '${path_name}.${provided_key}'.`,
+          );
         }
       }
       return normalized;
@@ -231,7 +267,9 @@ class RelationalRuntime {
 
 const runtime_singleton = new RelationalRuntime();
 
-export function set_schema_runtime_options(options: RuntimeSchemaOptions = {}): void {
+export function set_schema_runtime_options(
+  options: RuntimeSchemaOptions = {},
+): void {
   runtime_singleton.set_schema_options(options);
 }
 
@@ -239,11 +277,13 @@ export function callquery_runtime(reference: unknown, args: unknown): unknown {
   return runtime_singleton.callquery(reference, args);
 }
 
-export function callmutation_runtime(reference: unknown, args: unknown): unknown {
+export function callmutation_runtime(
+  reference: unknown,
+  args: unknown,
+): unknown {
   return runtime_singleton.callmutation(reference, args);
 }
 
 export function __reset_runtime_for_tests(): void {
   runtime_singleton.reset_for_tests();
 }
-

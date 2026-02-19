@@ -6,7 +6,7 @@ import type {
   ObjectValueDefinition,
   OptionalValueDefinition,
   StringValueDefinition,
-  ValueDefinition
+  ValueDefinition,
 } from "../relational/types";
 
 function string_value(): StringValueDefinition {
@@ -24,24 +24,26 @@ function boolean_value(): BooleanValueDefinition {
 function id_value(table_name: string): IdValueDefinition {
   return {
     kind: "id",
-    table: InputValidator.validate_table_name(table_name)
+    table: InputValidator.validate_table_name(table_name),
   };
 }
 
-function object_value(shape: Record<string, ValueDefinition>): ObjectValueDefinition {
+function object_value(
+  shape: Record<string, ValueDefinition>,
+): ObjectValueDefinition {
   if (typeof shape !== "object" || shape === null || Array.isArray(shape)) {
     throw new TypeError("value.object requires a shape object.");
   }
   return {
     kind: "object",
-    shape
+    shape,
   };
 }
 
 function optional_value(inner: ValueDefinition): OptionalValueDefinition {
   return {
     kind: "optional",
-    inner
+    inner,
   };
 }
 
@@ -51,5 +53,5 @@ export const value = {
   boolean: boolean_value,
   id: id_value,
   object: object_value,
-  optional: optional_value
+  optional: optional_value,
 };

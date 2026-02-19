@@ -38,7 +38,12 @@ describe("vecClient", () => {
 
     const db_file = path.join(temp_dir, "skypydb", "vector.db");
     const log_file = path.join(temp_dir, "skypydb", "logger", "log.txt");
-    const stats_file = path.join(temp_dir, "skypydb", "logger", "dbstat.sqlite3");
+    const stats_file = path.join(
+      temp_dir,
+      "skypydb",
+      "logger",
+      "dbstat.sqlite3",
+    );
 
     expect(fs.existsSync(db_file)).toBe(true);
     expect(fs.existsSync(log_file)).toBe(true);
@@ -49,54 +54,62 @@ describe("vecClient", () => {
       .reverse()
       .find(
         (entry: Record<string, unknown>) =>
-          entry.operation === "create_collection" && entry.collection === "my-videos"
+          entry.operation === "create_collection" &&
+          entry.collection === "my-videos",
       );
 
     expect(create_entry).toBeTruthy();
     expect(create_entry?.status).toBe("success");
-    expect((create_entry?.details as Record<string, unknown>).has_metadata).toBe(true);
+    expect(
+      (create_entry?.details as Record<string, unknown>).has_metadata,
+    ).toBe(true);
   });
 
   it("supports vector lifecycle and collection aliases", async () => {
     const client = new vecClient();
-    const collection = await client.get_or_create_collection("docs", { source: "tests" });
+    const collection = await client.get_or_create_collection("docs", {
+      source: "tests",
+    });
 
     await collection.add({
       ids: ["id1", "id2"],
       embeddings: [
         [1, 0],
-        [0, 1]
+        [0, 1],
       ],
       data: ["hello world", "goodbye world"],
-      metadatas: [{ source: "a", views: 10 }, { source: "b", views: 20 }]
+      metadatas: [
+        { source: "a", views: 10 },
+        { source: "b", views: 20 },
+      ],
     });
 
     await collection.add({
       ids: ["id3"],
       embeddings: [[0.8, 0.2]],
       documents: ["hello again"],
-      metadatas: [{ source: "a", views: 30 }]
+      metadatas: [{ source: "a", views: 30 }],
     });
 
     expect(await collection.count()).toBe(3);
 
     const filtered = await collection.get({
       where: { source: { $eq: "a" } },
-      include: ["documents", "metadatas"]
+      include: ["documents", "metadatas"],
     });
     expect(filtered.ids.length).toBe(2);
 
     const paged = await collection.get({
       include: ["documents"],
       limit: 1,
-      offset: 1
+      offset: 1,
     });
     expect(paged.ids.length).toBe(1);
 
     const queried = await collection.query({
       query_embeddings: [[1, 0]],
       number_of_results: 2,
-      include: ["documents", "distances"]
+      include: ["documents", "distances"],
     });
     expect(queried.ids[0].length).toBe(2);
     expect(queried.ids[0][0]).toBe("id1");
@@ -104,10 +117,13 @@ describe("vecClient", () => {
     await collection.update({
       ids: ["id1"],
       documents: ["hello world updated"],
-      metadatas: [{ source: "a", views: 99 }]
+      metadatas: [{ source: "a", views: 99 }],
     });
 
-    const updated = await collection.get({ ids: ["id1"], include: ["documents", "metadatas"] });
+    const updated = await collection.get({
+      ids: ["id1"],
+      include: ["documents", "metadatas"],
+    });
     expect(updated.documents?.[0]).toBe("hello world updated");
 
     await collection.delete({ by_data: "goodbye world" });

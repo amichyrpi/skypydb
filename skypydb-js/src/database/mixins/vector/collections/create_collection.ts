@@ -6,7 +6,9 @@ export abstract class CreateCollectionMixin extends CollectionAuditMixin {
   create_collection(name: string, metadata?: Record<string, unknown>): void {
     const validated = InputValidator.validate_table_name(name);
     if (this.collection_exists(validated)) {
-      throw new CollectionAlreadyExistsError(`Collection '${validated}' already exists`);
+      throw new CollectionAlreadyExistsError(
+        `Collection '${validated}' already exists`,
+      );
     }
 
     const table_name = `vec_${validated}`;
@@ -20,13 +22,13 @@ export abstract class CreateCollectionMixin extends CollectionAuditMixin {
           metadata TEXT,
           created_at TEXT NOT NULL
         )
-        `
+        `,
       )
       .run();
 
     this.conn
       .prepare(
-        "INSERT INTO _vector_collections (name, metadata, created_at) VALUES (?, ?, ?)"
+        "INSERT INTO _vector_collections (name, metadata, created_at) VALUES (?, ?, ?)",
       )
       .run(validated, JSON.stringify(metadata ?? {}), new Date().toISOString());
   }

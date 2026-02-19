@@ -84,7 +84,7 @@ export class LoggerService {
           )
           VALUES (1, 0, 0, NULL, NULL, NULL, NULL, ?)
           ON CONFLICT(id) DO NOTHING
-          `
+          `,
         )
         .run(this.now_iso());
     } catch (error) {
@@ -97,7 +97,7 @@ export class LoggerService {
       timestamp: this.now_iso(),
       operation: args.operation,
       status: args.status,
-      details: args.details
+      details: args.details,
     };
     if (args.collection !== undefined) {
       payload.collection = args.collection;
@@ -116,7 +116,10 @@ export class LoggerService {
     }
   }
 
-  refresh_full_snapshot(vector_conn: Database.Database, args: SnapshotArgs = {}): void {
+  refresh_full_snapshot(
+    vector_conn: Database.Database,
+    args: SnapshotArgs = {},
+  ): void {
     const snapshot_time = this.now_iso();
     const operation_time = args.last_operation_at ?? snapshot_time;
 
@@ -151,10 +154,12 @@ export class LoggerService {
       }
 
       if (counts.size > 0) {
-        const placeholders = Array.from({ length: counts.size }).fill("?").join(", ");
+        const placeholders = Array.from({ length: counts.size })
+          .fill("?")
+          .join(", ");
         this.stats_connection
           .prepare(
-            `DELETE FROM collection_stats WHERE collection_name NOT IN (${placeholders})`
+            `DELETE FROM collection_stats WHERE collection_name NOT IN (${placeholders})`,
           )
           .run(...Array.from(counts.keys()));
       } else {
@@ -174,7 +179,7 @@ export class LoggerService {
             last_operation_at = ?,
             updated_at = ?
           WHERE id = 1
-          `
+          `,
         )
         .run(
           collection_names.length,
@@ -183,7 +188,7 @@ export class LoggerService {
           args.last_status ?? null,
           args.last_collection ?? null,
           operation_time,
-          snapshot_time
+          snapshot_time,
         );
     } catch (error) {
       console.warn(`LoggerService snapshot refresh failed: ${String(error)}`);
@@ -194,7 +199,7 @@ export class LoggerService {
     operation: string,
     status: "success" | "error",
     collection?: string,
-    operation_at?: string
+    operation_at?: string,
   ): void {
     const snapshot_time = this.now_iso();
     const operation_time = operation_at ?? snapshot_time;
@@ -211,9 +216,15 @@ export class LoggerService {
             last_operation_at = ?,
             updated_at = ?
           WHERE id = 1
-          `
+          `,
         )
-        .run(operation, status, collection ?? null, operation_time, snapshot_time);
+        .run(
+          operation,
+          status,
+          collection ?? null,
+          operation_time,
+          snapshot_time,
+        );
     } catch (error) {
       console.warn(`LoggerService operation update failed: ${String(error)}`);
     }

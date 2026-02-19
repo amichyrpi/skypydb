@@ -38,7 +38,7 @@ export function cleanup_workspace(workspace: TempWorkspace): void {
 export function write_skypydb_file(
   workspace: TempWorkspace,
   relative_path: string,
-  content: string
+  content: string,
 ): string {
   const absolute = path.join(workspace.root, "skypydb", relative_path);
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
@@ -47,9 +47,11 @@ export function write_skypydb_file(
 }
 
 export async function resolve_result<T>(value: T | Promise<T>): Promise<T> {
-  if (value && typeof (value as unknown as { then?: unknown }).then === "function") {
-    return (value as Promise<T>);
+  if (
+    value &&
+    typeof (value as unknown as { then?: unknown }).then === "function"
+  ) {
+    return value as Promise<T>;
   }
   return value as T;
 }
-

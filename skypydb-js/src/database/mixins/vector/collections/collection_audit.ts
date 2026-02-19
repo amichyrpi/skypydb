@@ -15,9 +15,7 @@ export abstract class CollectionAuditMixin {
   collection_exists(name: string): boolean {
     const validated = InputValidator.validate_table_name(name);
     const row = this.conn
-      .prepare(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name = ?"
-      )
+      .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?")
       .get(`vec_${validated}`);
     return row !== undefined;
   }
@@ -31,7 +29,7 @@ export abstract class CollectionAuditMixin {
           metadata TEXT,
           created_at TEXT NOT NULL
         )
-        `
+        `,
       )
       .run();
   }
@@ -39,7 +37,7 @@ export abstract class CollectionAuditMixin {
   protected _matches_filters(
     item: ItemRow,
     where?: Record<string, unknown>,
-    where_document?: Record<string, string>
+    where_document?: Record<string, string>,
   ): boolean {
     if (where) {
       const metadata = item.metadata ?? {};
@@ -47,12 +45,20 @@ export abstract class CollectionAuditMixin {
         if (key.startsWith("$")) {
           if (key === "$and") {
             const conditions = (value as Array<Record<string, unknown>>) ?? [];
-            if (!conditions.every((condition) => this._matches_filters(item, condition, undefined))) {
+            if (
+              !conditions.every((condition) =>
+                this._matches_filters(item, condition, undefined),
+              )
+            ) {
               return false;
             }
           } else if (key === "$or") {
             const conditions = (value as Array<Record<string, unknown>>) ?? [];
-            if (!conditions.some((condition) => this._matches_filters(item, condition, undefined))) {
+            if (
+              !conditions.some((condition) =>
+                this._matches_filters(item, condition, undefined),
+              )
+            ) {
               return false;
             }
           }
@@ -68,22 +74,54 @@ export abstract class CollectionAuditMixin {
             if (operator === "$ne" && meta_value === operator_value) {
               return false;
             }
-            if (operator === "$gt" && !(meta_value !== undefined && (meta_value as number) > (operator_value as number))) {
+            if (
+              operator === "$gt" &&
+              !(
+                meta_value !== undefined &&
+                (meta_value as number) > (operator_value as number)
+              )
+            ) {
               return false;
             }
-            if (operator === "$gte" && !(meta_value !== undefined && (meta_value as number) >= (operator_value as number))) {
+            if (
+              operator === "$gte" &&
+              !(
+                meta_value !== undefined &&
+                (meta_value as number) >= (operator_value as number)
+              )
+            ) {
               return false;
             }
-            if (operator === "$lt" && !(meta_value !== undefined && (meta_value as number) < (operator_value as number))) {
+            if (
+              operator === "$lt" &&
+              !(
+                meta_value !== undefined &&
+                (meta_value as number) < (operator_value as number)
+              )
+            ) {
               return false;
             }
-            if (operator === "$lte" && !(meta_value !== undefined && (meta_value as number) <= (operator_value as number))) {
+            if (
+              operator === "$lte" &&
+              !(
+                meta_value !== undefined &&
+                (meta_value as number) <= (operator_value as number)
+              )
+            ) {
               return false;
             }
-            if (operator === "$in" && Array.isArray(operator_value) && !operator_value.includes(meta_value)) {
+            if (
+              operator === "$in" &&
+              Array.isArray(operator_value) &&
+              !operator_value.includes(meta_value)
+            ) {
               return false;
             }
-            if (operator === "$nin" && Array.isArray(operator_value) && operator_value.includes(meta_value)) {
+            if (
+              operator === "$nin" &&
+              Array.isArray(operator_value) &&
+              operator_value.includes(meta_value)
+            ) {
               return false;
             }
           }

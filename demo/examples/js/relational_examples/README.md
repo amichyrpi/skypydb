@@ -22,4 +22,4 @@ npx tsx demo/examples/js/relational_examples/client.ts
 ```
 
 The client sets `process.cwd()` to this example folder so runtime scanning resolves the local `skypydb/` directory.
-
+This demo imports directly from local `skypydb-js/src` entry points, so no package publish/install step is needed.

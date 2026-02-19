@@ -19,5 +19,5 @@ export const SQL_INJECTION_PATTERNS = [
   /EXECUTE\s*\(/i,
   /UNION\s+SELECT/i,
   /INTO\s+OUTFILE/i,
-  /LOAD_FILE/i
+  /LOAD_FILE/i,
 ];

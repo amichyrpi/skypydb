@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { callmutation, api as mutation_api } from "../src/mutation/callmutation";
+import {
+  callmutation,
+  api as mutation_api,
+} from "../src/mutation/callmutation";
 import { callquery, api as query_api } from "../src/query/callquery";
 import {
   cleanup_workspace,
@@ -7,7 +10,7 @@ import {
   resolve_result,
   src_import,
   write_skypydb_file,
-  type TempWorkspace
+  type TempWorkspace,
 } from "./relational_test_utils";
 
 let workspace: TempWorkspace;
@@ -29,7 +32,7 @@ export default defineSchema({
     amount: value.number()
   })
 });
-`.trim()
+`.trim(),
     );
 
     write_skypydb_file(
@@ -64,7 +67,7 @@ export const insertNumber = mutation({
 export const countNumbers = query({
   handler: (ctx) => ctx.db.count("numbers")
 });
-`.trim()
+`.trim(),
     );
 
     write_skypydb_file(
@@ -76,7 +79,7 @@ import { query } from ${src_import("query/query.ts")};
 export const ping = query({
   handler: () => "pong"
 });
-`.trim()
+`.trim(),
     );
   });
 
@@ -100,7 +103,9 @@ export const ping = query({
     expect(typeof mutate).toBe("function");
 
     await resolve_result(mutate({ label: "one", amount: 1 }));
-    await resolve_result(callmutation(mutation_api.math.insertNumber, { label: "two", amount: 2 }));
+    await resolve_result(
+      callmutation(mutation_api.math.insertNumber, { label: "two", amount: 2 }),
+    );
 
     expect(callquery(query_api.math.countNumbers)).toBe(2);
   });
@@ -109,4 +114,3 @@ export const ping = query({
     expect(() => callquery(query_api.math.badWrite)).toThrow("read-only");
   });
 });
-

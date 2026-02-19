@@ -18,14 +18,16 @@ type TypeScriptModule = {
       };
       fileName: string;
       reportDiagnostics: boolean;
-    }
+    },
   ) => { outputText: string };
   ModuleKind: Record<string, ModuleKind>;
   ScriptTarget: Record<string, ScriptTarget>;
   ModuleResolutionKind: Record<string, number>;
 };
 
-const runtime_require = createRequire(path.join(process.cwd(), "__skypydb_loader__.cjs"));
+const runtime_require = createRequire(
+  path.join(process.cwd(), "__skypydb_loader__.cjs"),
+);
 
 let ts_loader_ready = false;
 
@@ -46,13 +48,20 @@ function ensure_ts_loader(context: LoaderContext): void {
     throw get_error(context, "Unable to register a TypeScript module loader.");
   }
 
+  // If the current runtime (e.g. tsx/ts-node) already registered a TS loader,
+  // reuse it instead of requiring local TypeScript from node_modules.
+  if (typeof extensions[".ts"] === "function") {
+    ts_loader_ready = true;
+    return;
+  }
+
   let ts_module: TypeScriptModule;
   try {
     ts_module = runtime_require("typescript") as TypeScriptModule;
   } catch {
     throw get_error(
       context,
-      "TypeScript runtime support is not available. Install TypeScript or run with tsx/ts-node loader."
+      "TypeScript runtime support is not available. Install TypeScript or run with tsx/ts-node loader.",
     );
   }
 
@@ -63,15 +72,16 @@ function ensure_ts_loader(context: LoaderContext): void {
         module: ts_module.ModuleKind.CommonJS,
         target: ts_module.ScriptTarget.ES2022,
         esModuleInterop: true,
-        moduleResolution: ts_module.ModuleResolutionKind.NodeJs
+        moduleResolution: ts_module.ModuleResolutionKind.NodeJs,
       },
       fileName: filename,
-      reportDiagnostics: false
+      reportDiagnostics: false,
     });
-    (module as NodeModule & { _compile: (code: string, file_name: string) => void })._compile(
-      transpiled.outputText,
-      filename
-    );
+    (
+      module as NodeModule & {
+        _compile: (code: string, file_name: string) => void;
+      }
+    )._compile(transpiled.outputText, filename);
   };
 
   extensions[".ts"] = hook;
@@ -82,7 +92,10 @@ function ensure_ts_loader(context: LoaderContext): void {
   ts_loader_ready = true;
 }
 
-export function load_module_exports(module_path: string, context: LoaderContext): Record<string, unknown> {
+export function load_module_exports(
+  module_path: string,
+  context: LoaderContext,
+): Record<string, unknown> {
   const absolute_path = path.resolve(module_path);
   if (!fs.existsSync(absolute_path)) {
     throw get_error(context, `Module not found: ${absolute_path}`);
@@ -96,7 +109,7 @@ export function load_module_exports(module_path: string, context: LoaderContext)
   } catch (error) {
     throw get_error(
       context,
-      `Unable to resolve module '${absolute_path}': ${String(error)}`
+      `Unable to resolve module '${absolute_path}': ${String(error)}`,
     );
   }
 
@@ -108,7 +121,7 @@ export function load_module_exports(module_path: string, context: LoaderContext)
   } catch (error) {
     throw get_error(
       context,
-      `Failed to load TypeScript module '${absolute_path}'. If this project uses ESM-only tooling, run with tsx/ts-node loader. Original error: ${String(error)}`
+      `Failed to load TypeScript module '${absolute_path}'. If this project uses ESM-only tooling, run with tsx/ts-node loader. Original error: ${String(error)}`,
     );
   }
 }

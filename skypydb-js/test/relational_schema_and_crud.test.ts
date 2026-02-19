@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { callmutation, api as mutation_api } from "../src/mutation/callmutation";
+import {
+  callmutation,
+  api as mutation_api,
+} from "../src/mutation/callmutation";
 import { callquery, api as query_api } from "../src/query/callquery";
 import {
   cleanup_workspace,
@@ -7,7 +10,7 @@ import {
   resolve_result,
   src_import,
   write_skypydb_file,
-  type TempWorkspace
+  type TempWorkspace,
 } from "./relational_test_utils";
 
 let workspace: TempWorkspace;
@@ -38,7 +41,7 @@ export default defineSchema({
     authorId: value.id("users")
   })
 });
-`.trim()
+`.trim(),
     );
 
     write_skypydb_file(
@@ -79,7 +82,7 @@ export const getUser = query({
 export const countUsers = query({
   handler: (ctx) => ctx.db.count("users")
 });
-`.trim()
+`.trim(),
     );
   });
 
@@ -94,11 +97,13 @@ export const countUsers = query({
         age: 30,
         isActive: true,
         profile: { bio: "Engineer", score: 7 },
-        nickname: "ally"
-      })
+        nickname: "ally",
+      }),
     )) as string;
 
-    const users = (await resolve_result(callquery(query_api.ops.listUsers))) as Array<Record<string, unknown>>;
+    const users = (await resolve_result(
+      callquery(query_api.ops.listUsers),
+    )) as Array<Record<string, unknown>>;
     expect(users.length).toBe(1);
     expect(users[0].nickname).toBe("ally");
     expect((users[0]._extras as Record<string, unknown>).nickname).toBe("ally");
@@ -107,15 +112,15 @@ export const countUsers = query({
     await resolve_result(
       callmutation(mutation_api.ops.createPost, {
         title: "Hello",
-        authorId: user_id
-      })
+        authorId: user_id,
+      }),
     );
 
     expect(() =>
       callmutation(mutation_api.ops.createPost, {
         title: "Invalid",
-        authorId: "missing-user-id"
-      })
+        authorId: "missing-user-id",
+      }),
     ).toThrow("Referenced id");
 
     expect(() =>
@@ -124,9 +129,9 @@ export const countUsers = query({
         value: {
           name: "Alice 2",
           age: 31,
-          profile: { bio: "Still Engineer", score: 8 }
-        }
-      })
+          profile: { bio: "Still Engineer", score: 8 },
+        },
+      }),
     ).toThrow("Missing required field");
 
     await resolve_result(
@@ -137,27 +142,33 @@ export const countUsers = query({
           age: 31,
           isActive: false,
           profile: { bio: "Still Engineer", score: 8 },
-          alias: "a2"
-        }
-      })
+          alias: "a2",
+        },
+      }),
     );
 
     const updated_user = (await resolve_result(
-      callquery(query_api.ops.getUser, { id: user_id })
+      callquery(query_api.ops.getUser, { id: user_id }),
     )) as Record<string, unknown>;
     expect(updated_user.name).toBe("Alice 2");
     expect(updated_user.isActive).toBe(false);
-    expect((updated_user.profile as Record<string, unknown>).bio).toBe("Still Engineer");
-    expect((updated_user._extras as Record<string, unknown>).alias).toBe("a2");
-    expect((updated_user._extras as Record<string, unknown>).nickname).toBeUndefined();
-
-    expect(() => callmutation(mutation_api.ops.deleteUser, { id: user_id })).toThrow(
-      "Foreign key constraint failed"
+    expect((updated_user.profile as Record<string, unknown>).bio).toBe(
+      "Still Engineer",
     );
+    expect((updated_user._extras as Record<string, unknown>).alias).toBe("a2");
+    expect(
+      (updated_user._extras as Record<string, unknown>).nickname,
+    ).toBeUndefined();
 
-    await resolve_result(callmutation(mutation_api.ops.deletePostsByAuthor, { authorId: user_id }));
+    expect(() =>
+      callmutation(mutation_api.ops.deleteUser, { id: user_id }),
+    ).toThrow("Foreign key constraint failed");
+
+    await resolve_result(
+      callmutation(mutation_api.ops.deletePostsByAuthor, { authorId: user_id }),
+    );
     const deleted_users = await resolve_result(
-      callmutation(mutation_api.ops.deleteUser, { id: user_id })
+      callmutation(mutation_api.ops.deleteUser, { id: user_id }),
     );
     expect(deleted_users).toBe(1);
     expect(callquery(query_api.ops.countUsers)).toBe(0);

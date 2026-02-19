@@ -9,7 +9,7 @@ type DbResetCapable = {
 
 export async function reset_client(
   db: DbResetCapable,
-  collections: Map<string, unknown>
+  collections: Map<string, unknown>,
 ): Promise<boolean> {
   if (typeof db.reset === "function") {
     await db.reset();

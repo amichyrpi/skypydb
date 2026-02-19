@@ -7,7 +7,7 @@ export abstract class DeleteItemsMixin extends QueryItemsMixin {
     collection_name: string,
     ids?: string[],
     where?: Record<string, unknown>,
-    where_document?: Record<string, string>
+    where_document?: Record<string, string>,
   ): number {
     const validated = InputValidator.validate_table_name(collection_name);
     if (!this.collection_exists(validated)) {

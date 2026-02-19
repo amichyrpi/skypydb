@@ -1,5 +1,9 @@
 import "onnxruntime-node";
-import { env, pipeline, type FeatureExtractionPipeline } from "@xenova/transformers";
+import {
+  env,
+  pipeline,
+  type FeatureExtractionPipeline,
+} from "@xenova/transformers";
 import { EmbeddingsFunction } from "./mixins/embeddings_function";
 import type { EmbeddingMatrix, EmbeddingVector } from "../types";
 
@@ -41,18 +45,14 @@ export class SentenceTransformerEmbedding extends EmbeddingsFunction {
       this.pipeline_instance = (async () => {
         try {
           env.allowLocalModels = true;
-          return await pipeline(
-            "feature-extraction",
-            this.model,
-            {
-              device: this.device ?? "cpu"
-            } as Record<string, unknown>
-          );
+          return await pipeline("feature-extraction", this.model, {
+            device: this.device ?? "cpu",
+          } as Record<string, unknown>);
         } catch (error) {
           throw new Error(
             `ONNX runtime backend is required for sentence-transformers. Failed to load model '${this.model}': ${String(
-              error
-            )}`
+              error,
+            )}`,
           );
         }
       })();
@@ -68,7 +68,7 @@ export class SentenceTransformerEmbedding extends EmbeddingsFunction {
     const extractor = await this.get_pipeline();
     const output = (await extractor(texts, {
       pooling: "mean",
-      normalize: false
+      normalize: false,
     })) as {
       tolist?: () => unknown;
       data?: Float32Array;
@@ -80,7 +80,9 @@ export class SentenceTransformerEmbedding extends EmbeddingsFunction {
     if (typeof output.tolist === "function") {
       const list_data = output.tolist();
       if (Array.isArray(list_data) && Array.isArray(list_data[0])) {
-        rows = (list_data as number[][]).map((row) => row.map((value) => Number(value)));
+        rows = (list_data as number[][]).map((row) =>
+          row.map((value) => Number(value)),
+        );
       } else if (Array.isArray(list_data)) {
         rows = [list_data.map((value) => Number(value))];
       } else {

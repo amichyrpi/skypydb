@@ -4,5 +4,5 @@ export { value } from "./values";
 export type {
   SchemaDefinition,
   TableDefinition,
-  ValueDefinition
+  ValueDefinition,
 } from "../relational/types";

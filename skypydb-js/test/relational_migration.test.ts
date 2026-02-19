@@ -2,7 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import Database from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { callmutation, api as mutation_api } from "../src/mutation/callmutation";
+import {
+  callmutation,
+  api as mutation_api,
+} from "../src/mutation/callmutation";
 import { callquery, api as query_api } from "../src/query/callquery";
 import { callschemas } from "../src/schemas/callschemas";
 import {
@@ -11,7 +14,7 @@ import {
   resolve_result,
   src_import,
   write_skypydb_file,
-  type TempWorkspace
+  type TempWorkspace,
 } from "./relational_test_utils";
 
 let workspace: TempWorkspace;
@@ -32,7 +35,7 @@ export default defineSchema({
     payload: value.string()
   })
 });
-`.trim()
+`.trim(),
   );
 }
 
@@ -50,7 +53,7 @@ export default defineSchema({
     level: value.number()
   })
 });
-`.trim()
+`.trim(),
   );
 }
 
@@ -73,7 +76,7 @@ export const createUser = mutation({
 export const listUsers = query({
   handler: (ctx) => ctx.db.get("users")
 });
-`.trim()
+`.trim(),
     );
   });
 
@@ -82,28 +85,39 @@ export const listUsers = query({
   });
 
   it("throws on mismatch without destructive flag, then recreates with backup when enabled", async () => {
-    await resolve_result(callmutation(mutation_api.migrate.createUser, { name: "Before" }));
+    await resolve_result(
+      callmutation(mutation_api.migrate.createUser, { name: "Before" }),
+    );
     const db_path = path.join(workspace.root, "skypydb", "reactive.db");
     expect(fs.existsSync(db_path)).toBe(true);
 
     write_schema_v2(workspace);
 
-    expect(() => callquery(query_api.migrate.listUsers)).toThrow("Schema mismatch detected");
+    expect(() => callquery(query_api.migrate.listUsers)).toThrow(
+      "Schema mismatch detected",
+    );
 
     callschemas({ allowDestructiveSchemaChanges: true });
-    const users_after = (await resolve_result(callquery(query_api.migrate.listUsers))) as Array<unknown>;
+    const users_after = (await resolve_result(
+      callquery(query_api.migrate.listUsers),
+    )) as Array<unknown>;
     expect(users_after).toEqual([]);
 
     const skypydb_dir = path.join(workspace.root, "skypydb");
     const backups = fs
       .readdirSync(skypydb_dir)
-      .filter((file_name) => file_name.startsWith("reactive.backup-") && file_name.endsWith(".db"));
+      .filter(
+        (file_name) =>
+          file_name.startsWith("reactive.backup-") && file_name.endsWith(".db"),
+      );
     expect(backups.length).toBeGreaterThan(0);
 
     const connection = new Database(db_path);
     try {
       const legacy_table = connection
-        .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='legacy'")
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='legacy'",
+        )
         .get() as { name: string } | undefined;
       expect(legacy_table).toBeUndefined();
     } finally {
@@ -111,4 +125,3 @@ export const listUsers = query({
     }
   });
 });
-

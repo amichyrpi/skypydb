@@ -17,7 +17,7 @@ export abstract class GetItemsMixin extends UpdateItemsMixin {
     ids?: string[],
     where?: Record<string, unknown>,
     where_document?: Record<string, string>,
-    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">
+    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">,
   ): GetResult {
     const validated = InputValidator.validate_table_name(collection_name);
     if (!this.collection_exists(validated)) {
@@ -36,17 +36,21 @@ export abstract class GetItemsMixin extends UpdateItemsMixin {
     if (ids) {
       const placeholders = ids.map(() => "?").join(", ");
       rows = this.conn
-        .prepare(`SELECT * FROM [vec_${validated}] WHERE id IN (${placeholders})`)
+        .prepare(
+          `SELECT * FROM [vec_${validated}] WHERE id IN (${placeholders})`,
+        )
         .all(...ids) as typeof rows;
     } else {
-      rows = this.conn.prepare(`SELECT * FROM [vec_${validated}]`).all() as typeof rows;
+      rows = this.conn
+        .prepare(`SELECT * FROM [vec_${validated}]`)
+        .all() as typeof rows;
     }
 
     const result: GetResult = {
       ids: [],
       embeddings: include_keys.includes("embeddings") ? [] : null,
       documents: include_keys.includes("documents") ? [] : null,
-      metadatas: include_keys.includes("metadatas") ? [] : null
+      metadatas: include_keys.includes("metadatas") ? [] : null,
     };
 
     for (const row of rows) {
@@ -55,7 +59,7 @@ export abstract class GetItemsMixin extends UpdateItemsMixin {
         document: row.document,
         embedding: JSON.parse(row.embedding) as number[],
         metadata: row.metadata ? (JSON.parse(row.metadata) as Metadata) : null,
-        created_at: row.created_at
+        created_at: row.created_at,
       };
 
       if (!this._matches_filters(item, where, where_document)) {
@@ -78,7 +82,9 @@ export abstract class GetItemsMixin extends UpdateItemsMixin {
   }
 
   protected _get_all_items(collection_name: string): InternalItem[] {
-    const rows = this.conn.prepare(`SELECT * FROM [vec_${collection_name}]`).all() as Array<{
+    const rows = this.conn
+      .prepare(`SELECT * FROM [vec_${collection_name}]`)
+      .all() as Array<{
       id: string;
       document: string | null;
       embedding: string;
@@ -91,7 +97,7 @@ export abstract class GetItemsMixin extends UpdateItemsMixin {
       document: row.document,
       embedding: JSON.parse(row.embedding) as number[],
       metadata: row.metadata ? (JSON.parse(row.metadata) as Metadata) : null,
-      created_at: row.created_at
+      created_at: row.created_at,
     }));
   }
 }

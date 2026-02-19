@@ -14,7 +14,10 @@ export class OllamaEmbedding extends EmbeddingsFunction {
   constructor(options: OllamaEmbeddingOptions = {}) {
     super(options.dimension);
     this.model = options.model ?? "mxbai-embed-large";
-    this.base_url = (options.base_url ?? "http://localhost:11434").replace(/\/+$/, "");
+    this.base_url = (options.base_url ?? "http://localhost:11434").replace(
+      /\/+$/,
+      "",
+    );
   }
 
   protected async _get_embedding(text: string): Promise<EmbeddingVector> {
@@ -23,20 +26,20 @@ export class OllamaEmbedding extends EmbeddingsFunction {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: this.model,
-        prompt: text
-      })
+        prompt: text,
+      }),
     });
 
     if (!response.ok) {
       throw new Error(
-        `Cannot connect to Ollama at ${this.base_url}. Status: ${response.status}.`
+        `Cannot connect to Ollama at ${this.base_url}. Status: ${response.status}.`,
       );
     }
 
     const payload = (await response.json()) as { embedding?: number[] };
     if (!Array.isArray(payload.embedding)) {
       throw new Error(
-        `No embedding returned from Ollama. Make sure model '${this.model}' is an embedding model.`
+        `No embedding returned from Ollama. Make sure model '${this.model}' is an embedding model.`,
       );
     }
     return payload.embedding;

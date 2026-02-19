@@ -26,11 +26,14 @@ export abstract class GetCollectionMixin extends CreateCollectionMixin {
     return {
       name: row.name,
       metadata: row.metadata ? (JSON.parse(row.metadata) as Metadata) : {},
-      created_at: row.created_at
+      created_at: row.created_at,
     };
   }
 
-  get_or_create_collection(name: string, metadata?: Record<string, unknown>): CollectionInfo {
+  get_or_create_collection(
+    name: string,
+    metadata?: Record<string, unknown>,
+  ): CollectionInfo {
     const validated = InputValidator.validate_table_name(name);
     if (!this.collection_exists(validated)) {
       this.create_collection(validated, metadata);
@@ -43,7 +46,9 @@ export abstract class GetCollectionMixin extends CreateCollectionMixin {
   }
 
   list_collections(): CollectionInfo[] {
-    const rows = this.conn.prepare("SELECT * FROM _vector_collections").all() as Array<{
+    const rows = this.conn
+      .prepare("SELECT * FROM _vector_collections")
+      .all() as Array<{
       name: string;
       metadata: string | null;
       created_at: string;
@@ -51,7 +56,7 @@ export abstract class GetCollectionMixin extends CreateCollectionMixin {
     return rows.map((row) => ({
       name: row.name,
       metadata: row.metadata ? (JSON.parse(row.metadata) as Metadata) : {},
-      created_at: row.created_at
+      created_at: row.created_at,
     }));
   }
 }

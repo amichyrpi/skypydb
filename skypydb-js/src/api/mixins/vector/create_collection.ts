@@ -9,11 +9,14 @@ export class CreateCollectionMixin {
   async create_collection(
     name: string,
     metadata?: Metadata,
-    get_or_create = false
+    get_or_create = false,
   ): Promise<Collection> {
     if (get_or_create) {
       const current = this as unknown as {
-        get_or_create_collection: (name: string, metadata?: Metadata) => Promise<Collection>;
+        get_or_create_collection: (
+          name: string,
+          metadata?: Metadata,
+        ) => Promise<Collection>;
       };
       await current.get_or_create_collection(name, metadata);
     } else {

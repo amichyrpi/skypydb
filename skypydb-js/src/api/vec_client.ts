@@ -22,7 +22,9 @@ export class vecClient extends VecClientBase {
         embedding_model_config === null ||
         Array.isArray(embedding_model_config))
     ) {
-      throw new TypeError("embedding_model_config must be a dictionary when provided.");
+      throw new TypeError(
+        "embedding_model_config must be a dictionary when provided.",
+      );
     }
 
     const db_path = path.join("skypydb", "vector.db");
@@ -40,7 +42,7 @@ export class vecClient extends VecClientBase {
   async create_collection(
     name: string,
     metadata?: Metadata,
-    get_or_create = false
+    get_or_create = false,
   ): Promise<Collection> {
     return super.create_collection(name, metadata, get_or_create);
   }
@@ -49,7 +51,10 @@ export class vecClient extends VecClientBase {
     return super.get_collection(name);
   }
 
-  async get_or_create_collection(name: string, metadata?: Metadata): Promise<Collection> {
+  async get_or_create_collection(
+    name: string,
+    metadata?: Metadata,
+  ): Promise<Collection> {
     return super.get_or_create_collection(name, metadata);
   }
 

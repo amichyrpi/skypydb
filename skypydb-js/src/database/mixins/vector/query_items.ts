@@ -12,14 +12,16 @@ export abstract class QueryItemsMixin extends GetItemsMixin {
     n_results = 10,
     where?: Record<string, unknown>,
     where_document?: Record<string, string>,
-    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">
+    include?: Array<"embeddings" | "documents" | "metadatas" | "distances">,
   ): Promise<QueryResult> {
     const validated = InputValidator.validate_table_name(collection_name);
     if (!this.collection_exists(validated)) {
       throw new CollectionNotFoundError(`Collection '${validated}' not found`);
     }
     if (!query_embeddings && !query_texts) {
-      throw new Error("Either query_embeddings or query_texts must be provided");
+      throw new Error(
+        "Either query_embeddings or query_texts must be provided",
+      );
     }
 
     let resolved_query_embeddings = query_embeddings;
@@ -27,10 +29,17 @@ export abstract class QueryItemsMixin extends GetItemsMixin {
       if (!this.embedding_function) {
         throw new Error("Query texts provided but no embedding function set.");
       }
-      resolved_query_embeddings = await this.embedding_function(query_texts ?? []);
+      resolved_query_embeddings = await this.embedding_function(
+        query_texts ?? [],
+      );
     }
 
-    const include_keys = include ?? ["embeddings", "documents", "metadatas", "distances"];
+    const include_keys = include ?? [
+      "embeddings",
+      "documents",
+      "metadatas",
+      "distances",
+    ];
     const all_items = this._get_all_items(validated);
 
     const results: QueryResult = {
@@ -38,11 +47,14 @@ export abstract class QueryItemsMixin extends GetItemsMixin {
       embeddings: include_keys.includes("embeddings") ? [] : null,
       documents: include_keys.includes("documents") ? [] : null,
       metadatas: include_keys.includes("metadatas") ? [] : null,
-      distances: include_keys.includes("distances") ? [] : null
+      distances: include_keys.includes("distances") ? [] : null,
     };
 
     for (const query_embedding of resolved_query_embeddings) {
-      const scored: Array<{ item: (typeof all_items)[number]; distance: number }> = [];
+      const scored: Array<{
+        item: (typeof all_items)[number];
+        distance: number;
+      }> = [];
 
       for (const item of all_items) {
         if (!this._matches_filters(item, where, where_document)) {
@@ -51,7 +63,7 @@ export abstract class QueryItemsMixin extends GetItemsMixin {
         const similarity = cosine_similarity(query_embedding, item.embedding);
         scored.push({
           item,
-          distance: 1 - similarity
+          distance: 1 - similarity,
         });
       }
 

@@ -1,7 +1,10 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: {
+    index: "src/index.ts",
+    cli: "src/cli/index.ts",
+  },
   format: ["esm", "cjs"],
   dts: true,
   sourcemap: true,
@@ -9,7 +12,7 @@ export default defineConfig({
   target: "node18",
   outExtension({ format }) {
     return {
-      js: format === "esm" ? ".mjs" : ".cjs"
+      js: format === "esm" ? ".mjs" : ".cjs",
     };
-  }
+  },
 });

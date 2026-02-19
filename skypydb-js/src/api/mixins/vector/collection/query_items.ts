@@ -3,13 +3,8 @@ import { GetItemsMixin } from "./get_items";
 
 export class QueryItemsMixin extends GetItemsMixin {
   async query(params: QueryParams = {}): Promise<QueryResult> {
-    const {
-      query_embeddings,
-      query_texts,
-      where,
-      where_document,
-      include
-    } = params;
+    const { query_embeddings, query_texts, where, where_document, include } =
+      params;
     let { n_results, number_of_results } = params;
 
     if (number_of_results !== undefined) {
@@ -23,7 +18,7 @@ export class QueryItemsMixin extends GetItemsMixin {
       n_results ?? 10,
       where,
       where_document,
-      include
+      include,
     );
   }
 }

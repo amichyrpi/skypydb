@@ -5,6 +5,7 @@ Welcome to the Skypydb!
 This repository is governed by [the Contributor Covenant Code of Conduct](https://github.com/Ahen-Studio/skypydb/blob/main/CODE_OF_CONDUCT.md).
 
 ## Where to start.
+
 We welcome everyone who likes to contribute to Skypydb.
 
 You can contribute not only with code but with bug reports, comments, questions, answers, or just a simple tweet to spread the word.

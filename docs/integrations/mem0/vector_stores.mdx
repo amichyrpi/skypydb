@@ -82,6 +82,7 @@ File to change and or add:
             self.config = config_class(**config)
             return self
     ```
+
   </Step>
 
   <Step title="skypydb.py">
@@ -338,7 +339,7 @@ File to change and or add:
             """
             Reset the index by deleting and recreating it.
             """
-            
+
             logger.warning(f"Resetting index {self.collection_name}...")
             self.delete_col()
             self.collection = self.create_col(self.collection_name)
@@ -347,10 +348,10 @@ File to change and or add:
         def _generate_where_clause(where: Optional[Dict]) -> Optional[Dict]:
             """
             Generate a properly formatted where clause for SkypyDB.
-            
+
             Args:
                 where (Optional[Dict]): The filter conditions.
-                
+
             Returns:
             Optional[Dict]: Properly formatted where clause for SkypyDB.
             """
@@ -397,7 +398,7 @@ File to change and or add:
                     return {key: {"$eq": value}}
 
             processed = []
-            
+
             for key, value in where.items():
                 if key == "$or":
                     # Handle OR conditions
@@ -430,5 +431,6 @@ File to change and or add:
             else:
                 return {"$and": processed}
     ```
+
   </Step>
 </Steps>

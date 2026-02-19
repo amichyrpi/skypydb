@@ -9,7 +9,9 @@ export function schema_file_path(project_root = process.cwd()): string {
   return path.join(project_root, "skypydb", "schemas.ts");
 }
 
-export function is_schema_definition(value: unknown): value is SchemaDefinition {
+export function is_schema_definition(
+  value: unknown,
+): value is SchemaDefinition {
   if (typeof value !== "object" || value === null) {
     return false;
   }
@@ -20,7 +22,7 @@ export function load_schema(project_root = process.cwd()): SchemaDefinition {
   const schema_path = schema_file_path(project_root);
   if (!fs.existsSync(schema_path)) {
     throw new SchemaLoadError(
-      `Schema file not found at '${schema_path}'. Create skypydb/schemas.ts with defineSchema(...).`
+      `Schema file not found at '${schema_path}'. Create skypydb/schemas.ts with defineSchema(...).`,
     );
   }
 
@@ -28,9 +30,8 @@ export function load_schema(project_root = process.cwd()): SchemaDefinition {
   const candidate = (loaded.default ?? loaded.schema) as unknown;
   if (!is_schema_definition(candidate)) {
     throw new SchemaLoadError(
-      "Schema module must export default defineSchema({...}) or named export 'schema'."
+      "Schema module must export default defineSchema({...}) or named export 'schema'.",
     );
   }
   return candidate;
 }
-

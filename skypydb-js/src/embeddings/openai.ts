@@ -20,7 +20,9 @@ export class OpenAIEmbedding extends EmbeddingsFunction {
     super(options.dimension);
     const api_key = options.api_key ?? process.env.OPENAI_API_KEY;
     if (!api_key) {
-      throw new Error("OpenAI API key is required. Provide `api_key` or set OPENAI_API_KEY.");
+      throw new Error(
+        "OpenAI API key is required. Provide `api_key` or set OPENAI_API_KEY.",
+      );
     }
 
     this.model = options.model ?? "text-embedding-3-small";
@@ -29,14 +31,14 @@ export class OpenAIEmbedding extends EmbeddingsFunction {
       baseURL: options.base_url,
       organization: options.organization,
       project: options.project,
-      timeout: options.timeout
+      timeout: options.timeout,
     });
   }
 
   protected async _get_embedding(text: string): Promise<EmbeddingVector> {
     const result = await this.client.embeddings.create({
       model: this.model,
-      input: text
+      input: text,
     });
     const vector = result.data[0]?.embedding;
     if (!vector) {
@@ -51,9 +53,11 @@ export class OpenAIEmbedding extends EmbeddingsFunction {
     }
     const response = await this.client.embeddings.create({
       model: this.model,
-      input: texts
+      input: texts,
     });
-    const embeddings = response.data.map((entry) => Array.from(entry.embedding));
+    const embeddings = response.data.map((entry) =>
+      Array.from(entry.embedding),
+    );
     if (this._dimension === null && embeddings.length > 0) {
       this._dimension = embeddings[0].length;
     }

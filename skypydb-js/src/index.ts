@@ -2,5 +2,8 @@ export * from "./api";
 export * from "./database";
 export * from "./embeddings";
 export * from "./errors";
+export * from "./mutation/index";
+export * from "./query/index";
+export * from "./schemas/index";
 export * from "./security";
 export * from "./types";

@@ -2,6 +2,7 @@
 
 from typing import Any, Callable, List
 
+
 def _validate_remaining_config(
     provider: str,
     config: dict,
@@ -13,19 +14,6 @@ def _validate_remaining_config(
         raise ValueError(
             f"Unsupported embedding config keys for provider '{provider}': {unsupported_keys}"
         )
-
-def _get_embedding(
-    self,
-    text: str,
-) -> List[float]:
-    """Get embedding for a single text."""
-
-    embedding_impl = getattr(self, "_get_embedding", None)
-    if not callable(embedding_impl):
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement `_get_embedding`."
-        )
-    return embedding_impl(text)
 
 def get_embedding_function(
     provider: str = "ollama",

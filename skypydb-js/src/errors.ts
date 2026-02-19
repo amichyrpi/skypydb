@@ -43,6 +43,46 @@ export class DatabaseError extends SkypydbError {
   }
 }
 
+export class SchemaMismatchError extends SkypydbError {
+  code(): number {
+    return 514;
+  }
+
+  static error_name(): string {
+    return "Schema mismatch.";
+  }
+}
+
+export class SchemaLoadError extends SkypydbError {
+  code(): number {
+    return 515;
+  }
+
+  static error_name(): string {
+    return "Schema loading failed.";
+  }
+}
+
+export class FunctionResolutionError extends SkypydbError {
+  code(): number {
+    return 516;
+  }
+
+  static error_name(): string {
+    return "Function resolution failed.";
+  }
+}
+
+export class ConstraintError extends SkypydbError {
+  code(): number {
+    return 517;
+  }
+
+  static error_name(): string {
+    return "Constraint validation failed.";
+  }
+}
+
 export class InvalidSearchError extends SkypydbError {
   code(): number {
     return 501;

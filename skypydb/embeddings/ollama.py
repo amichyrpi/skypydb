@@ -8,6 +8,7 @@ import urllib.error
 from typing import List, Optional
 from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
 
+
 class OllamaEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
     """Ollama embedding function."""
 

@@ -1,5 +1,5 @@
 import { EmbeddingCallableMixin } from "../../utils/embedding_callable_mixin";
-import { get_embedding } from "./get_embeddings_function";
+import { get_embedding } from "./get_embedding";
 import type { EmbeddingMatrix } from "../../types";
 
 export abstract class EmbeddingsFunction extends EmbeddingCallableMixin {

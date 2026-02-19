@@ -4,6 +4,7 @@ import os
 from typing import Any, List, Optional
 from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
 
+
 class OpenAIEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
     """OpenAI embedding function."""
 

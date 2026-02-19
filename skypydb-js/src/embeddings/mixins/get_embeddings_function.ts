@@ -1,7 +1,8 @@
-import type { EmbeddingFunction, EmbeddingVector } from "../../types";
+import type { EmbeddingFunction } from "../../types";
 import { OllamaEmbedding } from "../ollama";
 import { OpenAIEmbedding } from "../openai";
 import { SentenceTransformerEmbedding } from "../sentence_transformers";
+export { get_embedding } from "./get_embedding";
 
 function validate_remaining_config(provider: string, config: Record<string, unknown>): void {
   const keys = Object.keys(config);
@@ -10,25 +11,6 @@ function validate_remaining_config(provider: string, config: Record<string, unkn
       `Unsupported embedding config keys for provider '${provider}': ${keys.sort().join(", ")}`
     );
   }
-}
-
-type EmbeddingProviderLike = {
-  _get_embedding?: (text: string) => Promise<EmbeddingVector>;
-};
-
-export async function get_embedding(
-  provider: unknown,
-  text: string
-): Promise<EmbeddingVector> {
-  const candidate = provider as EmbeddingProviderLike;
-
-  if (typeof candidate._get_embedding === "function") {
-    return candidate._get_embedding(text);
-  }
-
-  throw new Error(
-    `${(candidate as { constructor?: { name?: string } }).constructor?.name ?? "Provider"} must implement _get_embedding.`
-  );
 }
 
 export function get_embedding_function(

@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { EmbeddingsFunction } from "./mixins/embeddings_function";
+import { EmbeddingsFunction } from "./core/embeddings_function";
 import type { EmbeddingMatrix, EmbeddingVector } from "../types";
 
 type OpenAIEmbeddingOptions = {

@@ -1,10 +1,10 @@
 """Sentence Transformers embedding functions for vector operations."""
 
 from typing import Any, List, Optional
-from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
+from skypydb.embeddings.core import EmbeddingCallable, EmbeddingsFunction
 
 
-class SentenceTransformerEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
+class SentenceTransformerEmbedding(EmbeddingsFunction, EmbeddingCallable):
     """Sentence Transformers embedding function."""
 
     def __init__(

@@ -32,6 +32,22 @@ cargo add skypydb # rust client
 # git clone https://github.com/Ahen-Studio/skypydb.git
 ```
 
+## TODO
+
+- [ ] Remake CI/CD workflows
+- [ ] Remake demo file
+- [ ] Remake README.md
+- [ ] Remake docs
+- [ ] Remake python and typescript clients to be http clients
+
+## Backend Transition Notice
+
+Skypydb is transitioning to a dedicated Rust + MySQL backend service.
+
+- Current local in-process runtime flows in Python/TypeScript remain available.
+- Those local runtime paths are now considered transitional and will be deprecated in favor of backend HTTP adapters.
+- New backend-first APIs are exposed by the Rust service on port `8000`.
+
 ## Features
 
 - Simple: fully-documented and easy to debug with detailed error messages

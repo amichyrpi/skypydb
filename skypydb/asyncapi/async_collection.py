@@ -3,14 +3,14 @@
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from skypydb.asyncapi.async_vector_client import AsyncvecClient
+    from skypydb.asyncapi.async_vector_client import AsyncVectorClient
     from skypydb.api.collection import Collection as SyncCollection
 
 
 class AsyncCollection:
     """Expose the `Collection` API as awaitable methods."""
 
-    def __init__(self, client: "AsyncvecClient", collection: "SyncCollection"):
+    def __init__(self, client: "AsyncVectorClient", collection: "SyncCollection"):
         self._client = client
         self._collection = collection
 

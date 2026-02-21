@@ -7,10 +7,10 @@ const sourcePath = path.join(
   "src",
   "cli",
   "templates",
-  "local_project_readme.md",
+  "README.md",
 );
 const targetDir = path.join(projectRoot, "dist", "templates");
-const targetPath = path.join(targetDir, "local_project_readme.md");
+const targetPath = path.join(targetDir, "README.md");
 
 if (!fs.existsSync(sourcePath)) {
   throw new Error(`Missing CLI README template at ${sourcePath}`);

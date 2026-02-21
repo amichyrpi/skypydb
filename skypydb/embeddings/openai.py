@@ -2,10 +2,10 @@
 
 import os
 from typing import Any, List, Optional
-from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
+from skypydb.embeddings.core import EmbeddingCallable, EmbeddingsFunction
 
 
-class OpenAIEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
+class OpenAIEmbedding(EmbeddingsFunction, EmbeddingCallable):
     """OpenAI embedding function."""
 
     def __init__(

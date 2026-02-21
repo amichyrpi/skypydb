@@ -1,0 +1,9 @@
+﻿[package]
+name = "skypydb-health-check"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+serde = { version = "1", features = ["derive"] }
+skypydb-application = { path = "../application" }

@@ -1,6 +1,6 @@
 import type { Metadata } from "../types";
-import type { VectorDatabase } from "../database/vector_db";
-import { CollectionInfoMixin } from "./mixins/vector/collection";
+import type { VectorDatabase } from "../database/vector_database";
+import { CollectionInfoMixin } from "./operations/vector/collection";
 
 class CollectionBase extends CollectionInfoMixin {}
 

@@ -1,8 +1,8 @@
-﻿"""Collection wrapper for vector operations."""
+"""Collection wrapper for vector operations."""
 
 from typing import Any, Dict, Optional, TYPE_CHECKING
 
-from skypydb.api.mixins.vector.collection import (
+from skypydb.api.operations.vector.collection import (
     AddItemsMixin,
     CollectionInfoMixin,
     DeleteItemsMixin,
@@ -12,7 +12,7 @@ from skypydb.api.mixins.vector.collection import (
 )
 
 if TYPE_CHECKING:
-    from skypydb.database.vector_db import VectorDatabase
+    from skypydb.database.vector_database import VectorDatabase
 
 
 class Collection(

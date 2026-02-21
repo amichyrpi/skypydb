@@ -3,21 +3,22 @@
 import asyncio
 from functools import partial
 from typing import Any, Callable, Dict, List, Optional, TypeVar
+
 from skypydb.asyncapi.async_collection import AsyncCollection
-from skypydb.api.vector_client import vecClient
+from skypydb.api.vector_client import VectorClient
 
 T = TypeVar("T")
 
 
-class AsyncvecClient:
-    """Expose the `vecClient` API as awaitable methods."""
+class AsyncVectorClient:
+    """Expose the `VectorClient` API as awaitable methods."""
 
     def __init__(
         self,
         embedding_provider: str = "ollama",
         embedding_model_config: Optional[Dict[str, Any]] = None,
     ):
-        self._client = vecClient(
+        self._client = VectorClient(
             embedding_provider=embedding_provider,
             embedding_model_config=embedding_model_config,
         )
@@ -110,7 +111,7 @@ class AsyncvecClient:
         await self._run_sync(self._client.close)
         self._collections.clear()
 
-    async def __aenter__(self) -> "AsyncvecClient":
+    async def __aenter__(self) -> "AsyncVectorClient":
         """Support async context manager usage."""
 
         return self
@@ -119,3 +120,7 @@ class AsyncvecClient:
         """Close resources when exiting async context manager scope."""
 
         await self.close()
+
+
+# Deprecated compatibility alias. Prefer `AsyncVectorClient`.
+AsyncvecClient = AsyncVectorClient

@@ -23,3 +23,37 @@ npx tsx demo/examples/js/relational_examples/client.ts
 
 The client sets `process.cwd()` to this example folder so runtime scanning resolves the local `skypydb/` directory.
 This demo imports directly from local `skypydb-js/src` entry points, so no package publish/install step is needed.
+
+### Migration map example
+
+Use `callschemas` to declare non-destructive table migrations:
+
+```ts
+callschemas({
+  migrations: {
+    tables: {
+      users: {
+        from: "legacy_users",
+        fieldMap: {
+          fullName: "name",
+        },
+        defaults: {
+          level: 0,
+        },
+      },
+    },
+  },
+});
+```
+
+### Move rows between tables
+
+Inside a mutation handler:
+
+```ts
+ctx.db.move("todo", {
+  toTable: "done",
+  where: { isCompleted: true },
+  fieldMap: { completedAt: "updatedAt" },
+});
+```

@@ -5,8 +5,11 @@ import {
   sanitize_input,
   validate_column_name,
   validate_table_name,
-} from "./mixins/validation";
+} from "./internal/validation";
 
+/**
+ * Backward-compatible validator facade used across vector and relational modules.
+ */
 export class InputValidator extends ValidateInputsMixin {}
 
 export {

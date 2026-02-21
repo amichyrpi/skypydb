@@ -1,20 +1,21 @@
-﻿"""Vector client API for Skypydb."""
+"""Vector client API for Skypydb."""
 
 import os
 from typing import Any, Dict, Optional
+
 from skypydb.api.collection import Collection
-from skypydb.api.mixins.vector import (
+from skypydb.api.operations.vector import (
     ClientUtilitiesMixin,
     CreateCollectionMixin,
     DeleteCollectionMixin,
     GetCollectionMixin,
     ListCollectionsMixin,
 )
-from skypydb.database.vector_db import VectorDatabase
+from skypydb.database.vector_database import VectorDatabase
 from skypydb.embeddings import get_embedding_function
 
 
-class vecClient(
+class VectorClient(
     CreateCollectionMixin,
     GetCollectionMixin,
     ListCollectionsMixin,
@@ -50,3 +51,7 @@ class vecClient(
 
         self._db.close()
         self._collections.clear()
+
+
+# Deprecated compatibility alias. Prefer `VectorClient`.
+vecClient = VectorClient

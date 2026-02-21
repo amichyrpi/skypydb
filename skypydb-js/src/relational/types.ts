@@ -120,6 +120,24 @@ export type DeleteOptions = {
   where?: WhereClause;
 };
 
+export type MoveOptions = {
+  toTable: string;
+  id?: string;
+  where?: WhereClause;
+  fieldMap?: Record<string, string>;
+  defaults?: Record<string, unknown>;
+};
+
+export type TableMigrationRule = {
+  from?: string;
+  fieldMap?: Record<string, string>;
+  defaults?: Record<string, unknown>;
+};
+
+export type RuntimeSchemaMigrations = {
+  tables?: Record<string, TableMigrationRule>;
+};
+
 export type ReadonlyDbContext = {
   get: (table: string, options?: QueryOptions) => QueryRow[];
   first: (table: string, options?: QueryOptions) => QueryRow | null;
@@ -130,6 +148,7 @@ export type MutationDbContext = ReadonlyDbContext & {
   insert: (table: string, value: Record<string, unknown>) => string;
   update: (table: string, options: UpdateOptions) => number;
   delete: (table: string, options: DeleteOptions) => number;
+  move: (fromTable: string, options: MoveOptions) => number;
   transaction: <T>(fn: (txDb: MutationDbContext) => T) => T;
 };
 
@@ -160,7 +179,7 @@ export type ApiReference = {
 };
 
 export type RuntimeSchemaOptions = {
-  allowDestructiveSchemaChanges?: boolean;
+  migrations?: RuntimeSchemaMigrations;
 };
 
 export type EndpointKind = "query" | "mutation";

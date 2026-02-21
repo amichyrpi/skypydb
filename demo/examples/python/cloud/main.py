@@ -1,7 +1,7 @@
-import skypydbhttpclient
+import skypydb
 
 # Create a client
-client = skypydbhttpclient.cloud(
+client = skypydb.cloud(
     api_url="ahen-studio.com/skypydb",
     api_key="your-api-key"
 )

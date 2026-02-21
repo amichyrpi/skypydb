@@ -1,1 +1,1 @@
-export { VectorDatabase } from "./vector_db";
+export { VectorDatabase } from "./vector_database";

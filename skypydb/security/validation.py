@@ -1,8 +1,8 @@
-﻿"""Input validation and sanitization module for Skypydb."""
+"""Input validation and sanitization module for Skypydb."""
 
-from skypydb.security.mixins.validation.sanitize_values import SanitizeValuesMixin
-from skypydb.security.mixins.validation.sql_injection_check import SQLInjectionCheckMixin
-from skypydb.security.mixins.validation.validate_inputs import ValidateInputsMixin
+from skypydb.security.internal.validation.sanitize_values import SanitizeValuesMixin
+from skypydb.security.internal.validation.sql_injection_check import SQLInjectionCheckMixin
+from skypydb.security.internal.validation.validate_inputs import ValidateInputsMixin
 from skypydb.security.constants import (
     COLUMN_NAME_PATTERN,
     MAX_COLUMN_NAME_LENGTH,

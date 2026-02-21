@@ -1,0 +1,15 @@
+﻿[package]
+name = "skypydb-telemetry"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+opentelemetry = "0.31"
+opentelemetry-otlp = { version = "0.31", features = ["http-proto", "reqwest-client"] }
+opentelemetry_sdk = "0.31"
+skypydb-errors = { path = "../errors" }
+skypydb-metrics = { path = "../metrics" }
+tracing = "0.1"
+tracing-opentelemetry = "0.32"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }

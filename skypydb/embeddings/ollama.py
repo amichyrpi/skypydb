@@ -6,10 +6,10 @@ import json
 import urllib.request
 import urllib.error
 from typing import List, Optional
-from skypydb.embeddings.mixins import EmbeddingCallableMixin, EmbeddingsFunction
+from skypydb.embeddings.core import EmbeddingCallable, EmbeddingsFunction
 
 
-class OllamaEmbedding(EmbeddingsFunction, EmbeddingCallableMixin):
+class OllamaEmbedding(EmbeddingsFunction, EmbeddingCallable):
     """Ollama embedding function."""
 
     def __init__(

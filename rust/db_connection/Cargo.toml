@@ -1,0 +1,9 @@
+﻿[package]
+name = "skypydb-db-connection"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+skypydb-application = { path = "../application" }
+skypydb-errors = { path = "../errors" }
+sqlx = { version = "0.8", default-features = false, features = ["mysql", "runtime-tokio-rustls"] }

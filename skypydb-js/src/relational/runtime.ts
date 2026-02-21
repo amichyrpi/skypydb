@@ -29,10 +29,23 @@ class RelationalRuntime {
   private loaded_project_root: string | null = null;
 
   set_schema_options(options: RuntimeSchemaOptions = {}): void {
-    this.schema_options = {
-      ...this.schema_options,
-      ...options,
+    if (!is_plain_object(options)) {
+      throw new ValidationError("Schema runtime options must be an object.");
+    }
+
+    const existing_tables = this.schema_options.migrations?.tables ?? {};
+    const next_tables = options.migrations?.tables ?? {};
+    const merged_tables = {
+      ...existing_tables,
+      ...next_tables,
     };
+
+    this.schema_options = {};
+    if (Object.keys(merged_tables).length > 0) {
+      this.schema_options.migrations = {
+        tables: merged_tables,
+      };
+    }
   }
 
   callquery(reference: unknown, args: unknown): unknown {

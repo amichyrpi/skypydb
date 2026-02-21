@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { get_embedding_function } from "../src/embeddings/mixins/get_embeddings_function";
+import { get_embedding_function } from "../src/embeddings/core/get_embeddings_function";
 import { OllamaEmbedding } from "../src/embeddings/ollama";
 import { OpenAIEmbedding } from "../src/embeddings/openai";
 

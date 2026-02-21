@@ -45,6 +45,11 @@
       "types": "./dist/values.d.ts",
       "import": "./dist/values.mjs",
       "require": "./dist/values.cjs"
+    },
+    "./python-worker": {
+      "types": "./dist/python_worker.d.ts",
+      "import": "./dist/python_worker.mjs",
+      "require": "./dist/python_worker.cjs"
     }
   },
   "files": [

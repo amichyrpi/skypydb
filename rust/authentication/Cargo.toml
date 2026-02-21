@@ -1,0 +1,14 @@
+﻿[package]
+name = "skypydb-authentication"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+skypydb-application = { path = "../application" }
+skypydb-errors = { path = "../errors" }
+
+[dev-dependencies]
+sqlx = { version = "0.8", default-features = false, features = ["mysql", "runtime-tokio-rustls"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tower = "0.5"

@@ -1,3 +1,19 @@
 [workspace]
-members = ["rust"]
+members = [
+    "rust",
+    "rust/authentication",
+    "rust/application",
+    "rust/common",
+    "rust/database",
+    "rust/db_connection",
+    "rust/errors",
+    "rust/file_storage",
+    "rust/google_cloud_utils",
+    "rust/health_check",
+    "rust/metrics",
+    "rust/mysql",
+    "rust/relational",
+    "rust/telemetry",
+    "rust/vector",
+]
 resolver = "2"

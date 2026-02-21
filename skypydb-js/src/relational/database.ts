@@ -5,6 +5,10 @@ import Database from "better-sqlite3";
 import { ConstraintError, DatabaseError, ValidationError } from "../errors";
 import { InputValidator } from "../security/validation";
 import {
+  map_row_for_target,
+  normalize_table_migration_rule,
+} from "./row_mapping";
+import {
   apply_schema,
   assert_table_exists,
   compile_schema,
@@ -14,6 +18,7 @@ import type {
   CompiledSchema,
   CompiledTableDefinition,
   DeleteOptions,
+  MoveOptions,
   MutationDbContext,
   OrderByClause,
   QueryOptions,
@@ -30,6 +35,7 @@ const READONLY_FORBIDDEN_METHODS = new Set([
   "insert",
   "update",
   "delete",
+  "move",
   "transaction",
 ]);
 
@@ -128,6 +134,7 @@ export class RelationalDatabase {
       insert: this.insert.bind(this),
       update: this.update.bind(this),
       delete: this.delete.bind(this),
+      move: this.move.bind(this),
       transaction: this.transaction.bind(this),
     };
   }
@@ -311,6 +318,154 @@ export class RelationalDatabase {
     }
   }
 
+  move(from_table_name: string, options: MoveOptions): number {
+    const from_table = this.table(from_table_name);
+    if (!is_plain_object(options)) {
+      throw new ValidationError("Move options must be a dictionary.");
+    }
+    if (typeof options.toTable !== "string") {
+      throw new ValidationError("Move options require a 'toTable' string.");
+    }
+
+    const to_table = this.table(options.toTable);
+    if (from_table.name === to_table.name) {
+      throw new ValidationError(
+        "Move requires different source and target tables.",
+      );
+    }
+
+    if (
+      (options.id === undefined && options.where === undefined) ||
+      (options.id !== undefined && options.where !== undefined)
+    ) {
+      throw new ValidationError(
+        "Move requires exactly one of 'id' or 'where'.",
+      );
+    }
+
+    const migration_rule = normalize_table_migration_rule(to_table.name, {
+      fieldMap: options.fieldMap,
+      defaults: options.defaults,
+    });
+
+    for (const target_field of Object.keys(migration_rule.field_map)) {
+      if (!to_table.fields.has(target_field)) {
+        throw new ValidationError(
+          `Move field map references unknown target field '${to_table.name}.${target_field}'.`,
+        );
+      }
+    }
+
+    const select_parameters: unknown[] = [];
+    let where_sql = "1 = 0";
+    if (options.id !== undefined) {
+      select_parameters.push(
+        this.validate_id_value(options.id, `${from_table.name}._id`),
+      );
+      where_sql = "[_id] = ?";
+    } else {
+      where_sql = this.build_where_sql(
+        from_table,
+        options.where,
+        select_parameters,
+      );
+    }
+
+    const source_rows = this.connection
+      .prepare(`SELECT * FROM [${from_table.name}] WHERE ${where_sql}`)
+      .all(...select_parameters) as Array<Record<string, unknown>>;
+
+    if (source_rows.length === 0) {
+      return 0;
+    }
+
+    const now = new Date().toISOString();
+    const target_sorted_fields = [...to_table.fields.keys()].sort(
+      (left, right) => left.localeCompare(right),
+    );
+
+    const insert_columns = [
+      "_id",
+      "_createdAt",
+      "_updatedAt",
+      "_extras",
+      ...target_sorted_fields,
+    ];
+
+    const insert_statement = this.connection.prepare(
+      `INSERT INTO [${to_table.name}] (${insert_columns.map((column) => `[${column}]`).join(", ")}) VALUES (${insert_columns.map(() => "?").join(", ")})`,
+    );
+
+    const target_exists_statement = this.connection.prepare(
+      `SELECT [_id] FROM [${to_table.name}] WHERE [_id] = ?`,
+    );
+    const delete_statement = this.connection.prepare(
+      `DELETE FROM [${from_table.name}] WHERE [_id] = ?`,
+    );
+
+    const transaction_fn = this.connection.transaction(() => {
+      let moved = 0;
+      for (const raw_row of source_rows) {
+        const decoded_row = this.decode_row(from_table, raw_row as SelectRow);
+        const source_id = this.validate_id_value(
+          decoded_row._id,
+          `${from_table.name}._id`,
+        );
+        const source_created_at = this.validate_iso_timestamp(
+          decoded_row._createdAt,
+          `${from_table.name}._createdAt`,
+        );
+        const source_extras = is_plain_object(decoded_row._extras)
+          ? (decoded_row._extras as Record<string, unknown>)
+          : {};
+
+        const mapped_payload = map_row_for_target({
+          source_row: decoded_row,
+          source_extras,
+          target_fields: to_table.fields.keys(),
+          rule: migration_rule,
+        });
+        const record = this.prepare_record(to_table, mapped_payload, "insert");
+
+        const conflict = target_exists_statement.get(source_id) as
+          | { _id: string }
+          | undefined;
+        if (conflict) {
+          throw new ConstraintError(
+            `Cannot move row '${source_id}' to '${to_table.name}': id already exists.`,
+          );
+        }
+
+        const insert_values = insert_columns.map((column) => {
+          if (column === "_id") {
+            return source_id;
+          }
+          if (column === "_createdAt") {
+            return source_created_at;
+          }
+          if (column === "_updatedAt") {
+            return now;
+          }
+          if (column === "_extras") {
+            return JSON.stringify(record.extras);
+          }
+          return record.values[column] ?? null;
+        });
+
+        insert_statement.run(...insert_values);
+        delete_statement.run(source_id);
+        moved += 1;
+      }
+      return moved;
+    });
+
+    try {
+      return transaction_fn();
+    } catch (error) {
+      this.rethrow_sql_error(error, "Move failed.");
+    }
+  }
+
   transaction<T>(callback: (tx_db: MutationDbContext) => T): T {
     if (typeof callback !== "function") {
       throw new ValidationError("transaction requires a callback function.");
@@ -440,6 +595,15 @@ export class RelationalDatabase {
     if (typeof value !== "string" || value.length === 0) {
       throw new ConstraintError(
         `Field '${path_name}' must be a non-empty string.`,
+      );
+    }
+    return value;
+  }
+
+  private validate_iso_timestamp(value: unknown, path_name: string): string {
+    if (typeof value !== "string" || value.length === 0) {
+      throw new ConstraintError(
+        `Field '${path_name}' must be a timestamp string.`,
       );
     }
     return value;

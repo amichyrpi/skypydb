@@ -17,8 +17,8 @@ async function main(): Promise<void> {
   // Ensure runtime loads the local demo/examples/js/relational_examples/skypydb folder.
   process.chdir(current_dir);
 
-  // Optional config point for schema behavior.
-  callschemas({ allowDestructiveSchemaChanges: false });
+  // Optional config point for schema migration behavior.
+  callschemas();
 
   const runCreateUser = callmutation(mutationApi.users.createUser);
 

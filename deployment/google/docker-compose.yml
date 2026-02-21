@@ -1,0 +1,45 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: skypydb-gce-mysql
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb_buffer_pool_size=1G
+      - --max_connections=300
+      - --slow_query_log=ON
+      - --long_query_time=2
+    environment:
+      MYSQL_DATABASE: skypydb
+      MYSQL_USER: skypydb
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change-me-root}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-change-me-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - /mnt/disks/mysql-data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
+
+  mysql-backup:
+    image: mysql:8.4
+    container_name: skypydb-gce-mysql-backup
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/scripts/backup.sh"]
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: skypydb
+      MYSQL_USER: skypydb
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
+      MYSQLDUMP_CRON_SECONDS: "3600"
+    volumes:
+      - /mnt/disks/mysql-backups:/backups
+      - ./scripts:/scripts

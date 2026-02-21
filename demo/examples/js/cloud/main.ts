@@ -1,8 +1,8 @@
-import * as skypydbhttpclient from "skypydbhttpclient";
+import { api } from "skypydb";
 
 async function main(): Promise<void> {
   // Create a client.
-  const client = skypydbhttpclient.cloud({
+  const client = skypydb.cloud({
     api_url: "ahen-studio.com/skypydb",
     api_key: "your-api-key",
   });

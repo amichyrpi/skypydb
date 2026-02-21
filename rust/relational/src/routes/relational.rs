@@ -17,13 +17,13 @@ use skypydb_errors::AppError;
 /// Registers relational CRUD/query/move endpoints.
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/relational/{table}/insert", post(insert_row))
-        .route("/relational/{table}/update", post(update_rows))
-        .route("/relational/{table}/delete", post(delete_rows))
-        .route("/relational/{table}/move", post(move_rows))
-        .route("/relational/{table}/query", post(query_rows))
-        .route("/relational/{table}/count", post(count_rows))
-        .route("/relational/{table}/first", post(first_row))
+        .route("/relational/:table/insert", post(insert_row))
+        .route("/relational/:table/update", post(update_rows))
+        .route("/relational/:table/delete", post(delete_rows))
+        .route("/relational/:table/move", post(move_rows))
+        .route("/relational/:table/query", post(query_rows))
+        .route("/relational/:table/count", post(count_rows))
+        .route("/relational/:table/first", post(first_row))
 }
 
 async fn insert_row(

@@ -15,41 +15,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
-    },
-    "./callquery": {
-      "types": "./dist/callquery.d.ts",
-      "import": "./dist/callquery.mjs",
-      "require": "./dist/callquery.cjs"
-    },
-    "./callmutation": {
-      "types": "./dist/callmutation.d.ts",
-      "import": "./dist/callmutation.mjs",
-      "require": "./dist/callmutation.cjs"
-    },
-    "./query": {
-      "types": "./dist/query.d.ts",
-      "import": "./dist/query.mjs",
-      "require": "./dist/query.cjs"
-    },
-    "./mutation": {
-      "types": "./dist/mutation.d.ts",
-      "import": "./dist/mutation.mjs",
-      "require": "./dist/mutation.cjs"
-    },
-    "./schemas": {
-      "types": "./dist/schemas.d.ts",
-      "import": "./dist/schemas.mjs",
-      "require": "./dist/schemas.cjs"
-    },
-    "./values": {
-      "types": "./dist/values.d.ts",
-      "import": "./dist/values.mjs",
-      "require": "./dist/values.cjs"
-    },
-    "./python-worker": {
-      "types": "./dist/python_worker.d.ts",
-      "import": "./dist/python_worker.mjs",
-      "require": "./dist/python_worker.cjs"
     }
   },
   "files": [

@@ -1,9 +1,5 @@
-"""Skypydb - Open Source Vector Embedding Database for Python."""
+"""Skypydb HTTP SDK."""
 
-from skypydb.asyncapi.async_collection import AsyncCollection
-from skypydb.asyncapi.async_vector_client import AsyncVectorClient, AsyncvecClient
-from skypydb.api.collection import Collection
-from skypydb.api.vector_client import VectorClient, vecClient
 from skypydb.embeddings import (
     EmbeddingCallable,
     EmbeddingCallableMixin,
@@ -13,10 +9,12 @@ from skypydb.embeddings import (
     get_embedding_function,
 )
 from skypydb.errors import SkypydbError
-from skypydb.relational import (
-    AsyncRelationalClient,
-    ReactiveClient,
-    RelationalClient,
+from skypydb.http_client import (
+    AsyncHttpClient,
+    AsynchttpClient,
+    HttpClient,
+    HttpTransportError,
+    httpClient,
 )
 from skypydb.security import (
     InputValidator,
@@ -28,15 +26,11 @@ from skypydb.security import (
 __version__ = "1.0.3"
 
 __all__ = [
-    "AsyncCollection",
-    "AsyncRelationalClient",
-    "AsyncVectorClient",
-    "AsyncvecClient",
-    "VectorClient",
-    "vecClient",
-    "RelationalClient",
-    "ReactiveClient",
-    "Collection",
+    "AsyncHttpClient",
+    "AsynchttpClient",
+    "HttpClient",
+    "HttpTransportError",
+    "httpClient",
     "SkypydbError",
     "EmbeddingCallable",
     "EmbeddingCallableMixin",

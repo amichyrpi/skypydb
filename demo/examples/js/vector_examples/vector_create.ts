@@ -1,8 +1,10 @@
-import { vecClient } from "skypydb";
+import { httpClient } from "skypydb";
 
 async function main(): Promise<void> {
   // Create a client
-  const client = new vecClient({
+  const client = httpClient({
+    api_url: "http://localhost:8000",
+    api_key: "local-dev-key",
     embedding_provider: "ollama",
     embedding_model_config: {
       model: "mxbai-embed-large",

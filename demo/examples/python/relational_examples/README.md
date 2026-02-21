@@ -1,8 +1,8 @@
-## Relational Example (JavaScript/TypeScript, HTTP)
+## Relational Example (Python, HTTP)
 
-This example uses the HTTP SDK only:
+This example uses the Python HTTP SDK only:
 
-1. `httpClient(...)` to connect to the backend.
+1. `skypydb.httpClient(...)` to connect to the backend.
 2. `client.schema.apply(...)` to configure schema.
 3. `client.relational("table")` for insert/update/delete/move/query/count/first.
 
@@ -11,7 +11,7 @@ This example uses the HTTP SDK only:
 From the repository root:
 
 ```bash
-npx tsx demo/examples/js/relational_examples/src/client.ts
+python demo/examples/python/relational_examples/src/client.py
 ```
 
 ### Backend requirement

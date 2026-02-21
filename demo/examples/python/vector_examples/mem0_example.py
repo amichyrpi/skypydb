@@ -1,3 +1,5 @@
+import os
+
 from mem0 import Memory
 
 # Local mem0 config
@@ -5,9 +7,9 @@ config = {
     "vector_store": {
         "provider": "skypydb",
         "config": {
-            "vectordatabasename": "memory",
-            "host": "https://ahen-studio.com/skypydb", # can be a local instance : localhost:8000 with no api key
-            "api_key": "your-api-key"
+            "collection_name": "memory",
+            "api_url": os.getenv("SKYPYDB_API_URL", "http://localhost:8000"),
+            "api_key": os.getenv("SKYPYDB_API_KEY", "local-dev-key"),
         }
     },
     "llm": {

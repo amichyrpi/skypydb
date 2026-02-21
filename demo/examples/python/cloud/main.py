@@ -1,18 +1,20 @@
 import skypydb
 
 # Create a client
-client = skypydb.cloud(
-    api_url="ahen-studio.com/skypydb",
+client = skypydb.httpClient(
+    api_url="https://ahen-studio.com/skypydb",
     api_key="your-api-key"
 )
 # you can also use the self-hosted server
-# client = skypydbhttpclient.cloud(api_url="http://localhost:8000")
+# client = skypydb.httpClient(
+#     api_url="http://localhost:8000",
+#     api_key="local-dev-key"
+# )
 
 # Create a collection
 vectordb = client.create_collection("my-videos")
 # get_or_create_collection
 # get_collection
-# works the same way as the local client
 
 # Add data to your vector database
 vectordb.add(

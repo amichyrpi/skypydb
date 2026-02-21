@@ -1,8 +1,10 @@
-import { vecClient } from "skypydb";
+import { httpClient } from "skypydb";
 
 async function main(): Promise<void> {
   // Create a client
-  const client = new vecClient({
+  const client = httpClient({
+    api_url: "http://localhost:8000",
+    api_key: "local-dev-key",
     embedding_provider: "ollama",
     embedding_model_config: {
       model: "mxbai-embed-large",
@@ -11,8 +13,11 @@ async function main(): Promise<void> {
   });
 
   try {
-    // Create a collection
-    const vectordb = await client.create_collection("my-videos");
+    // Create a vector database or get it if it already exists
+    const vectordb = await client.get_or_create_collection("my-videos");
+
+    // Remove prior demo rows so this script can be rerun safely.
+    await vectordb.delete({ ids: ["vid1", "vid2"] });
 
     // Add data to your vector database
     await vectordb.add({

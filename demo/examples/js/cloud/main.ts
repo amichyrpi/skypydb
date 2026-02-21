@@ -1,19 +1,21 @@
-import { api } from "skypydb";
+import { httpClient } from "skypydb";
 
 async function main(): Promise<void> {
   // Create a client.
-  const client = skypydb.cloud({
-    api_url: "ahen-studio.com/skypydb",
+  const client = httpClient({
+    api_url: "https://ahen-studio.com/skypydb",
     api_key: "your-api-key",
   });
   // You can also use a self-hosted server:
-  // const client = skypydbhttpclient.cloud({ api_url: "http://localhost:8000" });
+  // const client = httpClient({
+  //   api_url: "http://localhost:8000",
+  //   api_key: "local-dev-key",
+  // });
 
   // Create a collection
   const vectordb = await client.create_collection("my-videos");
   // get_or_create_collection
   // get_collection
-  // works the same way as the local client
 
   // Add data to your vector database
   await vectordb.add({

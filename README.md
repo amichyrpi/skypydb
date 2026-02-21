@@ -35,7 +35,6 @@ cargo add skypydb # rust client
 ## TODO
 
 - [ ] Remake CI/CD workflows
-- [ ] Remake demo file
 - [ ] Remake README.md
 - [ ] Remake docs
 - [ ] Remake python and typescript clients to be http clients

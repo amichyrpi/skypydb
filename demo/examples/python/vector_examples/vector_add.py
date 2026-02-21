@@ -1,7 +1,9 @@
 import skypydb
 
 # Create a client
-client = skypydb.vecClient(
+client = skypydb.httpClient(
+    api_url="http://localhost:8000",
+    api_key="local-dev-key",
     embedding_provider="ollama",
     embedding_model_config={
         "model": "mxbai-embed-large",
@@ -9,8 +11,11 @@ client = skypydb.vecClient(
     }
 )
 
-# Create a collection
-vectordb = client.create_collection("my-videos")
+# Create a vector database or get it if it already exists
+vectordb = client.get_or_create_collection("my-videos")
+
+# Remove prior demo rows so this script can be rerun safely.
+vectordb.delete(ids=["vid1", "vid2"])
 
 # Add data to your vector database
 vectordb.add(

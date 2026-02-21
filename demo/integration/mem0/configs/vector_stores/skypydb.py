@@ -1,17 +1,12 @@
-from typing import Any, ClassVar, Dict, Optional
+from typing import Any, Dict
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class SkypyDBConfig(BaseModel):
-    try:
-        from skypydb.api.vector_client import VectorClient
-    except ImportError:
-        raise ImportError("The 'skypydb' library is required. Please install it using 'pip install skypydb'.")
-    VectorClient: ClassVar[type] = VectorClient
-
-    collection_name: str = Field("mem0", description="Default name for the collection")
-    path: Optional[str] = Field(None, description="Path to the database directory")
+    api_url: str = Field(..., description="Skypydb API URL.")
+    api_key: str = Field(..., description="Skypydb API key (X-API-Key).")
+    collection_name: str = Field("mem0", description="Collection name.")
 
     @model_validator(mode="before")
     @classmethod
@@ -21,8 +16,8 @@ class SkypyDBConfig(BaseModel):
         extra_fields = input_fields - allowed_fields
         if extra_fields:
             raise ValueError(
-                f"Extra fields not allowed: {', '.join(extra_fields)}. "
-                f"Please input only the following fields: {', '.join(allowed_fields)}"
+                f"Extra fields not allowed: {', '.join(sorted(extra_fields))}. "
+                f"Allowed fields: {', '.join(sorted(allowed_fields))}"
             )
         return values
 

@@ -3,7 +3,9 @@ import skypydb
 
 async def main() -> None:
     # Create an async client.
-    client = skypydb.AsyncvecClient(
+    client = skypydb.AsynchttpClient(
+        api_url="http://localhost:8000",
+        api_key="local-dev-key",
         embedding_provider="ollama",
         embedding_model_config={
             "model": "mxbai-embed-large",
@@ -11,8 +13,8 @@ async def main() -> None:
         },
     )
 
-    # Create a collection.
-    vectordb = await client.create_collection("my-videos")
+    # Create a vector database or get it if it already exists
+    vectordb = await client.get_or_create_collection("my-videos")
 
     # Add data to your vector database.
     await vectordb.add(

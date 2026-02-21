@@ -22,18 +22,18 @@ pub fn router() -> Router<AppState> {
             "/vector/collections",
             post(create_collection).get(list_collections),
         )
-        .route("/vector/collections/{name}", delete(delete_collection))
-        .route("/vector/collections/{name}/items/add", post(add_items))
+        .route("/vector/collections/:name", delete(delete_collection))
+        .route("/vector/collections/:name/items/add", post(add_items))
         .route(
-            "/vector/collections/{name}/items/update",
+            "/vector/collections/:name/items/update",
             post(update_items),
         )
         .route(
-            "/vector/collections/{name}/items/delete",
+            "/vector/collections/:name/items/delete",
             post(delete_items),
         )
-        .route("/vector/collections/{name}/items/get", post(get_items))
-        .route("/vector/collections/{name}/query", post(query_items))
+        .route("/vector/collections/:name/items/get", post(get_items))
+        .route("/vector/collections/:name/query", post(query_items))
 }
 
 async fn create_collection(

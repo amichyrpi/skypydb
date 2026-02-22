@@ -75,6 +75,18 @@ describe("HTTP relational and schema client", () => {
           ok: true,
           data: { affected_rows: 1 },
         }),
+      )
+      .mockResolvedValueOnce(
+        json_response(200, {
+          ok: true,
+          data: { result: [{ _id: "user_1", name: "Theo" }] },
+        }),
+      )
+      .mockResolvedValueOnce(
+        json_response(200, {
+          ok: true,
+          data: { result: "task_1" },
+        }),
       );
 
     vi.stubGlobal("fetch", fetch_mock as unknown as typeof fetch);
@@ -106,11 +118,21 @@ describe("HTTP relational and schema client", () => {
     expect(await users.count()).toBe(1);
     expect(await users.first()).toEqual({ _id: "user_1", name: "Theo" });
     expect(await users.delete({ id: "user_1" })).toBe(1);
+    expect(await client.callquery("users.listUsers", {})).toEqual([
+      { _id: "user_1", name: "Theo" },
+    ]);
+    expect(
+      await client.callmutation("tasks.createTask", {
+        title: "Task",
+        userId: "user_1",
+      }),
+    ).toBe("task_1");
 
     const urls = fetch_mock.mock.calls.map((call) => String(call[0]));
     expect(urls).toContain("http://localhost:8000/v1/admin/schema/apply");
     expect(urls).toContain("http://localhost:8000/v1/relational/users/insert");
     expect(urls).toContain("http://localhost:8000/v1/relational/users/move");
+    expect(urls).toContain("http://localhost:8000/v1/functions/call");
   });
 
   it("maps backend errors to HttpTransportError", async () => {

@@ -1,0 +1,56 @@
+services:
+  skypydb-api:
+    build:
+      context: ../..
+      dockerfile: rust/Dockerfile
+    container_name: skypydb-api
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SKYPYDB_SERVER_PORT: "8000"
+      SKYPYDB_API_KEY: "local-dev-key"
+      SKYPYDB_MYSQL_URL: "mysql://skypydb:skypydb@mysql:3306/skypydb"
+      SKYPYDB_MYSQL_POOL_MIN: "1"
+      SKYPYDB_MYSQL_POOL_MAX: "10"
+      SKYPYDB_LOG_LEVEL: "info"
+      SKYPYDB_CORS_ORIGINS: "*"
+      SKYPYDB_VECTOR_MAX_DIM: "4096"
+      SKYPYDB_QUERY_MAX_LIMIT: "500"
+      SKYPYDB_FUNCTIONS_MANIFEST_PATH: "/srv/skypydb/.generated/functions.manifest.json"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../demo/examples/python/relational_examples/skypydb/.generated:/srv/skypydb/.generated:ro
+
+  mysql:
+    image: mysql:8.4
+    container_name: skypydb-mysql
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: skypydb
+      MYSQL_USER: skypydb
+      MYSQL_PASSWORD: skypydb
+      MYSQL_ROOT_PASSWORD: rootpassword
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - skypydb_mysql_data:/var/lib/mysql
+
+  adminer:
+    image: adminer:4
+    container_name: skypydb-adminer
+    restart: unless-stopped
+    profiles: ["debug"]
+    ports:
+      - "8080:8080"
+
+volumes:
+  skypydb_mysql_data:

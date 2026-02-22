@@ -1,92 +1,76 @@
-import { httpClient, type SchemaDocument } from "skypydb";
+import path from "node:path";
+import dotenv from "dotenv";
+import { fileURLToPath } from "node:url";
+import { build_functions_manifest, httpClient } from "skypydb";
 
-const schema: SchemaDocument = {
-  tables: {
-    users: {
-      fields: {
-        name: { type: "string" },
-        email: { type: "string" },
-      },
-      indexes: [{ name: "users_email_idx", columns: ["email"] }],
-    },
-    tasks: {
-      fields: {
-        title: { type: "string" },
-        userId: { type: "id", table: "users" },
-        isCompleted: { type: "boolean" },
-      },
-      indexes: [
-        { name: "tasks_user_idx", columns: ["userId"] },
-        { name: "tasks_status_idx", columns: ["isCompleted"] },
-      ],
-    },
-  },
-};
+dotenv.config();
 
 async function main(): Promise<void> {
+  const current_file = fileURLToPath(import.meta.url);
+  const project_root = path.resolve(path.dirname(current_file), "..");
+  process.chdir(project_root);
+
+  const manifest = build_functions_manifest({
+    cwd: project_root,
+  });
+  console.log("Built functions manifest:", manifest.output_path);
+
   const client = httpClient({
-    api_url: process.env.SKYPYDB_URL ?? "http://localhost:8000",
-    api_key: process.env.SKYPYDB_API_KEY ?? "local-dev-key",
+    api_url: process.env.SKYPYDB_API_URL,
+    api_key: process.env.SKYPYDB_API_KEY,
   });
 
-  const users = client.relational("users");
-  const tasks = client.relational("tasks");
+  await client.callmutation("schemas.applySchema", {});
 
-  await client.schema.apply(schema);
+  const user_id = String(
+    await client.callmutation("users.createUser", {
+      name: "Theo",
+      email: "theo@example.com",
+    }),
+  );
 
-  const user_id = await users.insert({
-    name: "Theo",
-    email: "theo@example.com",
-  });
-
-  await tasks.insert({
+  await client.callmutation("tasks.createTask", {
     title: "Write relational feature",
     userId: user_id,
-    isCompleted: false,
   });
 
-  await tasks.insert({
+  await client.callmutation("tasks.createTask", {
     title: "Test query operators",
     userId: user_id,
-    isCompleted: false,
   });
 
-  const open_before = await tasks.count({
-    where: {
-      $and: [{ userId: { $eq: user_id } }, { isCompleted: { $eq: false } }],
-    },
-  });
+  const open_before = Number(
+    await client.callquery("tasks.countOpenTasks", {
+      userId: user_id,
+    }),
+  );
   console.log("Open tasks before complete:", open_before);
 
-  const task_rows = (await tasks.query({
-    where: { userId: { $eq: user_id } },
-    orderBy: [{ field: "_createdAt", direction: "asc" }],
+  const task_rows = (await client.callquery("tasks.listTasksByUser", {
+    userId: user_id,
   })) as Array<Record<string, unknown>>;
   console.log("Tasks:", task_rows);
 
   const first_task = task_rows[0];
   if (first_task) {
-    await tasks.update({
-      id: String(first_task._id),
-      value: {
-        title: String(first_task.title),
-        userId: String(first_task.userId),
-        isCompleted: true,
-      },
+    await client.callmutation("tasks.completeTask", {
+      taskId: String(first_task._id),
     });
   }
 
-  const open_after = await tasks.count({
-    where: {
-      $and: [{ userId: { $eq: user_id } }, { isCompleted: { $eq: false } }],
-    },
-  });
+  const open_after = Number(
+    await client.callquery("tasks.countOpenTasks", {
+      userId: user_id,
+    }),
+  );
   console.log("Open tasks after complete:", open_after);
 
-  const user_rows = await users.query({
-    orderBy: [{ field: "_createdAt", direction: "asc" }],
-  });
+  const user_rows = (await client.callquery("users.listUsers", {})) as Array<
+    Record<string, unknown>
+  >;
   console.log("Users:", user_rows);
+
+  await client.close();
 }
 
 void main();

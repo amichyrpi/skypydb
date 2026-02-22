@@ -1,0 +1,873 @@
+use std::collections::{BTreeMap, BTreeSet};
+
+use serde_json::{Map, Value};
+use sqlx::{MySql, MySqlPool};
+
+use crate::domain::relational::query_planner::OrderByClause;
+use crate::domain::schema::planner::apply_schema;
+use crate::functions::manifest::{FunctionKind, FunctionsManifest, ManifestFunction, ManifestStep};
+use crate::repositories::relational_repo::{
+    MoveOptions, RelationalQueryOptions, RelationalRepository,
+};
+use skypydb_common::schema::types::{FieldDefinition, FieldType, SchemaDocument};
+use skypydb_errors::AppError;
+
+/// Executes a manifest-defined function call and returns its JSON result.
+pub async fn execute_manifest_function(
+    pool: &MySqlPool,
+    max_query_limit: u32,
+    manifest: &FunctionsManifest,
+    endpoint: &str,
+    args: Map<String, Value>,
+) -> Result<Value, AppError> {
+    let function = manifest.functions.get(endpoint).ok_or_else(|| {
+        AppError::not_found(format!("function endpoint '{}' not found", endpoint))
+    })?;
+
+    let validated_args = validate_args(&function.args, &args)?;
+    let repository = RelationalRepository::new(pool.clone(), max_query_limit);
+
+    match function.kind {
+        FunctionKind::Query => {
+            execute_steps_without_transaction(
+                &repository,
+                pool,
+                function,
+                &validated_args,
+                ExecutionMode::ReadOnly,
+            )
+            .await
+        }
+        FunctionKind::Mutation => {
+            if function.steps.iter().any(|step| step.op == "applySchema") {
+                if function.steps.len() != 1 || function.steps[0].op != "applySchema" {
+                    return Err(AppError::validation(
+                        "applySchema functions must contain only one applySchema step",
+                    ));
+                }
+                return execute_steps_without_transaction(
+                    &repository,
+                    pool,
+                    function,
+                    &validated_args,
+                    ExecutionMode::ReadWrite,
+                )
+                .await;
+            }
+
+            let mut transaction = pool.begin().await?;
+            let result = execute_steps_with_transaction(
+                &repository,
+                pool,
+                function,
+                &validated_args,
+                &mut transaction,
+            )
+            .await;
+
+            match result {
+                Ok(value) => {
+                    transaction.commit().await?;
+                    Ok(value)
+                }
+                Err(error) => {
+                    let _ = transaction.rollback().await;
+                    Err(error)
+                }
+            }
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+enum ExecutionMode {
+    ReadOnly,
+    ReadWrite,
+}
+
+struct RuntimeContext {
+    args: Map<String, Value>,
+    vars: BTreeMap<String, Value>,
+}
+
+impl RuntimeContext {
+    fn new(args: Map<String, Value>) -> Self {
+        Self {
+            args,
+            vars: BTreeMap::new(),
+        }
+    }
+}
+
+async fn execute_steps_without_transaction(
+    repository: &RelationalRepository,
+    pool: &MySqlPool,
+    function: &ManifestFunction,
+    args: &Map<String, Value>,
+    mode: ExecutionMode,
+) -> Result<Value, AppError> {
+    let mut context = RuntimeContext::new(args.clone());
+    let mut last_result = Value::Null;
+
+    for step in &function.steps {
+        if mode_is_read_only(mode) && is_write_step(step) {
+            return Err(AppError::validation(format!(
+                "query function cannot execute '{}' step",
+                step.op
+            )));
+        }
+
+        let step_result =
+            execute_step_without_transaction(repository, pool, mode, &mut context, step).await?;
+
+        if let Some(into) = &step.into {
+            context.vars.insert(into.clone(), step_result.clone());
+        }
+        last_result = step_result;
+
+        if step.op == "return" {
+            return Ok(last_result);
+        }
+    }
+
+    Ok(last_result)
+}
+
+async fn execute_steps_with_transaction(
+    repository: &RelationalRepository,
+    pool: &MySqlPool,
+    function: &ManifestFunction,
+    args: &Map<String, Value>,
+    transaction: &mut sqlx::Transaction<'_, MySql>,
+) -> Result<Value, AppError> {
+    let mut context = RuntimeContext::new(args.clone());
+    let mut last_result = Value::Null;
+
+    for step in &function.steps {
+        let step_result =
+            execute_step_with_transaction(repository, pool, &mut context, transaction, step)
+                .await?;
+
+        if let Some(into) = &step.into {
+            context.vars.insert(into.clone(), step_result.clone());
+        }
+        last_result = step_result;
+
+        if step.op == "return" {
+            return Ok(last_result);
+        }
+    }
+
+    Ok(last_result)
+}
+
+fn mode_is_read_only(mode: ExecutionMode) -> bool {
+    matches!(mode, ExecutionMode::ReadOnly)
+}
+
+fn is_write_step(step: &ManifestStep) -> bool {
+    matches!(
+        step.op.as_str(),
+        "insert" | "update" | "delete" | "move" | "applySchema"
+    )
+}
+
+async fn execute_step_without_transaction(
+    repository: &RelationalRepository,
+    pool: &MySqlPool,
+    mode: ExecutionMode,
+    context: &mut RuntimeContext,
+    step: &ManifestStep,
+) -> Result<Value, AppError> {
+    match step.op.as_str() {
+        "get" => {
+            let (table, options) = parse_query_step(step, context)?;
+            let rows = repository.query(&table, options).await?;
+            Ok(Value::Array(rows))
+        }
+        "first" => {
+            let (table, options) = parse_query_step(step, context)?;
+            let row = repository.first(&table, options).await?;
+            Ok(row.unwrap_or(Value::Null))
+        }
+        "count" => {
+            let table = required_string_param(step, "table", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let count = repository.count(&table, where_clause.as_ref()).await?;
+            Ok(Value::Number(serde_json::Number::from(count)))
+        }
+        "insert" => {
+            ensure_write_allowed(mode, "insert")?;
+            let table = required_string_param(step, "table", context)?;
+            let payload = required_json_param(step, "value", context)?;
+            let id = repository.insert(&table, &payload).await?;
+            Ok(Value::String(id))
+        }
+        "update" => {
+            ensure_write_allowed(mode, "update")?;
+            let table = required_string_param(step, "table", context)?;
+            let id = optional_string_param(step, "id", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let value = required_json_param(step, "value", context)?;
+            let affected = repository
+                .update(&table, id.as_deref(), where_clause.as_ref(), &value)
+                .await?;
+            Ok(Value::Number(serde_json::Number::from(affected)))
+        }
+        "delete" => {
+            ensure_write_allowed(mode, "delete")?;
+            let table = required_string_param(step, "table", context)?;
+            let id = optional_string_param(step, "id", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let affected = repository
+                .delete(&table, id.as_deref(), where_clause.as_ref())
+                .await?;
+            Ok(Value::Number(serde_json::Number::from(affected)))
+        }
+        "move" => {
+            ensure_write_allowed(mode, "move")?;
+            let table = required_string_param(step, "table", context)?;
+            let to_table = required_string_param(step, "toTable", context)?;
+            let id = optional_string_param(step, "id", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let field_map = optional_string_map_param(step, "fieldMap", context)?;
+            let defaults = optional_object_param(step, "defaults", context)?;
+
+            let affected = repository
+                .move_rows(
+                    &table,
+                    &MoveOptions {
+                        to_table,
+                        id,
+                        where_clause,
+                        field_map,
+                        defaults,
+                    },
+                )
+                .await?;
+            Ok(Value::Number(serde_json::Number::from(affected)))
+        }
+        "assert" => {
+            let condition = required_json_param(step, "condition", context)?;
+            let message = required_literal_string(step, "message")?;
+            if !is_truthy(&condition) {
+                return Err(AppError::validation(message));
+            }
+            Ok(Value::Bool(true))
+        }
+        "setVar" => {
+            let name = required_literal_string(step, "name")?;
+            let value = required_json_param(step, "value", context)?;
+            context.vars.insert(name, value.clone());
+            Ok(value)
+        }
+        "return" => required_json_param(step, "value", context),
+        "applySchema" => {
+            ensure_write_allowed(mode, "applySchema")?;
+            let schema_value = required_json_param(step, "schema", context)?;
+            let schema =
+                serde_json::from_value::<SchemaDocument>(schema_value).map_err(|error| {
+                    AppError::validation(format!(
+                        "invalid schema payload in applySchema step: {}",
+                        error
+                    ))
+                })?;
+            let result = apply_schema(pool, &schema).await?;
+            serde_json::to_value(result).map_err(|error| {
+                AppError::internal(format!(
+                    "failed to serialize applySchema result for function execution: {}",
+                    error
+                ))
+            })
+        }
+        _ => Err(AppError::validation(format!(
+            "unsupported function step op '{}'",
+            step.op
+        ))),
+    }
+}
+
+async fn execute_step_with_transaction(
+    repository: &RelationalRepository,
+    pool: &MySqlPool,
+    context: &mut RuntimeContext,
+    transaction: &mut sqlx::Transaction<'_, MySql>,
+    step: &ManifestStep,
+) -> Result<Value, AppError> {
+    match step.op.as_str() {
+        "get" => {
+            let (table, options) = parse_query_step(step, context)?;
+            let rows = repository
+                .query_in_transaction(transaction, &table, options)
+                .await?;
+            Ok(Value::Array(rows))
+        }
+        "first" => {
+            let (table, options) = parse_query_step(step, context)?;
+            let row = repository
+                .first_in_transaction(transaction, &table, options)
+                .await?;
+            Ok(row.unwrap_or(Value::Null))
+        }
+        "count" => {
+            let table = required_string_param(step, "table", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let count = repository
+                .count_in_transaction(transaction, &table, where_clause.as_ref())
+                .await?;
+            Ok(Value::Number(serde_json::Number::from(count)))
+        }
+        "insert" => {
+            let table = required_string_param(step, "table", context)?;
+            let payload = required_json_param(step, "value", context)?;
+            let id = repository
+                .insert_in_transaction(transaction, &table, &payload)
+                .await?;
+            Ok(Value::String(id))
+        }
+        "update" => {
+            let table = required_string_param(step, "table", context)?;
+            let id = optional_string_param(step, "id", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let value = required_json_param(step, "value", context)?;
+            let affected = repository
+                .update_in_transaction(
+                    transaction,
+                    &table,
+                    id.as_deref(),
+                    where_clause.as_ref(),
+                    &value,
+                )
+                .await?;
+            Ok(Value::Number(serde_json::Number::from(affected)))
+        }
+        "delete" => {
+            let table = required_string_param(step, "table", context)?;
+            let id = optional_string_param(step, "id", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let affected = repository
+                .delete_in_transaction(transaction, &table, id.as_deref(), where_clause.as_ref())
+                .await?;
+            Ok(Value::Number(serde_json::Number::from(affected)))
+        }
+        "move" => {
+            let table = required_string_param(step, "table", context)?;
+            let to_table = required_string_param(step, "toTable", context)?;
+            let id = optional_string_param(step, "id", context)?;
+            let where_clause = optional_json_param(step, "where", context)?;
+            let field_map = optional_string_map_param(step, "fieldMap", context)?;
+            let defaults = optional_object_param(step, "defaults", context)?;
+
+            let affected = repository
+                .move_rows_in_transaction(
+                    transaction,
+                    &table,
+                    &MoveOptions {
+                        to_table,
+                        id,
+                        where_clause,
+                        field_map,
+                        defaults,
+                    },
+                )
+                .await?;
+            Ok(Value::Number(serde_json::Number::from(affected)))
+        }
+        "assert" => {
+            let condition = required_json_param(step, "condition", context)?;
+            let message = required_literal_string(step, "message")?;
+            if !is_truthy(&condition) {
+                return Err(AppError::validation(message));
+            }
+            Ok(Value::Bool(true))
+        }
+        "setVar" => {
+            let name = required_literal_string(step, "name")?;
+            let value = required_json_param(step, "value", context)?;
+            context.vars.insert(name, value.clone());
+            Ok(value)
+        }
+        "return" => required_json_param(step, "value", context),
+        "applySchema" => {
+            let schema_value = required_json_param(step, "schema", context)?;
+            let schema =
+                serde_json::from_value::<SchemaDocument>(schema_value).map_err(|error| {
+                    AppError::validation(format!(
+                        "invalid schema payload in applySchema step: {}",
+                        error
+                    ))
+                })?;
+            let result = apply_schema(pool, &schema).await?;
+            serde_json::to_value(result).map_err(|error| {
+                AppError::internal(format!(
+                    "failed to serialize applySchema result for function execution: {}",
+                    error
+                ))
+            })
+        }
+        _ => Err(AppError::validation(format!(
+            "unsupported function step op '{}'",
+            step.op
+        ))),
+    }
+}
+
+fn ensure_write_allowed(mode: ExecutionMode, op: &str) -> Result<(), AppError> {
+    if mode_is_read_only(mode) {
+        return Err(AppError::validation(format!(
+            "query function cannot execute '{}' step",
+            op
+        )));
+    }
+    Ok(())
+}
+
+fn parse_query_step(
+    step: &ManifestStep,
+    context: &RuntimeContext,
+) -> Result<(String, RelationalQueryOptions), AppError> {
+    let table = required_string_param(step, "table", context)?;
+    let where_clause = optional_json_param(step, "where", context)?;
+    let order_by = optional_order_by_param(step, "orderBy", context)?;
+    let limit = optional_u32_param(step, "limit", context)?;
+    let offset = optional_u32_param(step, "offset", context)?;
+    Ok((
+        table,
+        RelationalQueryOptions {
+            where_clause,
+            order_by,
+            limit,
+            offset,
+        },
+    ))
+}
+
+fn required_json_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<Value, AppError> {
+    let expression = step.payload.get(name).ok_or_else(|| {
+        AppError::validation(format!(
+            "step '{}' requires '{}' payload value",
+            step.op, name
+        ))
+    })?;
+    evaluate_expression(expression, &context.args, &context.vars)
+}
+
+fn optional_json_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<Option<Value>, AppError> {
+    let Some(expression) = step.payload.get(name) else {
+        return Ok(None);
+    };
+    let value = evaluate_expression(expression, &context.args, &context.vars)?;
+    if value.is_null() {
+        Ok(None)
+    } else {
+        Ok(Some(value))
+    }
+}
+
+fn required_string_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<String, AppError> {
+    let value = required_json_param(step, name, context)?;
+    value.as_str().map(ToOwned::to_owned).ok_or_else(|| {
+        AppError::validation(format!(
+            "step '{}' payload '{}' must evaluate to a string",
+            step.op, name
+        ))
+    })
+}
+
+fn optional_string_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<Option<String>, AppError> {
+    let Some(value) = optional_json_param(step, name, context)? else {
+        return Ok(None);
+    };
+    value
+        .as_str()
+        .map(ToOwned::to_owned)
+        .ok_or_else(|| {
+            AppError::validation(format!(
+                "step '{}' payload '{}' must evaluate to a string or null",
+                step.op, name
+            ))
+        })
+        .map(Some)
+}
+
+fn optional_u32_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<Option<u32>, AppError> {
+    let Some(value) = optional_json_param(step, name, context)? else {
+        return Ok(None);
+    };
+    let Some(number) = value.as_u64() else {
+        return Err(AppError::validation(format!(
+            "step '{}' payload '{}' must evaluate to an integer",
+            step.op, name
+        )));
+    };
+    if number > u32::MAX as u64 {
+        return Err(AppError::validation(format!(
+            "step '{}' payload '{}' is too large for u32",
+            step.op, name
+        )));
+    }
+    Ok(Some(number as u32))
+}
+
+fn optional_order_by_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<Vec<OrderByClause>, AppError> {
+    let Some(value) = optional_json_param(step, name, context)? else {
+        return Ok(Vec::new());
+    };
+    serde_json::from_value::<Vec<OrderByClause>>(value).map_err(|error| {
+        AppError::validation(format!(
+            "step '{}' payload '{}' must be an order-by array: {}",
+            step.op, name, error
+        ))
+    })
+}
+
+fn optional_string_map_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<BTreeMap<String, String>, AppError> {
+    let Some(value) = optional_json_param(step, name, context)? else {
+        return Ok(BTreeMap::new());
+    };
+    let object = value.as_object().ok_or_else(|| {
+        AppError::validation(format!(
+            "step '{}' payload '{}' must evaluate to an object",
+            step.op, name
+        ))
+    })?;
+    let mut output = BTreeMap::new();
+    for (key, value) in object {
+        let as_string = value.as_str().ok_or_else(|| {
+            AppError::validation(format!(
+                "step '{}' payload '{}' key '{}' must map to a string",
+                step.op, name, key
+            ))
+        })?;
+        output.insert(key.clone(), as_string.to_string());
+    }
+    Ok(output)
+}
+
+fn optional_object_param(
+    step: &ManifestStep,
+    name: &str,
+    context: &RuntimeContext,
+) -> Result<BTreeMap<String, Value>, AppError> {
+    let Some(value) = optional_json_param(step, name, context)? else {
+        return Ok(BTreeMap::new());
+    };
+    let object = value.as_object().ok_or_else(|| {
+        AppError::validation(format!(
+            "step '{}' payload '{}' must evaluate to an object",
+            step.op, name
+        ))
+    })?;
+    Ok(object
+        .iter()
+        .map(|(key, value)| (key.clone(), value.clone()))
+        .collect::<BTreeMap<String, Value>>())
+}
+
+fn required_literal_string(step: &ManifestStep, name: &str) -> Result<String, AppError> {
+    step.payload
+        .get(name)
+        .and_then(Value::as_str)
+        .map(ToOwned::to_owned)
+        .ok_or_else(|| {
+            AppError::validation(format!(
+                "step '{}' payload '{}' must be a string literal",
+                step.op, name
+            ))
+        })
+}
+
+fn evaluate_expression(
+    expression: &Value,
+    args: &Map<String, Value>,
+    vars: &BTreeMap<String, Value>,
+) -> Result<Value, AppError> {
+    match expression {
+        Value::String(text) => {
+            if text == "$arg" {
+                return Ok(Value::Object(args.clone()));
+            }
+            if let Some(path) = text.strip_prefix("$arg.") {
+                return resolve_reference_path(&Value::Object(args.clone()), path, "arg");
+            }
+            if let Some(path) = text.strip_prefix("$var.") {
+                let mut segments = path.split('.');
+                let var_name = segments.next().unwrap_or_default();
+                if var_name.is_empty() {
+                    return Err(AppError::validation(
+                        "invalid variable reference '$var.' in function expression",
+                    ));
+                }
+                let value = vars.get(var_name).ok_or_else(|| {
+                    AppError::validation(format!(
+                        "function expression references unknown variable '{}'",
+                        var_name
+                    ))
+                })?;
+                let remaining = segments.collect::<Vec<&str>>();
+                if remaining.is_empty() {
+                    return Ok(value.clone());
+                }
+                return resolve_reference_path(value, &remaining.join("."), "var");
+            }
+            Ok(Value::String(text.clone()))
+        }
+        Value::Array(items) => items
+            .iter()
+            .map(|item| evaluate_expression(item, args, vars))
+            .collect::<Result<Vec<Value>, AppError>>()
+            .map(Value::Array),
+        Value::Object(object) => {
+            let mut output = Map::new();
+            for (key, value) in object {
+                output.insert(key.clone(), evaluate_expression(value, args, vars)?);
+            }
+            Ok(Value::Object(output))
+        }
+        Value::Null | Value::Bool(_) | Value::Number(_) => Ok(expression.clone()),
+    }
+}
+
+fn resolve_reference_path(value: &Value, path: &str, scope: &str) -> Result<Value, AppError> {
+    let mut current = value;
+    for segment in path.split('.') {
+        if segment.is_empty() {
+            continue;
+        }
+        let Some(object) = current.as_object() else {
+            return Err(AppError::validation(format!(
+                "cannot resolve '{}': '{}' is not an object segment",
+                path, segment
+            )));
+        };
+        current = object.get(segment).ok_or_else(|| {
+            AppError::validation(format!(
+                "missing '{}' reference path segment '{}' in {} scope",
+                path, segment, scope
+            ))
+        })?;
+    }
+    Ok(current.clone())
+}
+
+fn is_truthy(value: &Value) -> bool {
+    match value {
+        Value::Null => false,
+        Value::Bool(boolean) => *boolean,
+        Value::Number(number) => {
+            if let Some(int_value) = number.as_i64() {
+                int_value != 0
+            } else if let Some(float_value) = number.as_f64() {
+                float_value != 0.0
+            } else {
+                false
+            }
+        }
+        Value::String(text) => !text.is_empty(),
+        Value::Array(items) => !items.is_empty(),
+        Value::Object(object) => !object.is_empty(),
+    }
+}
+
+fn validate_args(
+    schema: &BTreeMap<String, FieldDefinition>,
+    args: &Map<String, Value>,
+) -> Result<Map<String, Value>, AppError> {
+    let mut output = Map::<String, Value>::new();
+    let known_keys = schema.keys().cloned().collect::<BTreeSet<String>>();
+
+    for key in args.keys() {
+        if !known_keys.contains(key) {
+            return Err(AppError::validation(format!(
+                "unknown function arg '{}'",
+                key
+            )));
+        }
+    }
+
+    for (field_name, definition) in schema {
+        let maybe_value = args.get(field_name);
+        let validated =
+            validate_arg_value(definition, maybe_value, &format!("args.{}", field_name))?;
+        output.insert(field_name.clone(), validated);
+    }
+
+    Ok(output)
+}
+
+fn validate_arg_value(
+    definition: &FieldDefinition,
+    raw: Option<&Value>,
+    path: &str,
+) -> Result<Value, AppError> {
+    if definition.field_type == FieldType::Optional {
+        let Some(inner) = definition.inner.as_ref() else {
+            return Err(AppError::validation(format!(
+                "optional arg '{}' is missing inner schema",
+                path
+            )));
+        };
+        let Some(raw_value) = raw else {
+            return Ok(Value::Null);
+        };
+        if raw_value.is_null() {
+            return Ok(Value::Null);
+        }
+        return validate_arg_value(inner, Some(raw_value), path);
+    }
+
+    let Some(value) = raw else {
+        return Err(AppError::validation(format!(
+            "missing required function arg '{}'",
+            path
+        )));
+    };
+
+    match definition.field_type {
+        FieldType::String | FieldType::Id => value
+            .as_str()
+            .map(|text| Value::String(text.to_string()))
+            .ok_or_else(|| AppError::validation(format!("arg '{}' must be a string", path))),
+        FieldType::Number => {
+            if let Some(int_value) = value.as_i64() {
+                Ok(Value::Number(serde_json::Number::from(int_value)))
+            } else if let Some(float_value) = value.as_f64() {
+                serde_json::Number::from_f64(float_value)
+                    .map(Value::Number)
+                    .ok_or_else(|| {
+                        AppError::validation(format!("arg '{}' contains invalid number", path))
+                    })
+            } else {
+                Err(AppError::validation(format!(
+                    "arg '{}' must be a number",
+                    path
+                )))
+            }
+        }
+        FieldType::Boolean => value
+            .as_bool()
+            .map(Value::Bool)
+            .ok_or_else(|| AppError::validation(format!("arg '{}' must be a boolean", path))),
+        FieldType::Object => {
+            let object = value
+                .as_object()
+                .ok_or_else(|| AppError::validation(format!("arg '{}' must be an object", path)))?;
+
+            let mut output = Map::new();
+            for (nested_name, nested_definition) in &definition.shape {
+                let nested_path = format!("{}.{}", path, nested_name);
+                let nested_raw = object.get(nested_name);
+                let nested_validated =
+                    validate_arg_value(nested_definition, nested_raw, &nested_path)?;
+                output.insert(nested_name.clone(), nested_validated);
+            }
+
+            for key in object.keys() {
+                if !definition.shape.contains_key(key) {
+                    return Err(AppError::validation(format!(
+                        "arg '{}' includes unknown nested key '{}'",
+                        path, key
+                    )));
+                }
+            }
+
+            Ok(Value::Object(output))
+        }
+        FieldType::Optional => Err(AppError::validation(format!(
+            "arg '{}' uses unsupported nested optional type",
+            path
+        ))),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{evaluate_expression, validate_args};
+    use serde_json::{json, Map, Value};
+    use skypydb_common::schema::types::{FieldDefinition, FieldType};
+    use std::collections::BTreeMap;
+
+    fn string_field() -> FieldDefinition {
+        FieldDefinition {
+            field_type: FieldType::String,
+            table: None,
+            shape: BTreeMap::new(),
+            inner: None,
+        }
+    }
+
+    #[test]
+    fn evaluate_expression_resolves_arg_and_var_paths() {
+        let args = Map::from_iter([("userId".to_string(), Value::String("u1".to_string()))]);
+        let vars = BTreeMap::from_iter([(
+            "task".to_string(),
+            json!({
+                "_id": "t1",
+                "title": "Write tests"
+            }),
+        )]);
+
+        let value = evaluate_expression(
+            &json!({
+                "userId": "$arg.userId",
+                "taskTitle": "$var.task.title"
+            }),
+            &args,
+            &vars,
+        )
+        .expect("expression should evaluate");
+
+        assert_eq!(
+            value,
+            json!({
+                "userId": "u1",
+                "taskTitle": "Write tests"
+            })
+        );
+    }
+
+    #[test]
+    fn validate_args_rejects_unknown_keys() {
+        let schema = BTreeMap::from_iter([("name".to_string(), string_field())]);
+        let args = Map::from_iter([
+            ("name".to_string(), Value::String("Theo".to_string())),
+            (
+                "email".to_string(),
+                Value::String("theo@example.com".to_string()),
+            ),
+        ]);
+
+        let result = validate_args(&schema, &args);
+        assert!(result.is_err());
+        let message = result.err().expect("validation error").to_string();
+        assert!(message.contains("unknown function arg 'email'"));
+    }
+}

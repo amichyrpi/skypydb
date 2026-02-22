@@ -93,9 +93,31 @@ pub struct TableMigrationRule {
     #[serde(default)]
     pub from: Option<String>,
     /// Mapping of target field -> source field.
-    #[serde(default)]
+    #[serde(default, alias = "fieldMap")]
     pub field_map: BTreeMap<String, String>,
     /// Literal defaults for unmapped required fields.
     #[serde(default)]
     pub defaults: BTreeMap<String, Value>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TableMigrationRule;
+    use serde_json::json;
+
+    #[test]
+    fn table_migration_rule_accepts_field_map_alias() {
+        let rule: TableMigrationRule = serde_json::from_value(json!({
+            "from": "tasks_old",
+            "fieldMap": { "title": "name" },
+            "defaults": { "completed": false }
+        }))
+        .expect("table migration rule should deserialize");
+
+        assert_eq!(rule.from.as_deref(), Some("tasks_old"));
+        assert_eq!(
+            rule.field_map.get("title").map(String::as_str),
+            Some("name")
+        );
+    }
 }

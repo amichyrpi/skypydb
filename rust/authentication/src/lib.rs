@@ -50,6 +50,7 @@ mod tests {
             cors_origins: vec!["*".to_string()],
             vector_max_dim: 4096,
             query_max_limit: 100,
+            functions_manifest_path: "./skypydb/.generated/functions.manifest.json".to_string(),
         };
         let pool = MySqlPoolOptions::new()
             .connect_lazy(&config.mysql_url)

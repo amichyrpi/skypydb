@@ -38,6 +38,7 @@ pub struct DeleteRequest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MoveRequest {
     /// Target table receiving moved rows.
+    #[serde(alias = "toTable")]
     pub to_table: String,
     /// Optional single-row selector.
     #[serde(default)]
@@ -46,7 +47,7 @@ pub struct MoveRequest {
     #[serde(default, rename = "where")]
     pub where_clause: Option<Value>,
     /// Mapping of target field -> source field.
-    #[serde(default)]
+    #[serde(default, alias = "fieldMap")]
     pub field_map: BTreeMap<String, String>,
     /// Literal defaults for unmapped target fields.
     #[serde(default)]
@@ -70,7 +71,7 @@ pub struct QueryRequest {
     #[serde(default, rename = "where")]
     pub where_clause: Option<Value>,
     /// Optional order-by clauses.
-    #[serde(default)]
+    #[serde(default, alias = "orderBy")]
     pub order_by: Vec<OrderByClause>,
     /// Optional pagination limit.
     #[serde(default)]
@@ -121,4 +122,40 @@ pub struct CountResponse {
 pub struct FirstResponse {
     /// First row matched by query, if any.
     pub row: Option<Value>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{MoveRequest, QueryRequest};
+    use serde_json::json;
+
+    #[test]
+    fn move_request_accepts_camel_case_aliases() {
+        let request: MoveRequest = serde_json::from_value(json!({
+            "toTable": "tasks_archive",
+            "fieldMap": { "title": "name" },
+            "defaults": { "completed": false },
+            "where": { "_id": { "$eq": "abc" } }
+        }))
+        .expect("move request should deserialize");
+
+        assert_eq!(request.to_table, "tasks_archive");
+        assert_eq!(
+            request.field_map.get("title").expect("field_map value"),
+            "name"
+        );
+    }
+
+    #[test]
+    fn query_request_accepts_order_by_alias() {
+        let request: QueryRequest = serde_json::from_value(json!({
+            "orderBy": [{ "field": "name", "direction": "asc" }],
+            "limit": 10
+        }))
+        .expect("query request should deserialize");
+
+        assert_eq!(request.order_by.len(), 1);
+        assert_eq!(request.order_by[0].field, "name");
+        assert_eq!(request.order_by[0].direction.as_deref(), Some("asc"));
+    }
 }

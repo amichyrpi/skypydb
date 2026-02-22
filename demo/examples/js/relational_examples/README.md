@@ -1,20 +1,49 @@
-## Relational Example (JavaScript/TypeScript, HTTP)
+## Relational Example
 
-This example uses the HTTP SDK only:
+This example calls backend-executed TypeScript functions through the HTTP SDK.
 
-1. `httpClient(...)` to connect to the backend.
-2. `client.schema.apply(...)` to configure schema.
-3. `client.relational("table")` for insert/update/delete/move/query/count/first.
+### 1) Build TypeScript SDK (once)
 
-### Run
-
-From the repository root:
+From repository root:
 
 ```bash
-npx tsx demo/examples/js/relational_examples/src/client.ts
+cd skypydb-js
+npm install
+npm run build
+cd ..
 ```
 
-### Backend requirement
+### 2) Build the example function manifest
 
-Run the Rust API backend on `http://localhost:8000` and use a valid `X-API-Key`
-value (`local-dev-key` in local compose defaults).
+From `demo/examples/js/relational_examples`:
+
+```bash
+npx skypydb functions build
+```
+
+This writes:
+
+- `./skypydb/.generated/functions.manifest.json`
+
+### 3) Start backend with manifest path
+
+From repository root:
+
+```bash
+set SKYPYDB_FUNCTIONS_MANIFEST_PATH=demo/examples/js/relational_examples/skypydb/.generated/functions.manifest.json
+set SKYPYDB_API_KEY=local-dev-key
+# plus your MySQL env vars
+```
+
+Start the Rust backend after setting env vars.
+
+### 4) Run the JS client
+
+From `demo/examples/js/relational_examples`:
+
+```bash
+npm install
+set SKYPYDB_API_URL=http://localhost:8000
+set SKYPYDB_API_KEY=local-dev-key
+npx tsx src/client.ts
+```

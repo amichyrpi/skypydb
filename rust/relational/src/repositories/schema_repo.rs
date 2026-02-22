@@ -209,8 +209,16 @@ impl SchemaRepository {
             let columns = index
                 .columns
                 .iter()
-                .map(|column| format!("`{}`", column))
-                .collect::<Vec<String>>()
+                .map(|column| {
+                    let field_definition = definition.fields.get(column).ok_or_else(|| {
+                        AppError::validation(format!(
+                            "index '{}' on table '{}' references unknown field '{}'",
+                            index.name, table_name, column
+                        ))
+                    })?;
+                    index_column_sql(column, field_definition)
+                })
+                .collect::<Result<Vec<String>, AppError>>()?
                 .join(", ");
             let sql = format!(
                 "CREATE INDEX `{}` ON `{}` ({})",
@@ -443,6 +451,26 @@ fn column_type_sql(field_definition: &FieldDefinition) -> Result<String, AppErro
 
     let nullability = if optional { "NULL" } else { "NOT NULL" };
     Ok(format!("{} {}", sql_type, nullability))
+}
+
+fn index_column_sql(
+    field_name: &str,
+    field_definition: &FieldDefinition,
+) -> Result<String, AppError> {
+    let base_definition = field_definition.unwrap_base();
+    match base_definition.field_type {
+        // MySQL requires a prefix length for TEXT indexes. 191 is safe for utf8mb4.
+        FieldType::String => Ok(format!("`{}`(191)", field_name)),
+        FieldType::Object => Err(AppError::validation(format!(
+            "field '{}' has type 'object' and cannot be directly indexed",
+            field_name
+        ))),
+        FieldType::Optional => Err(AppError::validation(format!(
+            "field '{}' has unresolved optional type for index creation",
+            field_name
+        ))),
+        FieldType::Number | FieldType::Boolean | FieldType::Id => Ok(format!("`{}`", field_name)),
+    }
 }
 
 fn row_to_json_map(row: &MySqlRow) -> Result<Map<String, Value>, AppError> {

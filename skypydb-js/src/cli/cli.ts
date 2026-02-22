@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import prompts from "prompts";
 import { Command, CommanderError } from "commander";
+import { build_functions_manifest } from "../functions/compiler";
 import package_json from "../../package.json";
 
 type DevAction = "local" | "cloud" | "exit";
@@ -174,6 +175,22 @@ function create_program(dependencies: CliDependencies): Command {
     .description("Deploy your project")
     .action((): void => {
       dependencies.log(NOT_READY_TEXT);
+    });
+
+  const functions_command = program
+    .command("functions")
+    .description("Build and inspect TypeScript function manifests");
+
+  functions_command
+    .command("build")
+    .description("Build ./skypydb/.generated/functions.manifest.json")
+    .action((): void => {
+      const result = build_functions_manifest({
+        cwd: dependencies.cwd(),
+      });
+      dependencies.log(
+        `Built ${result.function_count} function(s) from ${result.source_files} file(s): ${result.output_path}`,
+      );
     });
 
   program.exitOverride();

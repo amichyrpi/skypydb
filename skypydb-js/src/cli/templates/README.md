@@ -1,12 +1,12 @@
 # Skypydb Local Project
 
-This folder contains your local Skypydb relational project files.
+This folder contains TypeScript files for a Skypydb backend project.
 
 Suggested next files:
 
-1. `schemas.ts` to define tables with `defineSchema` + `defineTable`
-2. query files that export `query(...)`
-3. mutation files that export `mutation(...)`
+1. `schemas.ts` with the schema JSON payload sent to `/v1/admin/schema/apply`
+2. helper modules that call `client.relational("<table>")` over HTTP
+3. a client entrypoint that configures `api_url` and `api_key`
 
 Typecheck your project files with:
 

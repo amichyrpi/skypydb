@@ -1,2 +1,9 @@
-export { HttpClient, HttpCollection, RelationalTableClient, SchemaClient, httpClient } from "./client";
+export {
+  FunctionsClient,
+  HttpClient,
+  HttpCollection,
+  RelationalTableClient,
+  SchemaClient,
+  httpClient,
+} from "./client";
 export { HttpTransport } from "./transport";

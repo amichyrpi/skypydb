@@ -96,11 +96,6 @@ export type DeleteParams = {
   by_data?: string | string[];
 };
 
-export type VecClientOptions = {
-  embedding_provider?: string;
-  embedding_model_config?: Record<string, unknown>;
-};
-
 export type HttpClientOptions = {
   api_url: string;
   api_key: string;

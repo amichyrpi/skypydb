@@ -17,7 +17,7 @@ pub fn validate_table_name(table_name: &str) -> Result<(), AppError> {
 
 /// Validates a field/column identifier for safe dynamic SQL usage.
 pub fn validate_identifier(identifier: &str) -> Result<(), AppError> {
-    let regex = Regex::new(r"^[a-zA-Z][a-zA-Z0-9_]*$").map_err(|error| {
+    let regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*$").map_err(|error| {
         AppError::internal(format!("failed to build identifier regex: {}", error))
     })?;
     if !regex.is_match(identifier) {

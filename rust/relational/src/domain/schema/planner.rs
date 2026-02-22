@@ -47,19 +47,27 @@ pub async fn apply_schema(
     let mut managed_tables = Vec::new();
     let mut migrated_tables = Vec::new();
 
-    for (table_name, table_definition) in &schema.tables {
+    let apply_order = resolve_table_apply_order(schema)?;
+    for table_name in apply_order {
+        let table_definition = schema.tables.get(&table_name).ok_or_else(|| {
+            AppError::internal(format!(
+                "table '{}' missing from schema during apply order traversal",
+                table_name
+            ))
+        })?;
+
         repository
-            .ensure_relational_table(table_name, table_definition)
+            .ensure_relational_table(&table_name, table_definition)
             .await?;
         repository
-            .ensure_indexes(table_name, table_definition)
+            .ensure_indexes(&table_name, table_definition)
             .await?;
 
-        if let Some(rule) = schema.migrations.tables.get(table_name) {
+        if let Some(rule) = schema.migrations.tables.get(&table_name) {
             if let Some(source_table) = &rule.from {
-                if source_table != table_name {
+                if source_table != &table_name {
                     let moved_rows = repository
-                        .migrate_rows_to_table(source_table, table_name, table_definition, rule)
+                        .migrate_rows_to_table(source_table, &table_name, table_definition, rule)
                         .await?;
                     if moved_rows > 0 {
                         info!(
@@ -75,15 +83,15 @@ pub async fn apply_schema(
         }
 
         let signature = per_table_signatures
-            .get(table_name)
+            .get(&table_name)
             .cloned()
             .ok_or_else(|| {
                 AppError::internal(format!("missing signature for table '{}'", table_name))
             })?;
         repository
-            .upsert_table_meta(table_name, &signature, true)
+            .upsert_table_meta(&table_name, &signature, true)
             .await?;
-        managed_tables.push(table_name.clone());
+        managed_tables.push(table_name);
     }
 
     let mut unmanaged_tables = Vec::new();
@@ -105,6 +113,66 @@ pub async fn apply_schema(
         unmanaged_tables,
         schema_signature: full_signature,
     })
+}
+
+fn resolve_table_apply_order(schema: &SchemaDocument) -> Result<Vec<String>, AppError> {
+    #[derive(Copy, Clone, Eq, PartialEq)]
+    enum VisitState {
+        Visiting,
+        Visited,
+    }
+
+    fn visit(
+        table_name: &str,
+        schema: &SchemaDocument,
+        states: &mut HashMap<String, VisitState>,
+        ordered: &mut Vec<String>,
+    ) -> Result<(), AppError> {
+        match states.get(table_name).copied() {
+            Some(VisitState::Visited) => return Ok(()),
+            Some(VisitState::Visiting) => {
+                return Err(AppError::validation(format!(
+                    "cyclic foreign-key dependency detected while applying schema at table '{}'",
+                    table_name
+                )))
+            }
+            None => {}
+        }
+
+        let table_definition = schema.tables.get(table_name).ok_or_else(|| {
+            AppError::validation(format!(
+                "table '{}' referenced in dependency resolution was not found",
+                table_name
+            ))
+        })?;
+
+        states.insert(table_name.to_string(), VisitState::Visiting);
+        for field_definition in table_definition.fields.values() {
+            let base = field_definition.unwrap_base();
+            if base.field_type != FieldType::Id {
+                continue;
+            }
+
+            let Some(target_table) = base.table.as_deref() else {
+                continue;
+            };
+            if target_table == table_name {
+                continue;
+            }
+            visit(target_table, schema, states, ordered)?;
+        }
+
+        states.insert(table_name.to_string(), VisitState::Visited);
+        ordered.push(table_name.to_string());
+        Ok(())
+    }
+
+    let mut states = HashMap::<String, VisitState>::new();
+    let mut ordered = Vec::<String>::new();
+    for table_name in schema.tables.keys() {
+        visit(table_name, schema, &mut states, &mut ordered)?;
+    }
+    Ok(ordered)
 }
 
 /// Validates schema consistency, foreign-key references, and migration mappings.

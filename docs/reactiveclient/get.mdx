@@ -1,29 +1,19 @@
 ---
-title: Search data from a table
-description: "Search data from a table with filter"
+title: ReactiveClient Get (Deprecated)
+description: "ReactiveClient was removed in favor of HttpClient"
 ---
 
-<Steps titleSize="h3">
-  <Step title="Search data in the table">
-    You can search data in the table assuming there is already data in the table and Skypydb will return the data.
+<Warning>`ReactiveClient` is no longer available.</Warning>
 
-    ```python Python
-    # Access your tables
-    success_table = tables["success"]
-    warning_table = tables["warning"]
-    error_table = tables["error"]
+Use `HttpClient`:
 
-    # Search results by filter
-    user_success_logs = success_table.search(
-        user_id="user123"
-    )
+```python
+from skypydb import HttpClient
 
-    if not user_success_logs:
-        print("No results found.")
-    else:
-        for user_success_log in user_success_logs:
-            print(user_success_log)
-    ```
-
-  </Step>
-</Steps>
+client = HttpClient(api_url="http://localhost:8000", api_key="local-dev-key")
+rows = client.relational("users").query(
+    where={"name": {"$eq": "Theo"}},
+    orderBy=[{"field": "name", "direction": "asc"}],
+)
+print(rows)
+```

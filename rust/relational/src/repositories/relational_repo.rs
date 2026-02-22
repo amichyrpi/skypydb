@@ -374,6 +374,331 @@ impl RelationalRepository {
         Ok(rows.pop())
     }
 
+    /// Inserts one row using an existing SQL transaction.
+    #[instrument(skip(self, transaction, value), fields(table = table_name))]
+    pub async fn insert_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        table_name: &str,
+        value: &Value,
+    ) -> Result<String, AppError> {
+        validate_table_name(table_name)?;
+        let schema = self.active_schema().await?;
+        let table_definition = schema_table(&schema, table_name)?;
+
+        let row_payload = prepare_payload(table_definition, value, false)?;
+        self.validate_foreign_keys_in_transaction(transaction, table_definition, &row_payload)
+            .await?;
+
+        let row_id = Uuid::new_v4().to_string();
+        let mut fields = vec![
+            "`_id`".to_string(),
+            "`_created_at`".to_string(),
+            "`_updated_at`".to_string(),
+            "`_extras`".to_string(),
+        ];
+        let mut values = vec![
+            Value::String(row_id.clone()),
+            Value::String(Utc::now().naive_utc().to_string()),
+            Value::String(Utc::now().naive_utc().to_string()),
+            row_payload.extras.clone(),
+        ];
+
+        for (field_name, field_value) in &row_payload.known_fields {
+            fields.push(format!("`{}`", field_name));
+            values.push(field_value.clone());
+        }
+
+        let sql = format!(
+            "INSERT INTO `{}` ({}) VALUES ({})",
+            table_name,
+            fields.join(", "),
+            placeholders(values.len())
+        );
+        let mut query = sqlx::query(&sql);
+        for value in &values {
+            query = bind_json_value(query, value)?;
+        }
+        query.execute(&mut **transaction).await?;
+        Ok(row_id)
+    }
+
+    /// Performs full-replace updates in an existing SQL transaction.
+    #[instrument(skip(self, transaction, where_clause, value), fields(table = table_name, id = id))]
+    pub async fn update_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        table_name: &str,
+        id: Option<&str>,
+        where_clause: Option<&Value>,
+        value: &Value,
+    ) -> Result<u64, AppError> {
+        validate_table_name(table_name)?;
+        validate_id_where_xor(id, where_clause.is_some())?;
+
+        let schema = self.active_schema().await?;
+        let table_definition = schema_table(&schema, table_name)?;
+        let row_payload = prepare_payload(table_definition, value, true)?;
+        self.validate_foreign_keys_in_transaction(transaction, table_definition, &row_payload)
+            .await?;
+
+        let mut assignments = Vec::<String>::new();
+        let mut params = Vec::<Value>::new();
+        for (field_name, field_value) in &row_payload.known_fields {
+            assignments.push(format!("`{}` = ?", field_name));
+            params.push(field_value.clone());
+        }
+        assignments.push("`_extras` = ?".to_string());
+        params.push(row_payload.extras);
+        assignments.push("`_updated_at` = ?".to_string());
+        params.push(Value::String(Utc::now().naive_utc().to_string()));
+
+        let mut sql = format!("UPDATE `{}` SET {}", table_name, assignments.join(", "));
+        if let Some(row_id) = id {
+            sql.push_str(" WHERE `_id` = ?");
+            params.push(Value::String(row_id.to_string()));
+        } else {
+            let allowed = allowed_fields(table_definition);
+            let compiled = compile_where_clause(where_clause, &allowed)?;
+            let clause = compiled
+                .clause
+                .ok_or_else(|| AppError::validation("where clause cannot be empty"))?;
+            sql.push_str(&format!(" WHERE {}", clause));
+            for param in compiled.params {
+                params.push(sql_param_to_json(param));
+            }
+        }
+
+        let mut query = sqlx::query(&sql);
+        for parameter in &params {
+            query = bind_json_value(query, parameter)?;
+        }
+        let result = query.execute(&mut **transaction).await?;
+        Ok(result.rows_affected())
+    }
+
+    /// Deletes rows in an existing SQL transaction.
+    #[instrument(skip(self, transaction, where_clause), fields(table = table_name, id = id))]
+    pub async fn delete_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        table_name: &str,
+        id: Option<&str>,
+        where_clause: Option<&Value>,
+    ) -> Result<u64, AppError> {
+        validate_table_name(table_name)?;
+        validate_id_where_xor(id, where_clause.is_some())?;
+
+        let schema = self.active_schema().await?;
+        let table_definition = schema_table(&schema, table_name)?;
+        let mut sql = format!("DELETE FROM `{}`", table_name);
+        let mut params = Vec::<Value>::new();
+
+        if let Some(row_id) = id {
+            sql.push_str(" WHERE `_id` = ?");
+            params.push(Value::String(row_id.to_string()));
+        } else {
+            let allowed = allowed_fields(table_definition);
+            let compiled = compile_where_clause(where_clause, &allowed)?;
+            let clause = compiled
+                .clause
+                .ok_or_else(|| AppError::validation("where clause cannot be empty"))?;
+            sql.push_str(&format!(" WHERE {}", clause));
+            for param in compiled.params {
+                params.push(sql_param_to_json(param));
+            }
+        }
+
+        let mut query = sqlx::query(&sql);
+        for parameter in &params {
+            query = bind_json_value(query, parameter)?;
+        }
+        let result = query.execute(&mut **transaction).await?;
+        Ok(result.rows_affected())
+    }
+
+    /// Moves rows between tables in an existing SQL transaction.
+    #[instrument(
+        skip(self, transaction, options),
+        fields(from_table = from_table, to_table = options.to_table)
+    )]
+    pub async fn move_rows_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        from_table: &str,
+        options: &MoveOptions,
+    ) -> Result<u64, AppError> {
+        validate_table_name(from_table)?;
+        validate_table_name(&options.to_table)?;
+        if from_table == options.to_table {
+            return Err(AppError::validation("fromTable and toTable must differ"));
+        }
+        validate_id_where_xor(options.id.as_deref(), options.where_clause.is_some())?;
+
+        let schema = self.active_schema().await?;
+        let source_definition = schema_table(&schema, from_table)?;
+        let target_definition = schema_table(&schema, &options.to_table)?;
+
+        let selected_rows = self
+            .query_in_transaction(
+                transaction,
+                from_table,
+                RelationalQueryOptions {
+                    where_clause: options.where_clause.clone(),
+                    order_by: Vec::new(),
+                    limit: None,
+                    offset: None,
+                },
+            )
+            .await?;
+
+        let selected_rows = if let Some(id) = &options.id {
+            selected_rows
+                .into_iter()
+                .filter(|row| row.get("_id") == Some(&Value::String(id.clone())))
+                .collect::<Vec<Value>>()
+        } else {
+            selected_rows
+        };
+
+        if selected_rows.is_empty() {
+            return Ok(0);
+        }
+
+        let mut moved = 0_u64;
+        for row in selected_rows {
+            let source_map = row
+                .as_object()
+                .ok_or_else(|| AppError::internal("selected row is not a JSON object"))?;
+            let mapped_payload = map_row_to_target_payload(
+                source_map,
+                target_definition,
+                &options.field_map,
+                &options.defaults,
+            )?;
+            let prepared =
+                prepare_payload(target_definition, &Value::Object(mapped_payload), false)?;
+            self.validate_foreign_keys_in_transaction(transaction, target_definition, &prepared)
+                .await?;
+
+            let row_id = source_map
+                .get("_id")
+                .and_then(Value::as_str)
+                .ok_or_else(|| AppError::internal("source row missing _id"))?
+                .to_string();
+
+            let exists_sql = format!(
+                "SELECT COUNT(1) FROM `{}` WHERE `_id` = ?",
+                options.to_table
+            );
+            let exists: i64 = sqlx::query_scalar(&exists_sql)
+                .bind(&row_id)
+                .fetch_one(&mut **transaction)
+                .await?;
+            if exists > 0 {
+                return Err(AppError::validation(format!(
+                    "cannot move row '{}': target table already contains this _id",
+                    row_id
+                )));
+            }
+
+            insert_prepared_row(
+                transaction,
+                &options.to_table,
+                &row_id,
+                source_map.get("_created_at"),
+                &prepared,
+            )
+            .await?;
+
+            let delete_sql = format!("DELETE FROM `{}` WHERE `_id` = ?", from_table);
+            sqlx::query(&delete_sql)
+                .bind(&row_id)
+                .execute(&mut **transaction)
+                .await?;
+            moved += 1;
+        }
+
+        let _ = source_definition;
+        Ok(moved)
+    }
+
+    /// Queries rows in an existing SQL transaction.
+    #[instrument(skip(self, transaction, options), fields(table = table_name))]
+    pub async fn query_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        table_name: &str,
+        options: RelationalQueryOptions,
+    ) -> Result<Vec<Value>, AppError> {
+        validate_table_name(table_name)?;
+        let schema = self.active_schema().await?;
+        let table_definition = schema_table(&schema, table_name)?;
+
+        let allowed = allowed_fields(table_definition);
+        let compiled_where = compile_where_clause(options.where_clause.as_ref(), &allowed)?;
+        let order_by = compile_order_by(Some(&options.order_by), &allowed)?;
+        let limit = effective_limit(options.limit, self.max_query_limit, 100);
+        let offset = options.offset.unwrap_or(0);
+
+        let mut sql = format!("SELECT * FROM `{}`", table_name);
+        if let Some(clause) = &compiled_where.clause {
+            sql.push_str(&format!(" WHERE {}", clause));
+        }
+        if let Some(order_by_sql) = &order_by {
+            sql.push_str(&format!(" ORDER BY {}", order_by_sql));
+        }
+        sql.push_str(" LIMIT ? OFFSET ?");
+
+        let mut query = bind_params(sqlx::query(&sql), &compiled_where.params);
+        query = query.bind(limit as i64).bind(offset as i64);
+        let rows = query.fetch_all(&mut **transaction).await?;
+        rows.iter()
+            .map(|row| row_to_public_json(row, table_definition))
+            .collect::<Result<Vec<Value>, AppError>>()
+    }
+
+    /// Counts rows in an existing SQL transaction.
+    #[instrument(skip(self, transaction, where_clause), fields(table = table_name))]
+    pub async fn count_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        table_name: &str,
+        where_clause: Option<&Value>,
+    ) -> Result<u64, AppError> {
+        validate_table_name(table_name)?;
+        let schema = self.active_schema().await?;
+        let table_definition = schema_table(&schema, table_name)?;
+        let allowed = allowed_fields(table_definition);
+        let compiled_where = compile_where_clause(where_clause, &allowed)?;
+
+        let mut sql = format!("SELECT COUNT(1) as count_value FROM `{}`", table_name);
+        if let Some(clause) = &compiled_where.clause {
+            sql.push_str(&format!(" WHERE {}", clause));
+        }
+
+        let query = bind_params(sqlx::query(&sql), &compiled_where.params);
+        let row = query.fetch_one(&mut **transaction).await?;
+        let count = row.try_get::<i64, _>("count_value")?;
+        Ok(count as u64)
+    }
+
+    /// Returns first row in an existing SQL transaction.
+    #[instrument(skip(self, transaction, options), fields(table = table_name))]
+    pub async fn first_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        table_name: &str,
+        mut options: RelationalQueryOptions,
+    ) -> Result<Option<Value>, AppError> {
+        options.limit = Some(1);
+        options.offset = Some(0);
+        let mut rows = self
+            .query_in_transaction(transaction, table_name, options)
+            .await?;
+        Ok(rows.pop())
+    }
+
     async fn active_schema(&self) -> Result<SchemaDocument, AppError> {
         SchemaRepository::new(self.pool.clone())
             .get_active_schema()
@@ -409,6 +734,44 @@ impl RelationalRepository {
             let count: i64 = sqlx::query_scalar(&sql)
                 .bind(id)
                 .fetch_one(&self.pool)
+                .await?;
+            if count == 0 {
+                return Err(AppError::validation(format!(
+                    "foreign key constraint failed for '{}': id '{}' does not exist in '{}'",
+                    field_name, id, target_table
+                )));
+            }
+        }
+        Ok(())
+    }
+
+    async fn validate_foreign_keys_in_transaction(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, MySql>,
+        table_definition: &TableDefinition,
+        payload: &PreparedPayload,
+    ) -> Result<(), AppError> {
+        for (field_name, field_definition) in &table_definition.fields {
+            let base = field_definition.unwrap_base();
+            if base.field_type != FieldType::Id {
+                continue;
+            }
+            let Some(target_table) = base.table.as_ref() else {
+                continue;
+            };
+            let Some(value) = payload.known_fields.get(field_name) else {
+                continue;
+            };
+            if value.is_null() {
+                continue;
+            }
+            let id = value.as_str().ok_or_else(|| {
+                AppError::validation(format!("field '{}' expects string id", field_name))
+            })?;
+            let sql = format!("SELECT COUNT(1) FROM `{}` WHERE `_id` = ?", target_table);
+            let count: i64 = sqlx::query_scalar(&sql)
+                .bind(id)
+                .fetch_one(&mut **transaction)
                 .await?;
             if count == 0 {
                 return Err(AppError::validation(format!(

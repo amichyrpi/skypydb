@@ -1,65 +1,86 @@
-import { mutation } from "skypydb/mutation";
-import { query } from "skypydb/query";
-import { value } from "skypydb/schemas";
+import { mutationFunction, queryFunction, value } from "skypydb";
 
-export const createTask = mutation({
+const TASKS_TABLE = "example_tasks";
+
+export const createTask = mutationFunction({
   args: {
     title: value.string(),
-    userId: value.id("users"),
+    userId: value.string(),
   },
-  handler: (ctx, args) => {
-    return ctx.db.insert("tasks", {
-      title: args.title,
-      completed: false,
-      userId: args.userId,
-    });
-  },
+  steps: [
+    {
+      op: "insert",
+      table: TASKS_TABLE,
+      value: {
+        title: "$arg.title",
+        completed: false,
+        userId: "$arg.userId",
+      },
+    },
+  ],
 });
 
-export const completeTask = mutation({
+export const completeTask = mutationFunction({
   args: {
     taskId: value.string(),
   },
-  handler: (ctx, args) => {
-    const task = ctx.db.first("tasks", {
-      where: { _id: { $eq: args.taskId } },
-    });
-    if (!task) {
-      throw new Error(`Task '${args.taskId}' not found`);
-    }
-
-    return ctx.db.update("tasks", {
-      id: args.taskId,
-      value: {
-        title: String(task.title),
-        completed: true,
-        userId: String(task.userId),
-      },
-    });
-  },
-});
-
-export const listTasksByUser = query({
-  args: {
-    userId: value.id("users"),
-  },
-  handler: (ctx, args) => {
-    return ctx.db.get("tasks", {
-      where: { userId: { $eq: args.userId } },
-      orderBy: [{ field: "title", direction: "asc" }],
-    });
-  },
-});
-
-export const countOpenTasks = query({
-  args: {
-    userId: value.id("users"),
-  },
-  handler: (ctx, args) => {
-    return ctx.db.count("tasks", {
+  steps: [
+    {
+      op: "first",
+      table: TASKS_TABLE,
       where: {
-        $and: [{ userId: { $eq: args.userId } }, { completed: { $eq: false } }],
+        _id: { $eq: "$arg.taskId" },
       },
-    });
+      into: "task",
+    },
+    {
+      op: "assert",
+      condition: "$var.task",
+      message: "Task not found",
+    },
+    {
+      op: "update",
+      table: TASKS_TABLE,
+      id: "$arg.taskId",
+      value: {
+        title: "$var.task.title",
+        completed: true,
+        userId: "$var.task.userId",
+      },
+    },
+  ],
+});
+
+export const listTasksByUser = queryFunction({
+  args: {
+    userId: value.string(),
   },
+  steps: [
+    {
+      op: "get",
+      table: TASKS_TABLE,
+      where: {
+        userId: { $eq: "$arg.userId" },
+      },
+      orderBy: [{ field: "title", direction: "asc" }],
+    },
+  ],
+});
+
+export const countOpenTasks = queryFunction({
+  args: {
+    userId: value.string(),
+  },
+  steps: [
+    {
+      op: "count",
+      table: TASKS_TABLE,
+      where: {
+        $and: [
+          { userId: { $eq: "$arg.userId" } },
+          { completed: { $eq: false } },
+        ],
+      },
+    },
+  ],
 });

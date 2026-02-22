@@ -551,14 +551,39 @@ export class SchemaClient {
   }
 }
 
+export class FunctionsClient {
+  private readonly transport: HttpTransport;
+
+  constructor(transport: HttpTransport) {
+    this.transport = transport;
+  }
+
+  async call(
+    endpoint: string,
+    args: Record<string, unknown> = {},
+  ): Promise<unknown> {
+    const data = await this.transport.request<{ result: unknown }>(
+      "POST",
+      "/v1/functions/call",
+      {
+        endpoint,
+        args,
+      },
+    );
+    return data.result;
+  }
+}
+
 export class HttpClient {
   private readonly transport: HttpTransport;
   private readonly embedding_function: EmbeddingFunction | null;
   readonly schema: SchemaClient;
+  readonly functions: FunctionsClient;
 
   constructor(options: HttpClientOptions) {
     this.transport = new HttpTransport(options);
     this.schema = new SchemaClient(this.transport);
+    this.functions = new FunctionsClient(this.transport);
 
     if (options.embedding_provider) {
       this.embedding_function = get_embedding_function(
@@ -636,6 +661,20 @@ export class HttpClient {
 
   relational(table_name: string): RelationalTableClient {
     return new RelationalTableClient(this.transport, table_name);
+  }
+
+  async callquery(
+    endpoint: string,
+    args: Record<string, unknown> = {},
+  ): Promise<unknown> {
+    return this.functions.call(endpoint, args);
+  }
+
+  async callmutation(
+    endpoint: string,
+    args: Record<string, unknown> = {},
+  ): Promise<unknown> {
+    return this.functions.call(endpoint, args);
   }
 
   async close(): Promise<void> {

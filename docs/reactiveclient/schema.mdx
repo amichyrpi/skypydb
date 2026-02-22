@@ -1,64 +1,26 @@
 ---
-title: Create a Schema
-description: "To create a new table you will need to create a schema file"
+title: ReactiveClient Schema (Deprecated)
+description: "Schema DSL runtime is removed; use HTTP schema admin API"
 ---
 
-<Steps titleSize="h3">
-  <Step title="Create a Schema">
-    To create table Skypydb use a schema file it expose every aspect of a table we provide an example for you to understand how to write your schema file:
+<Warning>Local runtime schema APIs were removed from SDK exports.</Warning>
 
-    ```python Python
-    """
-    Schema definition for Skypydb database tables.
-    This file defines all tables, their columns, types, and indexes.
-    """
+Use `HttpClient.schema`:
 
-    from skypydb.schema import defineSchema, defineTable
-    from skypydb.schema.values import value
+```python
+from skypydb import HttpClient
 
-    # Define the schema with all tables
-    schema = defineSchema({
-
-        # Table for success logs
-        "success": defineTable({
-            "component": value.string(),
-            "action": value.string(),
-            "message": value.string(),
-            "details": value.optional(value.string()),
-            "user_id": value.optional(value.string()),
-        })
-        .index("by_component", ["component"])
-        .index("by_action", ["action"])
-        .index("by_user", ["user_id"])
-        .index("by_component_and_action", ["component", "action"]),
-
-        # Table for warning logs
-        "warning": defineTable({
-            "component": value.string(),
-            "action": value.string(),
-            "message": value.string(),
-            "details": value.optional(value.string()),
-            "user_id": value.optional(value.string()),
-        })
-        .index("by_component", ["component"])
-        .index("by_action", ["action"])
-        .index("by_user", ["user_id"])
-        .index("by_component_and_action", ["component", "action"]),
-
-        # Table for error logs
-        "error": defineTable({
-            "component": value.string(),
-            "action": value.string(),
-            "message": value.string(),
-            "details": value.optional(value.string()),
-            "user_id": value.optional(value.string()),
-        })
-        .index("by_component", ["component"])
-        .index("by_action", ["action"])
-        .index("by_user", ["user_id"])
-        .index("by_component_and_action", ["component", "action"]),
-    })
-    ```
-
-  </Step>
-</Steps>
+client = HttpClient(api_url="http://localhost:8000", api_key="local-dev-key")
+client.schema.apply(
+    {
+        "tables": {
+            "users": {
+                "fields": {
+                    "name": {"type": "string"},
+                    "email": {"type": "string"},
+                }
+            }
+        }
+    }
+)
+```

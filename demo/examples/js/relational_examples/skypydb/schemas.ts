@@ -1,14 +1,30 @@
-import { defineSchema, defineTable } from "skypydb/schemas";
-import { value } from "skypydb/schemas";
+import { mutationFunction } from "skypydb";
 
-export default defineSchema({
-  users: defineTable({
-    name: value.string(),
-    email: value.string(),
-  }).index("by_email", ["email"]),
-  tasks: defineTable({
-    title: value.string(),
-    completed: value.boolean(),
-    userId: value.id("users"),
-  }).index("by_user", ["userId"]),
+export const schema_document = {
+  tables: {
+    example_users: {
+      fields: {
+        name: { type: "string" },
+        email: { type: "string" },
+      },
+      indexes: [{ name: "by_email", columns: ["email"] }],
+    },
+    example_tasks: {
+      fields: {
+        title: { type: "string" },
+        completed: { type: "boolean" },
+        userId: { type: "id", table: "example_users" },
+      },
+      indexes: [{ name: "by_user", columns: ["userId"] }],
+    },
+  },
+};
+
+export const applySchema = mutationFunction({
+  steps: [
+    {
+      op: "applySchema",
+      schema: schema_document,
+    },
+  ],
 });

@@ -662,6 +662,24 @@ class SchemaClient:
         return self._transport.request("GET", "/v1/admin/schema")
 
 
+class FunctionsClient:
+    """Function invocation API wrapper."""
+
+    def __init__(self, transport: _HttpTransport):
+        self._transport = transport
+
+    def call(self, endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+        data = self._transport.request(
+            "POST",
+            "/v1/functions/call",
+            {
+                "endpoint": endpoint,
+                "args": args or {},
+            },
+        )
+        return data.get("result")
+
+
 class HttpClient:
     """Unified HTTP client for vector + relational + schema APIs."""
 
@@ -681,6 +699,7 @@ class HttpClient:
 
         self._transport = _HttpTransport(api_url=api_url, api_key=api_key, timeout=timeout)
         self.schema = SchemaClient(self._transport)
+        self.functions = FunctionsClient(self._transport)
 
         if embedding_provider is not None:
             self._embedding_function = get_embedding_function(
@@ -745,6 +764,12 @@ class HttpClient:
 
     def relational(self, table_name: str) -> RelationalTableClient:
         return RelationalTableClient(self._transport, table_name)
+
+    def callquery(self, endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+        return self.functions.call(endpoint=endpoint, args=args)
+
+    def callmutation(self, endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+        return self.functions.call(endpoint=endpoint, args=args)
 
     def close(self) -> None:
         self._transport.close()
@@ -836,12 +861,23 @@ class AsyncSchemaClient:
         return await asyncio.to_thread(self._schema.get)
 
 
+class AsyncFunctionsClient:
+    """Async wrapper around `FunctionsClient`."""
+
+    def __init__(self, functions_client: FunctionsClient):
+        self._functions = functions_client
+
+    async def call(self, endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+        return await asyncio.to_thread(self._functions.call, endpoint, args)
+
+
 class AsyncHttpClient:
     """Async wrapper around `HttpClient`."""
 
     def __init__(self, **kwargs: Any):
         self._client = HttpClient(**kwargs)
         self.schema = AsyncSchemaClient(self._client.schema)
+        self.functions = AsyncFunctionsClient(self._client.functions)
 
     async def create_collection(
         self,
@@ -872,6 +908,12 @@ class AsyncHttpClient:
 
     def relational(self, table_name: str) -> AsyncRelationalTableClient:
         return AsyncRelationalTableClient(self._client.relational(table_name))
+
+    async def callquery(self, endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+        return await self.functions.call(endpoint=endpoint, args=args)
+
+    async def callmutation(self, endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+        return await self.functions.call(endpoint=endpoint, args=args)
 
     async def close(self) -> None:
         await asyncio.to_thread(self._client.close)

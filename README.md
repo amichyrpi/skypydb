@@ -4,483 +4,93 @@
 </div>
 
 <p align="center">
-    <b>Skypydb - Open Source Reactive and Vector Embeddings Database</b>. <br />
-    The better way to build Python and Rust logging system! And adding memory to an LLM.
+  <b>Skypydb</b> is a Rust + MySQL backend with HTTP SDKs for vector and relational workloads.
 </p>
 
-<div align="center">
+## HTTP-only SDKs
 
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/skypydb)
-[![Crates.io](https://img.shields.io/crates/v/skypydb)](https://crates.io/crates/skypydb)
-[![PyPI](https://img.shields.io/pypi/v/skypydb.svg)](https://pypi.org/project/skypydb/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/Ahen-Studio/skypydb/blob/main/LICENSE)
-[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
+Python and TypeScript SDKs are HTTP-only.
 
-</div>
+- Backend default URL: `http://localhost:8000`
+- Auth header: `X-API-Key`
+- No local runtime database files are created by the SDKs
 
-```bash
-pip install skypydb # python database
-# or download from the source
-# git clone https://github.com/Ahen-Studio/skypydb.git
-# cd skypydb
-# pip install -r requirements.txt
-```
+## Python quickstart
 
 ```bash
-cargo add skypydb # rust client
-# or download from the source
-# git clone https://github.com/Ahen-Studio/skypydb.git
+pip install skypydb
 ```
-
-## TODO
-
-- [ ] Remake CI/CD workflows
-- [ ] Remake README.md
-- [ ] Remake docs
-- [ ] Remake python and typescript clients to be http clients
-
-## Backend Transition Notice
-
-Skypydb is transitioning to a dedicated Rust + MySQL backend service.
-
-- Current local in-process runtime flows in Python/TypeScript remain available.
-- Those local runtime paths are now considered transitional and will be deprecated in favor of backend HTTP adapters.
-- New backend-first APIs are exposed by the Rust service on port `8000`.
-
-## Features
-
-- Simple: fully-documented and easy to debug with detailed error messages
-
-- Table: create, delete, search data from tables
-
-- Vector embeddings: create, search and delete vectors collections. It supports [Ollama](https://ollama.com/download), [OpenAI](https://developers.openai.com/api/docs/guides/embeddings), [Sentence-Transformers](https://huggingface.co/sentence-transformers) embeddings models (default model is [mxbai-embed-large](https://ollama.com/library/mxbai-embed-large) from Ollama).
-
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our integration.
-
-- Security, Input Validation: AES-256-GCM encryption for data at rest with selective field encryption, automatic protection against SQL injection attacks
-
-- Logger Service: all public vector database operations are logged to `skypydb/logger/log.txt` and current database state snapshots are stored in `skypydb/logger/dbstat.sqlite3`.
-
-- CLI: command line interface to initialize your database and launch the dashboard with one simple command
-
-- Observable: Dashboard with real-time data, metrics, and query inspection
-
-- Free & Open Source: MIT Licensed
-
-- Cross-platform: Windows, Linux, MacOS
-
-## Rust
-
-- use the rust client to interact with your database. examples are in the [rust](https://github.com/Ahen-Studio/skypydb/tree/main/rust) folder
-
-## TODO
-
-- [ ] Build the dashboard with python and rust server api support
-
-## What's next!
-
-- give us ideas!
-
-## Error Codes
-
-- Skypydb uses standardized error codes to help you quickly identify and handle issues:
-
-| Code       | Error                        | Description                                                             |
-| ---------- | ---------------------------- | ----------------------------------------------------------------------- |
-| **SKY001** | SkypydbError                 | Base exception for all Skypydb errors                                   |
-| **SKY101** | TableNotFoundError           | Raised when attempting to access a table that doesn't exist             |
-| **SKY102** | TableAlreadyExistsError      | Raised when trying to create a table that already exists                |
-| **SKY103** | DatabaseError                | Raised when a database operation fails                                  |
-| **SKY201** | InvalidSearchError           | Raised when search parameters are invalid                               |
-| **SKY301** | SecurityError                | Raised when a security operation fails                                  |
-| **SKY302** | ValidationError              | Raised when input validation fails                                      |
-| **SKY303** | EncryptionError              | Raised when encryption/decryption operations fail                       |
-| **SKY401** | CollectionNotFoundError      | Raised when attempting to access a vector collection that doesn't exist |
-| **SKY402** | CollectionAlreadyExistsError | Raised when trying to create a collection that already exists           |
-| **SKY403** | EmbeddingError               | Raised when embedding generation fails                                  |
-| **SKY404** | VectorSearchError            | Raised when vector similarity search fails                              |
-
-## Cli
-
-- use the cli to initialize your database and launch the dashboard with one simple command
-
-```bash
-skypydb dev
-```
-
-- run this command in your terminal
-
-## API
-
-- Use the API to interact with your database; before doing so, make sure to create a schema to define your tables.
 
 ```python
-"""
-Schema definition for Skypydb database tables.
-This file defines all tables, their columns, types, and indexes.
-"""
+from skypydb import HttpClient
 
-from skypydb.schema import defineSchema, defineTable
-from skypydb.schema.values import value
-
-# Define the schema with all tables
-schema = defineSchema({
-
-    # Table for success logs
-    "success": defineTable({
-        "component": value.string(),
-        "action": value.string(),
-        "message": value.string(),
-        "details": value.optional(value.string()),
-        "user_id": value.optional(value.string()),
-    })
-    .index("by_component", ["component"])
-    .index("by_action", ["action"])
-    .index("by_user", ["user_id"])
-    .index("by_component_and_action", ["component", "action"]),
-
-    # Table for warning logs
-    "warning": defineTable({
-        "component": value.string(),
-        "action": value.string(),
-        "message": value.string(),
-        "details": value.optional(value.string()),
-        "user_id": value.optional(value.string()),
-    })
-    .index("by_component", ["component"])
-    .index("by_action", ["action"])
-    .index("by_user", ["user_id"])
-    .index("by_component_and_action", ["component", "action"]),
-
-    # Table for error logs
-    "error": defineTable({
-        "component": value.string(),
-        "action": value.string(),
-        "message": value.string(),
-        "details": value.optional(value.string()),
-        "user_id": value.optional(value.string()),
-    })
-    .index("by_component", ["component"])
-    .index("by_action", ["action"])
-    .index("by_user", ["user_id"])
-    .index("by_component_and_action", ["component", "action"]),
-})
-```
-
-- after creating the schema file containing the tables, you can add data to your database
-
-```python
-import skypydb
-
-# Create a client
-client = skypydb.ReactiveClient()
-
-# Create tables from the schema
-# This reads the schema from db/schema.py and creates all tables
-tables = client.get_or_create_table()
-# if the tables already exists the programe get them instead
-
-# Access your tables
-success_table = tables["success"]
-warning_table = tables["warning"]
-error_table = tables["error"]
-
-# Insert data
-# Insert success logs
-success_table.add(
-    component="AuthService",
-    action="login",
-    message="User logged in successfully",
-    user_id="user123"
+client = HttpClient(
+    api_url="http://localhost:8000",
+    api_key="local-dev-key",
 )
 
-# Insert warning logs
-warning_table.add(
-    component="AuthService",
-    action="login_attempt",
-    message="Multiple failed login attempts",
-    user_id="user456",
-    details="5 failed attempts in 5 minutes"
-)
-
-# Insert error logs
-error_table.add(
-    component="DatabaseService",
-    action="connection",
-    message="Connection timeout",
-    user_id="system",
-    details="Timeout after 30 seconds"
-)
-```
-
-- after adding data to your database you can search specific data using the search method
-
-```python
-# Search results by filter
-user_success_logs = success_table.search(
-    user_id="user123"
-)
-
-if not user_success_logs:
-    print("No results found.")
-else:
-    for user_success_log in user_success_logs:
-        print(user_success_log)
-```
-
-- you can also delete specific data from your database using the delete method
-
-```python
-success_table.delete(
-    component="AuthService",
-    user_id="user123"
-)
-```
-
-### Vector
-
-- Use the vector API to perform vector operations on your database, it is useful for adding memory to an LLM.
-- The vector database path is fixed to `skypydb/vector.db` in the current Python client.
-
-```python
-import skypydb
-
-# Create a client
-client = skypydb.VectorClient(
-    embedding_provider="ollama",
-    embedding_model_config={
-        "model": "mxbai-embed-large",
-        "base_url": "http://localhost:11434"
-    }
-)
-
-# Create a collection
-collection = client.get_or_create_collection("my-documents")
-
-# Add documents
+collection = client.get_or_create_collection("docs")
 collection.add(
-    documents=["This is document1", "This is document2"],
-    metadatas=[{"source": "notion"}, {"source": "google-docs"}],
-    ids=["doc1", "doc2"]
+    ids=["doc1"],
+    documents=["Skypydb stores vectors and relational rows over HTTP."],
 )
-
-# Query for similar documents
-results = collection.query(
-    query_texts=["This is a query document"],
-    n_results=2
-)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
+print(collection.query(query_texts=["How does Skypydb work?"], n_results=1))
 ```
 
-- Use the vector API with OpenAI
-
-```python
-import skypydb
-
-# Create a client
-client = skypydb.VectorClient(
-    embedding_provider="openai",
-    embedding_model_config={
-        "api_key": "your-openai-api-key",
-        "model": "text-embedding-3-small"
-    }
-)
-
-# Create a collection
-collection = client.get_or_create_collection("my-documents")
-
-# Add documents
-collection.add(
-    documents=["This is document1", "This is document2"],
-    metadatas=[{"source": "notion"}, {"source": "google-docs"}],
-    ids=["doc1", "doc2"]
-)
-
-# Query for similar documents
-results = collection.query(
-    query_texts=["This is a query document"],
-    n_results=2
-)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-- Use the vector API with Sentence transformers
-
-```python
-import skypydb
-
-# Create a client
-client = skypydb.VectorClient(
-    embedding_provider="sentence-transformers",
-    embedding_model_config={
-        "model": "all-MiniLM-L6-v2"
-    }
-)
-
-# Create a collection
-collection = client.get_or_create_collection("my-documents")
-
-# Add documents
-collection.add(
-    documents=["This is document1", "This is document2"],
-    metadatas=[{"source": "notion"}, {"source": "google-docs"}],
-    ids=["doc1", "doc2"]
-)
-
-# Query for similar documents
-results = collection.query(
-    query_texts=["This is a query document"],
-    n_results=2
-)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-### Mem0
-
-- use this command to install skypydb and mem0
+## TypeScript quickstart
 
 ```bash
-pip install skypydb[mem0]
+cd skypydb-js
+npm install
+npm run build
 ```
 
-```python
-from mem0 import Memory
+```ts
+import { httpClient } from "skypydb";
 
-# Local mem0 config
-config = {
-    "vector_store": {
-        "provider": "skypydb",
-        "config": {
-            "collection_name": "memory",
-            "path": "db/_generated/mem0_vector.db"
-        }
-    },
-    "llm": {
-        "provider": "ollama",
-        "config": {
-            "model": "llama3.1:latest",
-            "temperature": 0.3,
-            "max_tokens": 1024,
-            "ollama_base_url": "http://localhost:11434",
-        },
-    },
-    "embedder": {
-        "provider": "ollama",
-        "config": {
-            "model": "mxbai-embed-large"
+const client = httpClient({
+  api_url: "http://localhost:8000",
+  api_key: "local-dev-key",
+});
+
+const users = client.relational("users");
+const id = await users.insert({ name: "Theo", email: "theo@example.com" });
+const rows = await users.query({ orderBy: [{ field: "name", direction: "asc" }] });
+console.log(id, rows);
+```
+
+## Relational schema apply
+
+```python
+client.schema.apply(
+    {
+        "tables": {
+            "users": {
+                "fields": {
+                    "name": {"type": "string"},
+                    "email": {"type": "string"},
+                },
+                "indexes": [{"name": "by_email", "columns": ["email"]}],
+            }
         }
     }
-}
-
-m = Memory.from_config(config)
-
-# Add memories
-m.add("I love Python programming", user_id="user1")
-m.add("My favorite color is blue", user_id="user1")
-
-# Search memories
-results = m.search("What programming language do I like?", user_id="user1")
-
-print(results)
+)
 ```
 
-### Secure Implementation
+## Backend
 
-- first create an encryption key and a salt key and make them available in the .env.local file don't show those keys to anyone, you can use the Cli to generate those keys
+The Rust backend and deployment assets are in `rust/` and `deployment/`.
 
-```python
-# you can generate a secure encryption key and salt using the cli
-# or generate a secure encryption key and salt using the this example code
+- Local compose: `deployment/local/docker-compose.yml`
+- Google compose scaffold: `deployment/google/docker-compose.yml`
 
-from skypydb.security import EncryptionManager
+## Examples
 
-# Generate a secure encryption key
-encryption_key = EncryptionManager.generate_key()
-salt = EncryptionManager.generate_salt()
-print(encryption_key) # don't show this key to anyone
-print(salt) # don't show this salt to anyone
-```
+Examples are in `demo/examples`:
 
-- Use the encryption key to encrypt sensitive data
-
-```python
-import os
-import skypydb
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv(".env.local")
-
-# Load encryption key from environment
-encryption_key = os.getenv("ENCRYPTION_KEY") # create a encryption key and make it available in .env file before using it, don't show this key to anyone
-salt_key = os.getenv("SALT_KEY") # create a salt key and make it available in .env file before using it, don't show this salt to anyone
-
-# transform salt key to bytes
-if salt_key is None:
-    raise ValueError("SALT_KEY missing")
-salt_bytes = salt_key.encode("utf-8")
-
-# Create encrypted database
-client = skypydb.ReactiveClient(
-    encryption_key=encryption_key,
-    salt=salt_bytes,
-    encrypted_fields=["message"]  # Optional: encrypt only sensitive fields
-)
-
-# All operations work the same - encryption is transparent!
-tables = client.get_or_create_table()
-# if the tables already exists the programe get them instead
-
-# Access your tables
-success_table = tables["success"]
-warning_table = tables["warning"]
-error_table = tables["error"]
-
-# Automatically encrypted
-success_table.add(
-    component="AuthService",
-    action="login",
-    message="User logged in successfully", # only this field is encrypted if encrypted_fields is not None
-    user_id="user123"
-)
-
-# Data is automatically decrypted when retrieved
-user_success_logs = success_table.search(
-    user_id="user123"
-)
-
-if not user_success_logs:
-    print("No results found.")
-else:
-    for user_success_log in user_success_logs:
-        print(user_success_log)
-```
-
-Learn more on our [Docs](https://docs.ahen-studio.com/)
-
-## All Thanks To Our Contributors:
-
-<a href="https://github.com/Ahen-Studio/skypydb/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Ahen-Studio/skypydb" />
-</a>
+- JavaScript vector, cloud, relational examples
+- Python vector, cloud, relational examples
+- mem0 integration examples under `demo/integration/mem0`
 
 ## License
 

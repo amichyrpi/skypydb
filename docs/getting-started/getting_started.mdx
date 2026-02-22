@@ -1,159 +1,67 @@
 ---
 title: Getting Started
-description: "Skypydb is an open-source reactive and vector embeddings database built in Python"
+description: "Use the HTTP-only Skypydb SDK against the Rust backend"
 ---
 
-<Note>You can use the Cli to make your life easier</Note>
+<Note>Skypydb SDKs are HTTP-only and connect to the backend on port `8000`.</Note>
 
-## Use Skypydb
+## Python
 
-<Steps titleSize="h3">
-  <Step title="Install Skypydb">
-    <CodeGroup>
-    ```bash pip
-    pip install skypydb
-    ```
+```python
+from skypydb import HttpClient
 
-    ```bash uv
-    uv pip install skypydb
-    ```
-    </CodeGroup>
+client = HttpClient(
+    api_url="http://localhost:8000",
+    api_key="local-dev-key",
+)
 
-  </Step>
+client.schema.apply(
+    {
+        "tables": {
+            "users": {
+                "fields": {
+                    "name": {"type": "string"},
+                    "email": {"type": "string"},
+                }
+            }
+        }
+    }
+)
 
-<Step title="Create a Skypydb Client">
-  ```python Python import skypydb client = skypydb.ReactiveClient() # or for
-  vector embeddings client = skypydb.VectorClient() ```
-</Step>
+user_id = client.relational("users").insert({"name": "Theo", "email": "theo@example.com"})
+rows = client.relational("users").query(orderBy=[{"field": "name", "direction": "asc"}])
+print(user_id, rows)
+```
 
-  <Step title="Create tables">
-    Tables are where you'll store your data. To create a table you will need to create a schema file. Example of a schema file to put in db/ directory:
+## TypeScript
 
-    ```python Python
-    """
-    Schema definition for Skypydb database tables.
-    This file defines all tables, their columns, types, and indexes.
-    """
+```ts
+import { httpClient } from "skypydb";
 
-    from skypydb.schema import defineSchema, defineTable
-    from skypydb.schema.values import value
+const client = httpClient({
+  api_url: "http://localhost:8000",
+  api_key: "local-dev-key",
+});
 
-    # Define the schema with all tables
-    schema = defineSchema({
+await client.schema.apply({
+  tables: {
+    users: {
+      fields: {
+        name: { type: "string" },
+        email: { type: "string" },
+      },
+    },
+  },
+});
 
-        # Table for success logs
-        "success": defineTable({
-            "component": value.string(),
-            "action": value.string(),
-            "message": value.string(),
-            "details": value.optional(value.string()),
-            "user_id": value.optional(value.string()),
-        })
-        .index("by_component", ["component"])
-        .index("by_action", ["action"])
-        .index("by_user", ["user_id"])
-        .index("by_component_and_action", ["component", "action"]),
+const userId = await client.relational("users").insert({
+  name: "Theo",
+  email: "theo@example.com",
+});
 
-        # Table for warning logs
-        "warning": defineTable({
-            "component": value.string(),
-            "action": value.string(),
-            "message": value.string(),
-            "details": value.optional(value.string()),
-            "user_id": value.optional(value.string()),
-        })
-        .index("by_component", ["component"])
-        .index("by_action", ["action"])
-        .index("by_user", ["user_id"])
-        .index("by_component_and_action", ["component", "action"]),
+const rows = await client.relational("users").query({
+  orderBy: [{ field: "name", direction: "asc" }],
+});
 
-        # Table for error logs
-        "error": defineTable({
-            "component": value.string(),
-            "action": value.string(),
-            "message": value.string(),
-            "details": value.optional(value.string()),
-            "user_id": value.optional(value.string()),
-        })
-        .index("by_component", ["component"])
-        .index("by_action", ["action"])
-        .index("by_user", ["user_id"])
-        .index("by_component_and_action", ["component", "action"]),
-    })
-    ```
-
-    You can then create a new table:
-
-    ```python Python
-    # Create tables from the schema
-    # This reads the schema from db/schema.py and creates all tables
-    tables = client.get_or_create_table()
-    # if the tables already exists the programe get them instead
-    ```
-
-  </Step>
-
-  <Step title="Add data to a table">
-    Skypydb will store your data in a database file.
-
-    ```python Python
-    # Access your tables
-    success_table = tables["success"]
-    warning_table = tables["warning"]
-    error_table = tables["error"]
-
-    # Insert data
-    # Insert success logs
-    success_table.add(
-        component="AuthService",
-        action="login",
-        message="User logged in successfully",
-        user_id="user123"
-    )
-
-    # Insert warning logs
-    warning_table.add(
-        component="AuthService",
-        action="login_attempt",
-        message="Multiple failed login attempts",
-        user_id="user456",
-        details="5 failed attempts in 5 minutes"
-    )
-
-    # Insert error logs
-    error_table.add(
-        component="DatabaseService",
-        action="connection",
-        message="Connection timeout",
-        user_id="system",
-        details="Timeout after 30 seconds"
-    )
-    ```
-
-  </Step>
-
-  <Step title="Search data in the table">
-    You can search data in the table and Skypydb will return the data.
-
-    ```python Python
-    # Access your tables
-    success_table = tables["success"]
-    warning_table = tables["warning"]
-    error_table = tables["error"]
-
-    # Search results by filter
-    user_success_logs = success_table.search(
-        user_id="user123"
-    )
-
-    if not user_success_logs:
-        print("No results found.")
-    else:
-        for user_success_log in user_success_logs:
-            print(user_success_log)
-    ```
-
-  </Step>
-</Steps>
-
-See the Vector Client section to learn how to use the vector portion of the database.
+console.log(userId, rows);
+```

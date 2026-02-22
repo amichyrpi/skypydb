@@ -52,16 +52,10 @@ class OllamaEmbedding(EmbeddingsFunction, EmbeddingCallable):
         model = getattr(self, "model", "mxbai-embed-large")
         url = f"{base_url}/api/embeddings"
 
-        data = json.dumps({
-            "model": model,
-            "prompt": text
-        }).encode("utf-8")
+        data = json.dumps({"model": model, "prompt": text}).encode("utf-8")
 
         request = urllib.request.Request(
-            url,
-            data=data,
-            headers={"Content-Type": "application/json"},
-            method="POST"
+            url, data=data, headers={"Content-Type": "application/json"}, method="POST"
         )
 
         try:

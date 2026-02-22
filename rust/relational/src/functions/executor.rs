@@ -3,16 +3,12 @@ use std::collections::{BTreeMap, BTreeSet};
 use serde_json::{Map, Value};
 use sqlx::{MySql, MySqlPool};
 
-use crate::domain::relational::query_planner::OrderByClause;
-use crate::domain::schema::planner::apply_schema;
 use crate::functions::manifest::{FunctionKind, FunctionsManifest, ManifestFunction, ManifestStep};
-use crate::repositories::relational_repo::{
-    MoveOptions, RelationalQueryOptions, RelationalRepository,
-};
-use skypydb_common::schema::types::{FieldDefinition, FieldType, SchemaDocument};
+use crate::repositories::relational_repo::{OrderByClause, RelationalQueryOptions, RelationalRepository};
+use skypydb_common::schema::types::{FieldDefinition, FieldType};
 use skypydb_errors::AppError;
 
-/// Executes a manifest-defined function call and returns its JSON result.
+/// Executes a runtime-defined function call and returns its JSON result.
 pub async fn execute_manifest_function(
     pool: &MySqlPool,
     max_query_limit: u32,
@@ -29,41 +25,13 @@ pub async fn execute_manifest_function(
 
     match function.kind {
         FunctionKind::Query => {
-            execute_steps_without_transaction(
-                &repository,
-                pool,
-                function,
-                &validated_args,
-                ExecutionMode::ReadOnly,
-            )
-            .await
+            execute_steps_without_transaction(&repository, function, &validated_args, true).await
         }
         FunctionKind::Mutation => {
-            if function.steps.iter().any(|step| step.op == "applySchema") {
-                if function.steps.len() != 1 || function.steps[0].op != "applySchema" {
-                    return Err(AppError::validation(
-                        "applySchema functions must contain only one applySchema step",
-                    ));
-                }
-                return execute_steps_without_transaction(
-                    &repository,
-                    pool,
-                    function,
-                    &validated_args,
-                    ExecutionMode::ReadWrite,
-                )
-                .await;
-            }
-
             let mut transaction = pool.begin().await?;
-            let result = execute_steps_with_transaction(
-                &repository,
-                pool,
-                function,
-                &validated_args,
-                &mut transaction,
-            )
-            .await;
+            let result =
+                execute_steps_with_transaction(&repository, function, &validated_args, &mut transaction)
+                    .await;
 
             match result {
                 Ok(value) => {
@@ -79,10 +47,30 @@ pub async fn execute_manifest_function(
     }
 }
 
-#[derive(Clone, Copy)]
-enum ExecutionMode {
-    ReadOnly,
-    ReadWrite,
+/// Ensures backing tables used by function steps exist.
+pub async fn ensure_runtime_tables(
+    pool: &MySqlPool,
+    max_query_limit: u32,
+    manifest: &FunctionsManifest,
+) -> Result<(), AppError> {
+    let repository = RelationalRepository::new(pool.clone(), max_query_limit);
+    let mut tables = BTreeSet::<String>::new();
+
+    for function in manifest.functions.values() {
+        for step in &function.steps {
+            if matches!(step.op.as_str(), "get" | "first" | "insert") {
+                if let Some(table) = step.payload.get("table").and_then(Value::as_str) {
+                    tables.insert(table.to_string());
+                }
+            }
+        }
+    }
+
+    for table in tables {
+        repository.ensure_table(&table).await?;
+    }
+
+    Ok(())
 }
 
 struct RuntimeContext {
@@ -101,24 +89,23 @@ impl RuntimeContext {
 
 async fn execute_steps_without_transaction(
     repository: &RelationalRepository,
-    pool: &MySqlPool,
     function: &ManifestFunction,
     args: &Map<String, Value>,
-    mode: ExecutionMode,
+    read_only: bool,
 ) -> Result<Value, AppError> {
     let mut context = RuntimeContext::new(args.clone());
     let mut last_result = Value::Null;
 
     for step in &function.steps {
-        if mode_is_read_only(mode) && is_write_step(step) {
+        if read_only && is_write_step(step) {
             return Err(AppError::validation(format!(
                 "query function cannot execute '{}' step",
                 step.op
             )));
         }
 
-        let step_result =
-            execute_step_without_transaction(repository, pool, mode, &mut context, step).await?;
+        let step_result = execute_step_without_transaction(repository, read_only, &mut context, step)
+            .await?;
 
         if let Some(into) = &step.into {
             context.vars.insert(into.clone(), step_result.clone());
@@ -135,7 +122,6 @@ async fn execute_steps_without_transaction(
 
 async fn execute_steps_with_transaction(
     repository: &RelationalRepository,
-    pool: &MySqlPool,
     function: &ManifestFunction,
     args: &Map<String, Value>,
     transaction: &mut sqlx::Transaction<'_, MySql>,
@@ -145,8 +131,7 @@ async fn execute_steps_with_transaction(
 
     for step in &function.steps {
         let step_result =
-            execute_step_with_transaction(repository, pool, &mut context, transaction, step)
-                .await?;
+            execute_step_with_transaction(repository, &mut context, transaction, step).await?;
 
         if let Some(into) = &step.into {
             context.vars.insert(into.clone(), step_result.clone());
@@ -161,21 +146,13 @@ async fn execute_steps_with_transaction(
     Ok(last_result)
 }
 
-fn mode_is_read_only(mode: ExecutionMode) -> bool {
-    matches!(mode, ExecutionMode::ReadOnly)
-}
-
 fn is_write_step(step: &ManifestStep) -> bool {
-    matches!(
-        step.op.as_str(),
-        "insert" | "update" | "delete" | "move" | "applySchema"
-    )
+    matches!(step.op.as_str(), "insert")
 }
 
 async fn execute_step_without_transaction(
     repository: &RelationalRepository,
-    pool: &MySqlPool,
-    mode: ExecutionMode,
+    read_only: bool,
     context: &mut RuntimeContext,
     step: &ManifestStep,
 ) -> Result<Value, AppError> {
@@ -190,62 +167,12 @@ async fn execute_step_without_transaction(
             let row = repository.first(&table, options).await?;
             Ok(row.unwrap_or(Value::Null))
         }
-        "count" => {
-            let table = required_string_param(step, "table", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let count = repository.count(&table, where_clause.as_ref()).await?;
-            Ok(Value::Number(serde_json::Number::from(count)))
-        }
         "insert" => {
-            ensure_write_allowed(mode, "insert")?;
+            ensure_write_allowed(read_only, "insert")?;
             let table = required_string_param(step, "table", context)?;
             let payload = required_json_param(step, "value", context)?;
             let id = repository.insert(&table, &payload).await?;
             Ok(Value::String(id))
-        }
-        "update" => {
-            ensure_write_allowed(mode, "update")?;
-            let table = required_string_param(step, "table", context)?;
-            let id = optional_string_param(step, "id", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let value = required_json_param(step, "value", context)?;
-            let affected = repository
-                .update(&table, id.as_deref(), where_clause.as_ref(), &value)
-                .await?;
-            Ok(Value::Number(serde_json::Number::from(affected)))
-        }
-        "delete" => {
-            ensure_write_allowed(mode, "delete")?;
-            let table = required_string_param(step, "table", context)?;
-            let id = optional_string_param(step, "id", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let affected = repository
-                .delete(&table, id.as_deref(), where_clause.as_ref())
-                .await?;
-            Ok(Value::Number(serde_json::Number::from(affected)))
-        }
-        "move" => {
-            ensure_write_allowed(mode, "move")?;
-            let table = required_string_param(step, "table", context)?;
-            let to_table = required_string_param(step, "toTable", context)?;
-            let id = optional_string_param(step, "id", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let field_map = optional_string_map_param(step, "fieldMap", context)?;
-            let defaults = optional_object_param(step, "defaults", context)?;
-
-            let affected = repository
-                .move_rows(
-                    &table,
-                    &MoveOptions {
-                        to_table,
-                        id,
-                        where_clause,
-                        field_map,
-                        defaults,
-                    },
-                )
-                .await?;
-            Ok(Value::Number(serde_json::Number::from(affected)))
         }
         "assert" => {
             let condition = required_json_param(step, "condition", context)?;
@@ -262,24 +189,6 @@ async fn execute_step_without_transaction(
             Ok(value)
         }
         "return" => required_json_param(step, "value", context),
-        "applySchema" => {
-            ensure_write_allowed(mode, "applySchema")?;
-            let schema_value = required_json_param(step, "schema", context)?;
-            let schema =
-                serde_json::from_value::<SchemaDocument>(schema_value).map_err(|error| {
-                    AppError::validation(format!(
-                        "invalid schema payload in applySchema step: {}",
-                        error
-                    ))
-                })?;
-            let result = apply_schema(pool, &schema).await?;
-            serde_json::to_value(result).map_err(|error| {
-                AppError::internal(format!(
-                    "failed to serialize applySchema result for function execution: {}",
-                    error
-                ))
-            })
-        }
         _ => Err(AppError::validation(format!(
             "unsupported function step op '{}'",
             step.op
@@ -289,7 +198,6 @@ async fn execute_step_without_transaction(
 
 async fn execute_step_with_transaction(
     repository: &RelationalRepository,
-    pool: &MySqlPool,
     context: &mut RuntimeContext,
     transaction: &mut sqlx::Transaction<'_, MySql>,
     step: &ManifestStep,
@@ -309,14 +217,6 @@ async fn execute_step_with_transaction(
                 .await?;
             Ok(row.unwrap_or(Value::Null))
         }
-        "count" => {
-            let table = required_string_param(step, "table", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let count = repository
-                .count_in_transaction(transaction, &table, where_clause.as_ref())
-                .await?;
-            Ok(Value::Number(serde_json::Number::from(count)))
-        }
         "insert" => {
             let table = required_string_param(step, "table", context)?;
             let payload = required_json_param(step, "value", context)?;
@@ -324,54 +224,6 @@ async fn execute_step_with_transaction(
                 .insert_in_transaction(transaction, &table, &payload)
                 .await?;
             Ok(Value::String(id))
-        }
-        "update" => {
-            let table = required_string_param(step, "table", context)?;
-            let id = optional_string_param(step, "id", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let value = required_json_param(step, "value", context)?;
-            let affected = repository
-                .update_in_transaction(
-                    transaction,
-                    &table,
-                    id.as_deref(),
-                    where_clause.as_ref(),
-                    &value,
-                )
-                .await?;
-            Ok(Value::Number(serde_json::Number::from(affected)))
-        }
-        "delete" => {
-            let table = required_string_param(step, "table", context)?;
-            let id = optional_string_param(step, "id", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let affected = repository
-                .delete_in_transaction(transaction, &table, id.as_deref(), where_clause.as_ref())
-                .await?;
-            Ok(Value::Number(serde_json::Number::from(affected)))
-        }
-        "move" => {
-            let table = required_string_param(step, "table", context)?;
-            let to_table = required_string_param(step, "toTable", context)?;
-            let id = optional_string_param(step, "id", context)?;
-            let where_clause = optional_json_param(step, "where", context)?;
-            let field_map = optional_string_map_param(step, "fieldMap", context)?;
-            let defaults = optional_object_param(step, "defaults", context)?;
-
-            let affected = repository
-                .move_rows_in_transaction(
-                    transaction,
-                    &table,
-                    &MoveOptions {
-                        to_table,
-                        id,
-                        where_clause,
-                        field_map,
-                        defaults,
-                    },
-                )
-                .await?;
-            Ok(Value::Number(serde_json::Number::from(affected)))
         }
         "assert" => {
             let condition = required_json_param(step, "condition", context)?;
@@ -388,23 +240,6 @@ async fn execute_step_with_transaction(
             Ok(value)
         }
         "return" => required_json_param(step, "value", context),
-        "applySchema" => {
-            let schema_value = required_json_param(step, "schema", context)?;
-            let schema =
-                serde_json::from_value::<SchemaDocument>(schema_value).map_err(|error| {
-                    AppError::validation(format!(
-                        "invalid schema payload in applySchema step: {}",
-                        error
-                    ))
-                })?;
-            let result = apply_schema(pool, &schema).await?;
-            serde_json::to_value(result).map_err(|error| {
-                AppError::internal(format!(
-                    "failed to serialize applySchema result for function execution: {}",
-                    error
-                ))
-            })
-        }
         _ => Err(AppError::validation(format!(
             "unsupported function step op '{}'",
             step.op
@@ -412,8 +247,8 @@ async fn execute_step_with_transaction(
     }
 }
 
-fn ensure_write_allowed(mode: ExecutionMode, op: &str) -> Result<(), AppError> {
-    if mode_is_read_only(mode) {
+fn ensure_write_allowed(read_only: bool, op: &str) -> Result<(), AppError> {
+    if read_only {
         return Err(AppError::validation(format!(
             "query function cannot execute '{}' step",
             op
@@ -486,26 +321,6 @@ fn required_string_param(
     })
 }
 
-fn optional_string_param(
-    step: &ManifestStep,
-    name: &str,
-    context: &RuntimeContext,
-) -> Result<Option<String>, AppError> {
-    let Some(value) = optional_json_param(step, name, context)? else {
-        return Ok(None);
-    };
-    value
-        .as_str()
-        .map(ToOwned::to_owned)
-        .ok_or_else(|| {
-            AppError::validation(format!(
-                "step '{}' payload '{}' must evaluate to a string or null",
-                step.op, name
-            ))
-        })
-        .map(Some)
-}
-
 fn optional_u32_param(
     step: &ManifestStep,
     name: &str,
@@ -543,53 +358,6 @@ fn optional_order_by_param(
             step.op, name, error
         ))
     })
-}
-
-fn optional_string_map_param(
-    step: &ManifestStep,
-    name: &str,
-    context: &RuntimeContext,
-) -> Result<BTreeMap<String, String>, AppError> {
-    let Some(value) = optional_json_param(step, name, context)? else {
-        return Ok(BTreeMap::new());
-    };
-    let object = value.as_object().ok_or_else(|| {
-        AppError::validation(format!(
-            "step '{}' payload '{}' must evaluate to an object",
-            step.op, name
-        ))
-    })?;
-    let mut output = BTreeMap::new();
-    for (key, value) in object {
-        let as_string = value.as_str().ok_or_else(|| {
-            AppError::validation(format!(
-                "step '{}' payload '{}' key '{}' must map to a string",
-                step.op, name, key
-            ))
-        })?;
-        output.insert(key.clone(), as_string.to_string());
-    }
-    Ok(output)
-}
-
-fn optional_object_param(
-    step: &ManifestStep,
-    name: &str,
-    context: &RuntimeContext,
-) -> Result<BTreeMap<String, Value>, AppError> {
-    let Some(value) = optional_json_param(step, name, context)? else {
-        return Ok(BTreeMap::new());
-    };
-    let object = value.as_object().ok_or_else(|| {
-        AppError::validation(format!(
-            "step '{}' payload '{}' must evaluate to an object",
-            step.op, name
-        ))
-    })?;
-    Ok(object
-        .iter()
-        .map(|(key, value)| (key.clone(), value.clone()))
-        .collect::<BTreeMap<String, Value>>())
 }
 
 fn required_literal_string(step: &ManifestStep, name: &str) -> Result<String, AppError> {

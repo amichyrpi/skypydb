@@ -1,12 +1,11 @@
 import skypydb
 
 # Create a client
-client = skypydb.httpClient(
-    api_url="https://ahen-studio.com/skypydb",
-    api_key="your-api-key"
+client = skypydb.HttpClient(
+    api_url="https://ahen-studio.com/skypydb", api_key="your-api-key"
 )
 # you can also use the self-hosted server
-# client = skypydb.httpClient(
+# client = skypydb.HttpClient(
 #     api_url="http://localhost:8000",
 #     api_key="local-dev-key"
 # )
@@ -18,16 +17,16 @@ vectordb = client.create_collection("my-videos")
 
 # Add data to your vector database
 vectordb.add(
-    data=["Video Theo1", "Video Theo2"], # data to add
-    metadatas=[{"source": "youtube"}, {"source": "dailymotion"}], # metadata to add to the data
-    ids=["vid1", "vid2"] # unique ids for the data
+    documents=["Video Theo1", "Video Theo2"],  # data to add
+    metadatas=[
+        {"source": "youtube"},
+        {"source": "dailymotion"},
+    ],  # metadata to add to the data
+    ids=["vid1", "vid2"],  # unique ids for the data
 )
 
 # Query for similar data
-results = vectordb.query(
-    query_texts=["This is a query"],
-    number_of_results=2
-)
+results = vectordb.query(query_texts=["This is a query"], n_results=2)
 
 # Access results
 if not results:

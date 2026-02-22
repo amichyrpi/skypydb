@@ -1,9 +1,10 @@
 import asyncio
 import skypydb
 
+
 async def main() -> None:
     # Create an async client.
-    client = skypydb.AsynchttpClient(
+    client = skypydb.AsyncHttpClient(
         api_url="http://localhost:8000",
         api_key="local-dev-key",
         embedding_provider="ollama",
@@ -18,7 +19,7 @@ async def main() -> None:
 
     # Add data to your vector database.
     await vectordb.add(
-        data=["Video Theo1", "Video Theo2"],
+        documents=["Video Theo1", "Video Theo2"],
         metadatas=[{"source": "youtube"}, {"source": "dailymotion"}],
         ids=["vid1", "vid2"],
     )

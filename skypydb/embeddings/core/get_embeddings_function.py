@@ -15,9 +15,9 @@ def _validate_remaining_config(
             f"Unsupported embedding config keys for provider '{provider}': {unsupported_keys}"
         )
 
+
 def get_embedding_function(
-    provider: str = "ollama",
-    **config: Any
+    provider: str = "ollama", **config: Any
 ) -> Callable[[List[str]], List[List[float]]]:
     """
     Get an embedding function from supported providers.
@@ -58,12 +58,14 @@ def get_embedding_function(
             organization=organization,
             project=project,
             timeout=timeout,
-            dimension=dimension
+            dimension=dimension,
         )
 
     # sentence-transformers provider
     if provider in {"sentence-transformers", "sentence-transformer"}:
-        from skypydb.embeddings.sentence_transformers import SentenceTransformerEmbedding
+        from skypydb.embeddings.sentence_transformers import (
+            SentenceTransformerEmbedding,
+        )
 
         model = config.pop("model", "all-MiniLM-L6-v2")
         device = config.pop("device", None)
@@ -74,7 +76,7 @@ def get_embedding_function(
             model=model,
             device=device,
             normalize_embeddings=normalize_embeddings,
-            dimension=dimension
+            dimension=dimension,
         )
     raise ValueError(
         f"Unsupported embedding provider '{provider}'. "

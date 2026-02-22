@@ -10,7 +10,7 @@ config = {
             "collection_name": "memory",
             "api_url": os.getenv("SKYPYDB_API_URL", "http://localhost:8000"),
             "api_key": os.getenv("SKYPYDB_API_KEY", "local-dev-key"),
-        }
+        },
     },
     "llm": {
         "provider": "ollama",
@@ -21,12 +21,7 @@ config = {
             "ollama_base_url": "http://localhost:11434",
         },
     },
-    "embedder": {
-        "provider": "ollama",
-        "config": {
-            "model": "mxbai-embed-large"
-        }
-    }
+    "embedder": {"provider": "ollama", "config": {"model": "mxbai-embed-large"}},
 }
 
 m = Memory.from_config(config)

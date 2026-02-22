@@ -1,4 +1,2 @@
-﻿/// Relational row CRUD repository.
+/// Runtime function row storage repository.
 pub mod relational_repo;
-/// Schema metadata and DDL repository.
-pub mod schema_repo;

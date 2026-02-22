@@ -12,8 +12,8 @@
 import { ApiFromFunction, FunctionExporter } from "skypydb/serverside";
 import { deploys } from "skypydb/functions";
 
-import type * as users from "users.ts";
-import type * as read from "read.ts";
+import type * as users from "./users";
+import type * as read from "./read";
 
 declare const Api: ApiFromFunction<{
   users: typeof users;

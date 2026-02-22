@@ -9,19 +9,14 @@ Use `deployment/local/docker-compose.yml` to start:
 1. `skypydb-api` on port `8000`
 2. MySQL 8.4
 3. Optional Adminer UI (`--profile debug`)
-4. TypeScript function manifest mounted from:
-   - `demo/examples/python/relational_examples/skypydb/.generated/functions.manifest.json`
+4. TypeScript function source mounted from:
+   - `demo/examples/python/relational_examples/skypydb/`
 
 ```bash
 docker compose -f deployment/local/docker-compose.yml up -d
 ```
 
-Before running relational function examples, build the manifest:
-
-```bash
-cd demo/examples/python/relational_examples
-npx skypydb functions build
-```
+No build step is required for relational functions in local mode.
 
 ### Google Cloud
 

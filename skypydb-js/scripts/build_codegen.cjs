@@ -6,10 +6,10 @@ const sourcePath = path.join(
   projectRoot,
   "src",
   "cli",
-  "templates",
+  "codegen_templates",
   "README.md",
 );
-const targetDir = path.join(projectRoot, "dist", "templates");
+const targetDir = path.join(projectRoot, "dist", "codegen_templates");
 const targetPath = path.join(targetDir, "README.md");
 
 if (!fs.existsSync(sourcePath)) {

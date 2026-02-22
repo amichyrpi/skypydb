@@ -1,8 +1,8 @@
-import { EmbeddingCallableMixin } from "../../utils/embedding_callable";
+import { EmbeddingCallable } from "../../utils/embedding_callable";
 import { get_embedding } from "./get_embedding";
 import type { EmbeddingMatrix } from "../../types";
 
-export abstract class EmbeddingsFunction extends EmbeddingCallableMixin {
+export abstract class EmbeddingsFunction extends EmbeddingCallable {
   protected _dimension: number | null;
 
   constructor(dimension?: number) {

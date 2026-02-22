@@ -1,7 +1,7 @@
 import skypydb
 
 # Create a client
-client = skypydb.httpClient(
+client = skypydb.HttpClient(
     api_url="http://localhost:8000",
     api_key="local-dev-key",
     embedding_provider="ollama",
@@ -17,7 +17,7 @@ vectordb = client.get_or_create_collection("my-videos")
 # Firts add data to your vector database
 # Add data to your vector database
 vectordb.add(
-    data=["Video Theo1", "Video Theo2"],  # data to add
+    documents=["Video Theo1", "Video Theo2"],  # data to add
     metadatas=[
         {"source": "youtube"},
         {"source": "dailymotion"},
@@ -26,7 +26,7 @@ vectordb.add(
 )
 
 # Query for similar data
-results = vectordb.query(query_texts=["This is a query"], number_of_results=2)
+results = vectordb.query(query_texts=["This is a query"], n_results=2)
 
 # Access results
 if not results:

@@ -69,10 +69,7 @@ export function get_embedding_function(
     return provider_instance.embed.bind(provider_instance);
   }
 
-  if (
-    normalized === "sentence-transformers" ||
-    normalized === "sentence-transformer"
-  ) {
+  if (normalized === "sentence-transformers") {
     const model = (mutable.model as string | undefined) ?? "all-MiniLM-L6-v2";
     const device = mutable.device as string | undefined;
     const normalize_embeddings =

@@ -51,9 +51,7 @@ class OpenAIEmbedding(EmbeddingsFunction, EmbeddingCallable):
                 "Install it with `pip install openai`."
             ) from exc
 
-        client_kwargs: dict[str, Any] = {
-            "api_key": self.api_key
-        }
+        client_kwargs: dict[str, Any] = {"api_key": self.api_key}
         if self.base_url is not None:
             client_kwargs["base_url"] = self.base_url
         if self.organization is not None:
@@ -65,19 +63,13 @@ class OpenAIEmbedding(EmbeddingsFunction, EmbeddingCallable):
 
         self._client = OpenAI(**client_kwargs)
 
-    def embed(
-        self,
-        texts: List[str]
-    ) -> List[List[float]]:
+    def embed(self, texts: List[str]) -> List[List[float]]:
         """Generate embeddings for a list of texts using OpenAI API."""
 
         if not texts:
             return []
 
-        response = self._client.embeddings.create(
-            model=self.model,
-            input=texts
-        )
+        response = self._client.embeddings.create(model=self.model, input=texts)
         embeddings = [list(item.embedding) for item in response.data]
         if self._dimension is None and embeddings:
             self._dimension = len(embeddings[0])

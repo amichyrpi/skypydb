@@ -39,13 +39,15 @@ class SentenceTransformerEmbedding(EmbeddingsFunction, EmbeddingCallable):
 
         try:
             self._model = SentenceTransformer(
-                model_name_or_path=self.model,
-                device=self.device,
-                backend="onnx"
+                model_name_or_path=self.model, device=self.device, backend="onnx"
             )
         except Exception as exc:
             error_text = str(exc).lower()
-            if "onnx" in error_text and "optimum" in error_text and "runtime" in error_text:
+            if (
+                "onnx" in error_text
+                and "optimum" in error_text
+                and "runtime" in error_text
+            ):
                 raise ImportError(
                     "ONNX runtime backend is required for sentence-transformers. "
                     "Install with `pip install sentence-transformers[onnx]`."
@@ -70,9 +72,7 @@ class SentenceTransformerEmbedding(EmbeddingsFunction, EmbeddingCallable):
             return []
 
         vectors = self._model.encode(
-            texts,
-            convert_to_numpy=True,
-            normalize_embeddings=self.normalize_embeddings
+            texts, convert_to_numpy=True, normalize_embeddings=self.normalize_embeddings
         )
         embeddings = [self._to_list(vector) for vector in vectors]
         if self._dimension is None and embeddings:

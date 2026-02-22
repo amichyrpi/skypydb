@@ -15,10 +15,7 @@ use skypydb_file_storage::maybe_backup_on_startup;
 use skypydb_health_check::router as health_router;
 use skypydb_metrics::{init_metrics, MetricsConfig};
 use skypydb_mysql::run_bootstrap_migrations;
-use skypydb_relational::functions::manifest::load_manifest;
-use skypydb_relational::routes::admin_schema::router as admin_schema_router;
 use skypydb_relational::routes::functions::router as functions_router;
-use skypydb_relational::routes::relational::router as relational_router;
 use skypydb_telemetry::{init_tracing, trace_http_action};
 use skypydb_vector::routes::router as vector_router;
 use tokio::net::TcpListener;
@@ -33,19 +30,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = AppConfig::from_env()?;
     init_metrics(MetricsConfig::from_env())?;
     init_tracing(&config.log_level)?;
-
-    if let Some(manifest) = load_manifest(std::path::Path::new(&config.functions_manifest_path))? {
-        info!(
-            manifest_path = %config.functions_manifest_path,
-            endpoints = manifest.functions.len(),
-            "loaded functions manifest",
-        );
-    } else {
-        info!(
-            manifest_path = %config.functions_manifest_path,
-            "functions manifest not found; function calls will return not-found until one is generated",
-        );
-    }
+    info!(
+        functions_source_dir = %config.functions_source_dir,
+        "function source runtime enabled",
+    );
 
     let pool = build_mysql_pool(&config).await?;
     run_bootstrap_migrations(&pool).await?;
@@ -64,9 +52,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn build_router(state: AppState) -> Router {
     let protected_router = Router::new()
-        .merge(admin_schema_router())
         .merge(functions_router())
-        .merge(relational_router())
         .merge(vector_router())
         .layer(from_fn_with_state(state.clone(), require_api_key));
 

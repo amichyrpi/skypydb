@@ -6,7 +6,7 @@ use serde_json::{Map, Value};
 pub struct FunctionCallRequest {
     /// Endpoint key in `<module>.<function>` format.
     pub endpoint: String,
-    /// Runtime args validated against the function manifest.
+    /// Runtime args validated against loaded function definitions.
     #[serde(default)]
     pub args: Value,
 }

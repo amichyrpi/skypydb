@@ -18,11 +18,11 @@ services:
       SKYPYDB_CORS_ORIGINS: "*"
       SKYPYDB_VECTOR_MAX_DIM: "4096"
       SKYPYDB_QUERY_MAX_LIMIT: "500"
-      SKYPYDB_FUNCTIONS_MANIFEST_PATH: "/srv/skypydb/.generated/functions.manifest.json"
+      SKYPYDB_FUNCTIONS_SOURCE_DIR: "/srv/skypydb"
     ports:
       - "8000:8000"
     volumes:
-      - ../../demo/examples/python/relational_examples/skypydb/.generated:/srv/skypydb/.generated:ro
+      - ../../demo/examples/python/relational_examples/skypydb:/srv/skypydb:ro
 
   mysql:
     image: mysql:8.4

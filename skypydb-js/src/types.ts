@@ -14,8 +14,7 @@ export type EmbeddingMatrix = EmbeddingVector[];
 export type EmbeddingProviderName =
   | "ollama"
   | "openai"
-  | "sentence-transformers"
-  | "sentence-transformer";
+  | "sentence-transformers";
 
 export type EmbeddingFunction = (texts: string[]) => Promise<EmbeddingMatrix>;
 
@@ -58,7 +57,6 @@ export type AddParams = {
   embeddings?: EmbeddingMatrix;
   documents?: string[];
   metadatas?: Metadata[];
-  data?: string[];
 };
 
 export type UpdateParams = {
@@ -81,7 +79,6 @@ export type QueryParams = {
   query_embeddings?: EmbeddingMatrix;
   query_texts?: string[];
   n_results?: number;
-  number_of_results?: number;
   where?: WhereFilter;
   where_document?: WhereDocumentFilter;
   include?: IncludeKeys[];
@@ -91,9 +88,6 @@ export type DeleteParams = {
   ids?: string[];
   where?: WhereFilter;
   where_document?: WhereDocumentFilter;
-  by_ids?: string[];
-  by_metadatas?: Record<string, unknown> | Array<Record<string, unknown>>;
-  by_data?: string | string[];
 };
 
 export type HttpClientOptions = {
@@ -102,37 +96,6 @@ export type HttpClientOptions = {
   timeout_ms?: number;
   embedding_provider?: EmbeddingProviderName;
   embedding_model_config?: Record<string, unknown>;
-};
-
-export type RelationalOrderBy = {
-  field: string;
-  direction?: "asc" | "desc";
-};
-
-export type RelationalUpdateParams = {
-  id?: string;
-  where?: Record<string, unknown>;
-  value: Record<string, unknown>;
-};
-
-export type RelationalDeleteParams = {
-  id?: string;
-  where?: Record<string, unknown>;
-};
-
-export type RelationalMoveParams = {
-  toTable: string;
-  id?: string;
-  where?: Record<string, unknown>;
-  fieldMap?: Record<string, string>;
-  defaults?: Record<string, unknown>;
-};
-
-export type RelationalQueryParams = {
-  where?: Record<string, unknown>;
-  orderBy?: RelationalOrderBy[];
-  limit?: number;
-  offset?: number;
 };
 
 export type SchemaFieldType =

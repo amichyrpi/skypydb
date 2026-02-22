@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import prompts from "prompts";
 import { Command, CommanderError } from "commander";
-import { build_functions_manifest } from "../functions/compiler";
 import package_json from "../../package.json";
 
 type DevAction = "local" | "cloud" | "exit";
@@ -29,9 +28,16 @@ function load_readme_template(): string {
   const candidates: string[] = [];
 
   if (typeof __dirname === "string") {
-    candidates.push(path.join(__dirname, "templates", "README.md"));
+    candidates.push(path.join(__dirname, "codegen_templates", "README.md"));
     candidates.push(
-      path.join(__dirname, "..", "src", "cli", "templates", "README.md"),
+      path.join(
+        __dirname,
+        "..",
+        "src",
+        "cli",
+        "codegen_templates",
+        "README.md",
+      ),
     );
   }
 
@@ -175,22 +181,6 @@ function create_program(dependencies: CliDependencies): Command {
     .description("Deploy your project")
     .action((): void => {
       dependencies.log(NOT_READY_TEXT);
-    });
-
-  const functions_command = program
-    .command("functions")
-    .description("Build and inspect TypeScript function manifests");
-
-  functions_command
-    .command("build")
-    .description("Build ./skypydb/.generated/functions.manifest.json")
-    .action((): void => {
-      const result = build_functions_manifest({
-        cwd: dependencies.cwd(),
-      });
-      dependencies.log(
-        `Built ${result.function_count} function(s) from ${result.source_files} file(s): ${result.output_path}`,
-      );
     });
 
   program.exitOverride();

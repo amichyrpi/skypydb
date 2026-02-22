@@ -5,7 +5,7 @@ import { readFunction, value } from "skypydb/functions";
 export const readDatabase = readFunction({
   // Validators for arguments.
   args: {
-    name: value.number(),
+    name: value.string(),
     email: value.string(),
   },
 

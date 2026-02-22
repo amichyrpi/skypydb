@@ -1,12 +1,10 @@
-use std::path::Path;
-
 use axum::extract::State;
 use axum::routing::post;
 use axum::{Json, Router};
 
 use crate::api_models::functions::{FunctionCallRequest, FunctionCallResponse};
-use crate::functions::executor::execute_manifest_function;
-use crate::functions::manifest::load_manifest;
+use crate::functions::executor::{ensure_runtime_tables, execute_manifest_function};
+use crate::functions::manifest::load_functions_from_source;
 use skypydb_application::state::AppState;
 use skypydb_common::api::envelope::ApiEnvelope;
 use skypydb_errors::AppError;
@@ -27,14 +25,16 @@ async fn call_function(
         ));
     }
 
-    let manifest_path = Path::new(&state.config.functions_manifest_path);
-    let manifest = load_manifest(manifest_path)?;
-    let Some(manifest) = manifest else {
+    let source_dir = std::path::Path::new(&state.config.functions_source_dir);
+    let manifest = load_functions_from_source(source_dir)?;
+    if !manifest.functions.contains_key(&endpoint) {
         return Err(AppError::not_found(format!(
-            "function manifest not found at '{}'; run `skypydb functions build`",
-            manifest_path.display()
+            "function endpoint '{}' not found in source directory '{}'",
+            endpoint,
+            source_dir.display()
         )));
-    };
+    }
+    ensure_runtime_tables(&state.pool, state.config.query_max_limit, &manifest).await?;
 
     let args = request.args_object()?;
     let result = execute_manifest_function(

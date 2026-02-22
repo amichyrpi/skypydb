@@ -46,7 +46,7 @@ class EmbeddingsFunction:
         """
         Get the embedding dimension.
 
-        Returns: 
+        Returns:
             None if no embedding has been generated yet.
         """
 

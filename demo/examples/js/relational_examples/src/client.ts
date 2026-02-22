@@ -1,15 +1,15 @@
 import { httpClient } from "skypydb/httpclient";
 import { api } from "../skypydb/deploy";
 import { callread, callwrite } from "skypydb/serverside";
-import { dotenv } from "dotenv";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 export default function databaseclient() {
   // Create a client to interact with the database.
   const client = httpClient({
-    api_url: process.env.SKYPYDB_API_URL,
-    api_key: process.env.SKYPYDB_API_KEY,
+    api_url: process.env.SKYPYDB_API_URL ?? "http://localhost:8000",
+    api_key: process.env.SKYPYDB_API_KEY ?? "local-dev-key",
   });
 
   // Create a writer to write to the database using the function define in the skypydb folder

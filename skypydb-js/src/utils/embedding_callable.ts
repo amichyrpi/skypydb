@@ -10,8 +10,3 @@ export abstract class EmbeddingCallable {
     return this.embed(texts);
   }
 }
-
-/**
- * Backward compatible alias kept for existing internal imports.
- */
-export abstract class EmbeddingCallableMixin extends EmbeddingCallable {}

@@ -5,6 +5,7 @@ Custom exceptions for Skypydb.
 from abc import abstractmethod
 from overrides import overrides, EnforceOverrides
 
+
 class SkypydbError(Exception, EnforceOverrides):
     """Base exception for all Skypydb errors."""
 
@@ -21,6 +22,7 @@ class SkypydbError(Exception, EnforceOverrides):
         """Return the error name"""
         pass
 
+
 class TableNotFoundError(SkypydbError):
     @overrides
     def code(self) -> int:
@@ -30,6 +32,7 @@ class TableNotFoundError(SkypydbError):
     @overrides
     def name(cls) -> str:
         return "Table not found."
+
 
 class TableAlreadyExistsError(SkypydbError):
     @overrides
@@ -41,6 +44,7 @@ class TableAlreadyExistsError(SkypydbError):
     def name(cls) -> str:
         return "Table already exists."
 
+
 class DatabaseError(SkypydbError):
     @overrides
     def code(self) -> int:
@@ -50,9 +54,10 @@ class DatabaseError(SkypydbError):
     @overrides
     def name(cls) -> str:
         return (
-        "Database operation failed. This may indicate a connectivity issue, "
-        "invalid query, or transaction problem. Check database logs and configuration."
-    )
+            "Database operation failed. This may indicate a connectivity issue, "
+            "invalid query, or transaction problem. Check database logs and configuration."
+        )
+
 
 class InvalidSearchError(SkypydbError):
     @overrides
@@ -63,9 +68,10 @@ class InvalidSearchError(SkypydbError):
     @overrides
     def name(cls) -> str:
         return (
-        "One or more search parameters are invalid. "
-        "Check parameter names, types, and value ranges for your search query."
-    )
+            "One or more search parameters are invalid. "
+            "Check parameter names, types, and value ranges for your search query."
+        )
+
 
 class SecurityError(SkypydbError):
     @overrides
@@ -76,9 +82,10 @@ class SecurityError(SkypydbError):
     @overrides
     def name(cls) -> str:
         return (
-        "Security operation failed. Possible authentication or authorization issue; "
-        "see logs for details."
-    )
+            "Security operation failed. Possible authentication or authorization issue; "
+            "see logs for details."
+        )
+
 
 class ValidationError(SkypydbError):
     @overrides
@@ -90,6 +97,7 @@ class ValidationError(SkypydbError):
     def name(cls) -> str:
         return "Input validation failed."
 
+
 class CollectionNotFoundError(SkypydbError):
     @overrides
     def code(self) -> int:
@@ -99,6 +107,7 @@ class CollectionNotFoundError(SkypydbError):
     @overrides
     def name(cls) -> str:
         return "Collection not found."
+
 
 class CollectionAlreadyExistsError(SkypydbError):
     @overrides
@@ -110,6 +119,7 @@ class CollectionAlreadyExistsError(SkypydbError):
     def name(cls) -> str:
         return "Collection already exists."
 
+
 class EmbeddingError(SkypydbError):
     @overrides
     def code(self) -> int:
@@ -119,6 +129,7 @@ class EmbeddingError(SkypydbError):
     @overrides
     def name(cls) -> str:
         return "Embedding generation failed."
+
 
 class VectorSearchError(SkypydbError):
     @overrides

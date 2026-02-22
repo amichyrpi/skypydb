@@ -1,10 +1,8 @@
 /// Relational request/response payloads.
 pub mod api_models;
-/// Relational and schema domain logic.
-pub mod domain;
-/// Function manifest loading and execution.
+/// Function loading and execution.
 pub mod functions;
-/// Relational repositories for schema and table data.
+/// Relational repositories.
 pub mod repositories;
-/// Axum route handlers for relational and schema APIs.
+/// Axum route handlers for function APIs.
 pub mod routes;

@@ -1,4 +1,4 @@
-/// Function execution engine for manifest-defined relational operations.
+/// Function execution engine for runtime-defined relational operations.
 pub mod executor;
-/// TypeScript-compiled function manifest loading and validation.
+/// Runtime TypeScript function loading.
 pub mod manifest;

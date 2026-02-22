@@ -40,8 +40,8 @@ impl AppConfig {
         let log_level = env::var("SKYPYDB_LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
         let vector_max_dim = parse_usize_with_default("SKYPYDB_VECTOR_MAX_DIM", 4096)?;
         let query_max_limit = parse_u32_with_default("SKYPYDB_QUERY_MAX_LIMIT", 500)?;
-        let functions_source_dir = env::var("SKYPYDB_FUNCTIONS_SOURCE_DIR")
-            .unwrap_or_else(|_| "./skypydb".to_string());
+        let functions_source_dir =
+            env::var("SKYPYDB_FUNCTIONS_SOURCE_DIR").unwrap_or_else(|_| "./skypydb".to_string());
         let cors_origins = env::var("SKYPYDB_CORS_ORIGINS")
             .unwrap_or_else(|_| "*".to_string())
             .split(',')

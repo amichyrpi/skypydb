@@ -6,7 +6,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 
-use skypydb_common::schema::types::{FieldDefinition, FieldType};
+use skypydb_common::contracts::field_types::{FieldDefinition, FieldType};
 use skypydb_errors::AppError;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
@@ -199,7 +199,10 @@ fn parse_file_exports(
         } else {
             FunctionKind::Mutation
         };
-        out.insert(endpoint.clone(), parse_function_options(&options, kind, &endpoint)?);
+        out.insert(
+            endpoint.clone(),
+            parse_function_options(&options, kind, &endpoint)?,
+        );
     }
 
     Ok(out)
@@ -211,12 +214,23 @@ fn parse_function_options(
     endpoint: &str,
 ) -> Result<ManifestFunction, AppError> {
     let args = parse_args(options).map_err(|error| {
-        AppError::validation(format!("function '{}' has invalid args: {}", endpoint, error))
+        AppError::validation(format!(
+            "function '{}' has invalid args: {}",
+            endpoint, error
+        ))
     })?;
     let handler = parse_handler(options).map_err(|error| {
-        AppError::validation(format!("function '{}' has invalid handler: {}", endpoint, error))
+        AppError::validation(format!(
+            "function '{}' has invalid handler: {}",
+            endpoint, error
+        ))
     })?;
-    let steps = compile_handler(&handler.body, &handler.ctx_name, &handler.args_name, endpoint)?;
+    let steps = compile_handler(
+        &handler.body,
+        &handler.ctx_name,
+        &handler.args_name,
+        endpoint,
+    )?;
     Ok(ManifestFunction { kind, args, steps })
 }
 
@@ -508,8 +522,7 @@ fn compile_expression(
                 continue;
             }
             if let Some(colon) = find_top_level_char(trimmed, ':') {
-                let key = parse_property_name(&trimmed[..colon])
-                    .map_err(AppError::validation)?;
+                let key = parse_property_name(&trimmed[..colon]).map_err(AppError::validation)?;
                 let value = compile_expression(trimmed[colon + 1..].trim(), args_name, vars)?;
                 object.insert(key, value);
             } else {
@@ -599,8 +612,7 @@ fn parse_property_name(value: &str) -> Result<String, String> {
     if let Some(text) = parse_string_literal(trimmed) {
         return Ok(text);
     }
-    let identifier_re = Regex::new(r"^[A-Za-z_][A-Za-z0-9_]*$")
-        .map_err(|e| e.to_string())?;
+    let identifier_re = Regex::new(r"^[A-Za-z_][A-Za-z0-9_]*$").map_err(|e| e.to_string())?;
     if identifier_re.is_match(trimmed) {
         return Ok(trimmed.to_string());
     }
@@ -735,13 +747,7 @@ fn find_top_level_char(input: &str, needle: char) -> Option<usize> {
 }
 
 fn extract_braced_block(input: &str, open_brace: usize) -> Result<(String, usize), String> {
-    if input
-        .as_bytes()
-        .get(open_brace)
-        .copied()
-        .map(char::from)
-        != Some('{')
-    {
+    if input.as_bytes().get(open_brace).copied().map(char::from) != Some('{') {
         return Err("expected '{'".to_string());
     }
 

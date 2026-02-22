@@ -6,5 +6,5 @@ pub mod middleware;
 pub mod openapi;
 /// Shared query compilation and bind parameter contracts.
 pub mod query;
-/// Shared schema contracts and signature hashing.
-pub mod schema;
+/// Shared runtime function argument field contracts.
+pub mod contracts;

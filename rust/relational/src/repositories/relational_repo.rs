@@ -192,9 +192,7 @@ fn require_object_payload(value: &Value) -> Result<Value, AppError> {
     if value.is_object() {
         return Ok(value.clone());
     }
-    Err(AppError::validation(
-        "insert payload must be a JSON object",
-    ))
+    Err(AppError::validation("insert payload must be a JSON object"))
 }
 
 fn build_query_sql(
@@ -323,11 +321,7 @@ fn map_row(row: MySqlRow) -> Result<Value, AppError> {
     let updated_at: NaiveDateTime = row.try_get("_updated_at")?;
     let payload_json: sqlx::types::Json<Value> = row.try_get("_payload")?;
 
-    let payload_object = payload_json
-        .0
-        .as_object()
-        .cloned()
-        .unwrap_or_else(Map::new);
+    let payload_object = payload_json.0.as_object().cloned().unwrap_or_else(Map::new);
 
     let mut output = BTreeMap::<String, Value>::new();
     output.insert("_id".to_string(), Value::String(id));

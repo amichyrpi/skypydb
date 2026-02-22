@@ -1,56 +1,69 @@
 services:
   skypydb-api:
+    # Set SKYPYDB_IMAGE to run a prebuilt image instead of local build output.
+    image: ${SKYPYDB_IMAGE:-local-skypydb-api:latest}
     build:
-      context: ../..
-      dockerfile: rust/Dockerfile
-    container_name: skypydb-api
+      context: ${SKYPYDB_BUILD_CONTEXT:-../..}
+      dockerfile: ${SKYPYDB_DOCKERFILE:-rust/Dockerfile}
+    stop_grace_period: 10s
+    stop_signal: SIGINT
     restart: unless-stopped
+    ports:
+      - "${SKYPYDB_PUBLISH_PORT:-8000}:8000"
     depends_on:
       mysql:
         condition: service_healthy
-    environment:
-      SKYPYDB_SERVER_PORT: "8000"
-      SKYPYDB_API_KEY: "local-dev-key"
-      SKYPYDB_MYSQL_URL: "mysql://skypydb:skypydb@mysql:3306/skypydb"
-      SKYPYDB_MYSQL_POOL_MIN: "1"
-      SKYPYDB_MYSQL_POOL_MAX: "10"
-      SKYPYDB_LOG_LEVEL: "info"
-      SKYPYDB_CORS_ORIGINS: "*"
-      SKYPYDB_VECTOR_MAX_DIM: "4096"
-      SKYPYDB_QUERY_MAX_LIMIT: "500"
-      SKYPYDB_FUNCTIONS_SOURCE_DIR: "/srv/skypydb"
-    ports:
-      - "8000:8000"
     volumes:
-      - ../../demo/examples/python/relational_examples/skypydb:/srv/skypydb:ro
+      - type: bind
+        source: ${SKYPYDB_FUNCTIONS_DIR:-./skypydb}
+        target: /srv/skypydb
+        read_only: true
+    environment:
+      - SKYPYDB_SERVER_PORT=8000
+      - SKYPYDB_API_KEY=${SKYPYDB_API_KEY:-local-dev-key}
+      - SKYPYDB_MYSQL_URL=mysql://${MYSQL_USER:-skypydb}:${MYSQL_PASSWORD:-skypydb}@mysql:3306/${MYSQL_DATABASE:-skypydb}
+      - SKYPYDB_MYSQL_POOL_MIN=${SKYPYDB_MYSQL_POOL_MIN:-1}
+      - SKYPYDB_MYSQL_POOL_MAX=${SKYPYDB_MYSQL_POOL_MAX:-10}
+      - SKYPYDB_LOG_LEVEL=${SKYPYDB_LOG_LEVEL:-info}
+      - SKYPYDB_CORS_ORIGINS=${SKYPYDB_CORS_ORIGINS:-*}
+      - SKYPYDB_VECTOR_MAX_DIM=${SKYPYDB_VECTOR_MAX_DIM:-4096}
+      - SKYPYDB_QUERY_MAX_LIMIT=${SKYPYDB_QUERY_MAX_LIMIT:-500}
+      - SKYPYDB_FUNCTIONS_SOURCE_DIR=${SKYPYDB_FUNCTIONS_SOURCE_DIR:-/srv/skypydb}
 
   mysql:
     image: mysql:8.4
-    container_name: skypydb-mysql
+    stop_grace_period: 10s
+    stop_signal: SIGINT
     restart: unless-stopped
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     environment:
-      MYSQL_DATABASE: skypydb
-      MYSQL_USER: skypydb
-      MYSQL_PASSWORD: skypydb
-      MYSQL_ROOT_PASSWORD: rootpassword
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-skypydb}
+      - MYSQL_USER=${MYSQL_USER:-skypydb}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-skypydb}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpassword"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD} --silent",
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 15s
     volumes:
       - skypydb_mysql_data:/var/lib/mysql
 
   adminer:
     image: adminer:4
-    container_name: skypydb-adminer
+    stop_grace_period: 10s
+    stop_signal: SIGINT
     restart: unless-stopped
     profiles: ["debug"]
     ports:
-      - "8080:8080"
+      - "${ADMINER_PUBLISH_PORT:-8080}:8080"
 
 volumes:
   skypydb_mysql_data:

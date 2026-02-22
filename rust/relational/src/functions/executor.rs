@@ -4,8 +4,10 @@ use serde_json::{Map, Value};
 use sqlx::{MySql, MySqlPool};
 
 use crate::functions::manifest::{FunctionKind, FunctionsManifest, ManifestFunction, ManifestStep};
-use crate::repositories::relational_repo::{OrderByClause, RelationalQueryOptions, RelationalRepository};
-use skypydb_common::schema::types::{FieldDefinition, FieldType};
+use crate::repositories::relational_repo::{
+    OrderByClause, RelationalQueryOptions, RelationalRepository,
+};
+use skypydb_common::contracts::field_types::{FieldDefinition, FieldType};
 use skypydb_errors::AppError;
 
 /// Executes a runtime-defined function call and returns its JSON result.
@@ -29,9 +31,13 @@ pub async fn execute_manifest_function(
         }
         FunctionKind::Mutation => {
             let mut transaction = pool.begin().await?;
-            let result =
-                execute_steps_with_transaction(&repository, function, &validated_args, &mut transaction)
-                    .await;
+            let result = execute_steps_with_transaction(
+                &repository,
+                function,
+                &validated_args,
+                &mut transaction,
+            )
+            .await;
 
             match result {
                 Ok(value) => {
@@ -104,8 +110,8 @@ async fn execute_steps_without_transaction(
             )));
         }
 
-        let step_result = execute_step_without_transaction(repository, read_only, &mut context, step)
-            .await?;
+        let step_result =
+            execute_step_without_transaction(repository, read_only, &mut context, step).await?;
 
         if let Some(into) = &step.into {
             context.vars.insert(into.clone(), step_result.clone());
@@ -580,7 +586,7 @@ fn validate_arg_value(
 mod tests {
     use super::{evaluate_expression, validate_args};
     use serde_json::{json, Map, Value};
-    use skypydb_common::schema::types::{FieldDefinition, FieldType};
+    use skypydb_common::contracts::field_types::{FieldDefinition, FieldType};
     use std::collections::BTreeMap;
 
     fn string_field() -> FieldDefinition {

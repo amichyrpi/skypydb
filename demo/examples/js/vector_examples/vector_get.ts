@@ -23,4 +23,3 @@ async function main(): Promise<void> {
     await client.close();
   }
 }
-

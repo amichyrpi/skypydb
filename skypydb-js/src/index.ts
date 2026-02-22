@@ -1,4 +1,4 @@
-export * from "./http";
+export * from "./httpclient";
 export * from "./embeddings";
 export * from "./functions";
 export * from "./errors";

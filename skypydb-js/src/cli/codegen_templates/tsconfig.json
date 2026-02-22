@@ -1,0 +1,25 @@
+{
+    /* This TypeScript project config describes the environment that
+     * Skypydb functions run in and is used to typecheck them.
+     * You can modify it, but some settings are required to use Skypydb.
+     */
+    "compilerOptions": {
+      /* These settings can be modified. */
+      "allowJs": true,
+      "strict": true,
+      "moduleResolution": "Bundler",
+      "jsx": "react-jsx",
+      "skipLibCheck": true,
+      "allowSyntheticDefaultImports": true,
+  
+      /* These compiler options cannot be modified. */
+      "target": "ESNext",
+      "lib": ["ES2021", "dom"],
+      "forceConsistentCasingInFileNames": true,
+      "module": "ESNext",
+      "isolatedModules": true,
+      "noEmit": true
+    },
+    "include": ["./**/*"]
+  }
+  

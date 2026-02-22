@@ -55,7 +55,9 @@ const client = httpClient({
 
 const users = client.relational("users");
 const id = await users.insert({ name: "Theo", email: "theo@example.com" });
-const rows = await users.query({ orderBy: [{ field: "name", direction: "asc" }] });
+const rows = await users.query({
+  orderBy: [{ field: "name", direction: "asc" }],
+});
 console.log(id, rows);
 ```
 

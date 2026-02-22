@@ -9,6 +9,10 @@ use thiserror::Error;
 pub struct ErrorBody {
     /// Error class identifier.
     pub error: String,
+    /// Stable machine-readable error code.
+    pub code: String,
+    /// Short user-facing error description.
+    pub description: String,
     /// Human-readable message.
     pub message: String,
 }
@@ -77,12 +81,36 @@ impl AppError {
             Self::Internal(_) => "InternalError",
         }
     }
+
+    fn error_code(&self) -> &'static str {
+        match self {
+            Self::Config(_) => "CONFIG_ERROR",
+            Self::Validation(_) => "VALIDATION_ERROR",
+            Self::Unauthorized(_) => "UNAUTHORIZED",
+            Self::NotFound(_) => "NOT_FOUND",
+            Self::Database(_) => "DATABASE_ERROR",
+            Self::Internal(_) => "INTERNAL_ERROR",
+        }
+    }
+
+    fn error_description(&self) -> &'static str {
+        match self {
+            Self::Config(_) => "Server configuration is invalid or incomplete.",
+            Self::Validation(_) => "Request payload failed validation checks.",
+            Self::Unauthorized(_) => "Authentication failed or API key is missing.",
+            Self::NotFound(_) => "Requested resource or function endpoint was not found.",
+            Self::Database(_) => "Database operation failed while processing the request.",
+            Self::Internal(_) => "Unexpected internal server error.",
+        }
+    }
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let body = ErrorBody {
             error: self.error_name().to_string(),
+            code: self.error_code().to_string(),
+            description: self.error_description().to_string(),
             message: self.to_string(),
         };
         (self.status_code(), Json(body)).into_response()

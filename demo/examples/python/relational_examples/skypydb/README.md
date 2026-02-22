@@ -1,4 +1,4 @@
-# Welcome to your Convex functions directory!
+# Skypydb functions directory
 
 Write your Relational functions here.
 Look at https://docs.ahen-studio.com/relational/functions for more.

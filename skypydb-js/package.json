@@ -1,7 +1,7 @@
 {
   "name": "skypydb",
-  "version": "0.0.0",
-  "description": "TypeScript vector client for Skypydb.",
+  "version": "1.0.4",
+  "description": "Open Source Relational and Vector Embeddings Database",
   "license": "Apache",
   "author": "Ahen Studio",
   "main": "./dist/index.cjs",

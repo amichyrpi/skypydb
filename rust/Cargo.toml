@@ -1,13 +1,10 @@
 [package]
 name = "skypydb"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 description = "Rust backend for Skypydb relational and vector APIs"
 repository = "https://github.com/Ahen-Studio/skypydb"
 license = "Apache-2.0"
-exclude = [
-    "examples/**",
-]
 
 [[bin]]
 name = "skypydb"

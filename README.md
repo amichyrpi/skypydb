@@ -4,96 +4,64 @@
 </div>
 
 <p align="center">
-  <b>Skypydb</b> is a Rust + MySQL backend with HTTP SDKs for vector and relational workloads.
+    <b>Skypydb - Open Source Relational and Vector Embeddings Database</b>. <br />
 </p>
 
-## HTTP-only SDKs
+<div align="center">
 
-Python and TypeScript SDKs are HTTP-only.
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/skypydb)
+[![PyPI](https://img.shields.io/pypi/v/skypydb.svg)](https://pypi.org/project/skypydb/)
+![NPM Version](https://img.shields.io/npm/v/skypydb)
+![GitHub](https://img.shields.io/github/license/Ahen-Studio/skypydb)
+[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
 
-- Backend default URL: `http://localhost:8000`
-- Auth header: `X-API-Key`
-- No local runtime database files are created by the SDKs
-
-## Python quickstart
-
-```bash
-pip install skypydb
-```
-
-```python
-from skypydb import HttpClient
-
-client = HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-)
-
-collection = client.get_or_create_collection("docs")
-collection.add(
-    ids=["doc1"],
-    documents=["Skypydb stores vectors and relational rows over HTTP."],
-)
-print(collection.query(query_texts=["How does Skypydb work?"], n_results=1))
-```
-
-## TypeScript quickstart
+</div>
 
 ```bash
-cd skypydb-js
-npm install
-npm run build
+pip install skypydb # python database
 ```
 
-```ts
-import { httpClient } from "skypydb";
-
-const client = httpClient({
-  api_url: "http://localhost:8000",
-  api_key: "local-dev-key",
-});
-
-const users = client.relational("users");
-const id = await users.insert({ name: "Theo", email: "theo@example.com" });
-const rows = await users.query({
-  orderBy: [{ field: "name", direction: "asc" }],
-});
-console.log(id, rows);
+```bash
+npm install skypydb # typescript client
 ```
 
-## Relational schema apply
+## Features
 
-```python
-client.schema.apply(
-    {
-        "tables": {
-            "users": {
-                "fields": {
-                    "name": {"type": "string"},
-                    "email": {"type": "string"},
-                },
-                "indexes": [{"name": "by_email", "columns": ["email"]}],
-            }
-        }
-    }
-)
-```
+- Simple: fully-documented and easy to debug with detailed error messages
 
-## Backend
+- Relational: create your functions and store your data in a relational database.
 
-The Rust backend and deployment assets are in `rust/` and `deployment/`.
+- Vector embeddings: create, search and delete vectors collections.
 
-- Local compose: `deployment/local/docker-compose.yml`
-- Google compose scaffold: `deployment/google/docker-compose.yml`
+- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our integration.
 
-## Examples
+- Free & Open Source: Apache 2.0 Licensed
 
-Examples are in `demo/examples`:
+- Cross-platform: Windows, Linux, MacOS
 
-- JavaScript vector, cloud, relational examples
-- Python vector, cloud, relational examples
-- mem0 integration examples under `demo/integration/mem0`
+## TODO
+
+- [ ] Remake the docs
+- [ ] Fix the CLI
+- [ ] Fix workflows
+- [ ] Fix deployment files
+
+## HttpClients
+
+### Python
+
+Learn more on our [Docs](https://docs.ahen-studio.com/)
+
+### Typescript
+
+Learn more on our [Docs](https://docs.ahen-studio.com/)
+
+## All Thanks To Our Contributors:
+
+<a href="https://github.com/Ahen-Studio/skypydb/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Ahen-Studio/skypydb" />
+</a>
 
 ## License
 
-[MIT](./LICENSE)
+[Apache 2.0](./LICENSE)

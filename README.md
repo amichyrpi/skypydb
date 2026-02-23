@@ -27,7 +27,7 @@ npm install skypydb # typescript client
 
 ## Features
 
-- Simple: fully-documented and easy to debug with detailed error messages
+- Simple: fully-documented and easy to debug
 
 - Relational: create your functions and store your data in a relational database.
 

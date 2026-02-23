@@ -20,6 +20,10 @@ export type DbApi = {
 
 export type FunctionContext = {
   db: DbApi;
+  storage: {
+    createUploadUrl(): Promise<string>;
+    getUrl(storageId: unknown): Promise<string | null>;
+  };
 };
 
 export type FunctionHandler<TArgs extends FunctionArgsDefinition, TResult> = (

@@ -1,9 +1,9 @@
 # Skypydb functions directory
 
 Write your Relational functions here.
-Look at https://docs.ahen-studio.com/relational/functions for more.
+Look at https://docs.ahen-studio.com/relational/functions for more information.
 
-A read function that with two arguments:
+A read function that have two arguments:
 
 ```ts
 // skypydb/read.ts

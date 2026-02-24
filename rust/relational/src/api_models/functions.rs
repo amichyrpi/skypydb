@@ -30,3 +30,31 @@ pub struct FunctionCallResponse {
     /// Final value returned by the function.
     pub result: Value,
 }
+
+/// Source file uploaded by the CLI deploy command.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FunctionDeploySourceFile {
+    /// File path relative to the function root directory.
+    pub path: String,
+    /// UTF-8 TypeScript source code.
+    pub content: String,
+}
+
+/// Request payload for function deployment.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FunctionDeployRequest {
+    /// Target deployment mode selected in the CLI. Defaults to `"local"` when omitted.
+    #[serde(default)]
+    pub mode: Option<String>,
+    /// TypeScript source files to compile into a runtime manifest.
+    pub files: Vec<FunctionDeploySourceFile>,
+}
+
+/// Response payload after deploying a new manifest.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FunctionDeployResponse {
+    /// Number of compiled function endpoints in the active manifest.
+    pub deployed_functions: usize,
+    /// Deployment mode echoed from request metadata.
+    pub mode: String,
+}

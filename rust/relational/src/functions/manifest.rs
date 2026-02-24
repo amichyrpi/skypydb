@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -46,6 +46,8 @@ struct ParsedHandler {
     body: String,
 }
 
+const SYNTHETIC_RETURN_VALUE_VAR: &str = "__return_value";
+
 pub fn load_functions_from_source(source_dir: &Path) -> Result<FunctionsManifest, AppError> {
     if !source_dir.exists() {
         return Err(AppError::not_found(format!(
@@ -79,6 +81,97 @@ pub fn load_functions_from_source(source_dir: &Path) -> Result<FunctionsManifest
         version: 1,
         functions,
     })
+}
+
+pub fn load_functions_from_uploaded_sources(
+    uploaded_files: &[(String, String)],
+) -> Result<FunctionsManifest, AppError> {
+    if uploaded_files.is_empty() {
+        return Err(AppError::validation(
+            "deploy payload must include at least one source file",
+        ));
+    }
+
+    let mut files = uploaded_files
+        .iter()
+        .map(|(path, content)| normalize_uploaded_source_path(path).map(|p| (p, content.clone())))
+        .collect::<Result<Vec<(String, String)>, AppError>>()?;
+    files.sort_by(|left, right| left.0.cmp(&right.0));
+    for pair in files.windows(2) {
+        if pair[0].0 == pair[1].0 {
+            return Err(AppError::validation(format!(
+                "duplicate uploaded source path '{}' after normalization",
+                pair[0].0
+            )));
+        }
+    }
+
+    let mut functions = BTreeMap::<String, ManifestFunction>::new();
+    for (relative_path, content) in files {
+        if !relative_path.ends_with(".ts") || relative_path.ends_with(".d.ts") {
+            continue;
+        }
+        let parsed = parse_file_exports_from_text(&content, &relative_path, &relative_path)?;
+        for (endpoint, function) in parsed {
+            if functions.contains_key(&endpoint) {
+                return Err(AppError::validation(format!(
+                    "duplicate function endpoint '{}'",
+                    endpoint
+                )));
+            }
+            functions.insert(endpoint, function);
+        }
+    }
+
+    Ok(FunctionsManifest {
+        version: 1,
+        functions,
+    })
+}
+
+fn normalize_uploaded_source_path(path: &str) -> Result<String, AppError> {
+    let normalized = path.trim().replace('\\', "/");
+    if normalized.is_empty() {
+        return Err(AppError::validation("source file path cannot be empty"));
+    }
+    if normalized.contains('\0') {
+        return Err(AppError::validation(format!(
+            "source file path '{}' cannot contain NUL bytes",
+            path
+        )));
+    }
+    let bytes = normalized.as_bytes();
+    let looks_like_windows_absolute =
+        bytes.len() >= 3 && bytes[1] == b':' && (bytes[2] == b'/' || bytes[2] == b'\\');
+    if normalized.starts_with('/') || normalized.starts_with("//") || looks_like_windows_absolute {
+        return Err(AppError::validation(format!(
+            "source file path '{}' must be relative",
+            path
+        )));
+    }
+    let normalized = normalized.trim_start_matches("./").to_string();
+    if normalized.is_empty() {
+        return Err(AppError::validation("source file path cannot be empty"));
+    }
+    let normalized_path = Path::new(&normalized);
+    for component in normalized_path.components() {
+        if matches!(
+            component,
+            Component::ParentDir | Component::RootDir | Component::Prefix(_)
+        ) {
+            return Err(AppError::validation(format!(
+                "source file path '{}' must be relative",
+                path
+            )));
+        }
+    }
+    if normalized.split('/').any(|segment| segment == "..") {
+        return Err(AppError::validation(format!(
+            "source file path '{}' cannot contain '..'",
+            path
+        )));
+    }
+    Ok(normalized)
 }
 
 fn collect_ts_files(root: &Path) -> Result<Vec<PathBuf>, AppError> {
@@ -144,7 +237,16 @@ fn parse_file_exports(
         .map_err(|error| AppError::internal(error.to_string()))?
         .to_string_lossy()
         .replace('\\', "/");
-    let mut module_key = relative.trim_end_matches(".ts").to_string();
+    parse_file_exports_from_text(&text, &relative, &file_path.display().to_string())
+}
+
+fn parse_file_exports_from_text(
+    text: &str,
+    relative_path: &str,
+    source_name: &str,
+) -> Result<BTreeMap<String, ManifestFunction>, AppError> {
+    let relative_path = relative_path.replace('\\', "/");
+    let mut module_key = relative_path.trim_end_matches(".ts").to_string();
     if module_key.ends_with("/index") {
         module_key = module_key.trim_end_matches("/index").to_string();
     }
@@ -176,7 +278,7 @@ fn parse_file_exports(
             AppError::validation(format!(
                 "invalid function '{}' in '{}': {}",
                 export_name,
-                file_path.display(),
+                source_name,
                 error
             ))
         })?;
@@ -184,7 +286,7 @@ fn parse_file_exports(
             AppError::validation(format!(
                 "function '{}' in '{}' must end with ');'",
                 export_name,
-                file_path.display()
+                source_name
             ))
         })?;
         cursor = close_brace + 1 + close_call.end();
@@ -345,6 +447,15 @@ fn compile_handler(
     let mut vars = BTreeSet::<String>::new();
     let mut steps = Vec::<ManifestStep>::new();
     let cleaned_body = strip_line_comments(body);
+    let ensure_return_slot_available = |vars: &BTreeSet<String>| -> Result<(), AppError> {
+        if vars.contains(SYNTHETIC_RETURN_VALUE_VAR) {
+            return Err(AppError::validation(format!(
+                "function '{}' declares reserved variable '{}'",
+                endpoint, SYNTHETIC_RETURN_VALUE_VAR
+            )));
+        }
+        Ok(())
+    };
     for statement in split_top_level(&cleaned_body, ';') {
         let statement = statement.trim();
         if statement.is_empty() || statement.starts_with("console.log(") {
@@ -486,6 +597,7 @@ fn compile_handler(
                 .captures(return_expr)
                 .or_else(|| get_no_await_re.captures(return_expr));
             if let Some(get_caps) = get_caps {
+                ensure_return_slot_available(&vars)?;
                 let table = get_caps
                     .get(1)
                     .map(|m| m.as_str().to_string())
@@ -500,13 +612,13 @@ fn compile_handler(
                 first_payload.insert("where".to_string(), json!({ "_id": { "$eq": id_value } }));
                 steps.push(ManifestStep {
                     op: "first".to_string(),
-                    into: Some("__return_value".to_string()),
+                    into: Some(SYNTHETIC_RETURN_VALUE_VAR.to_string()),
                     payload: first_payload,
                 });
                 let mut return_payload = BTreeMap::new();
                 return_payload.insert(
                     "value".to_string(),
-                    Value::String("$var.__return_value".to_string()),
+                    Value::String(format!("$var.{}", SYNTHETIC_RETURN_VALUE_VAR)),
                 );
                 steps.push(ManifestStep {
                     op: "return".to_string(),
@@ -517,15 +629,16 @@ fn compile_handler(
             }
 
             if storage_generate_upload_url_re.is_match(return_expr) {
+                ensure_return_slot_available(&vars)?;
                 steps.push(ManifestStep {
                     op: "storageGenerateUploadUrl".to_string(),
-                    into: Some("__return_value".to_string()),
+                    into: Some(SYNTHETIC_RETURN_VALUE_VAR.to_string()),
                     payload: BTreeMap::new(),
                 });
                 let mut return_payload = BTreeMap::new();
                 return_payload.insert(
                     "value".to_string(),
-                    Value::String("$var.__return_value".to_string()),
+                    Value::String(format!("$var.{}", SYNTHETIC_RETURN_VALUE_VAR)),
                 );
                 steps.push(ManifestStep {
                     op: "return".to_string(),
@@ -536,6 +649,7 @@ fn compile_handler(
             }
 
             if let Some(storage_get_url_caps) = storage_get_url_re.captures(return_expr) {
+                ensure_return_slot_available(&vars)?;
                 let storage_id_expr = storage_get_url_caps
                     .get(1)
                     .map(|m| m.as_str().trim())
@@ -547,13 +661,13 @@ fn compile_handler(
                 );
                 steps.push(ManifestStep {
                     op: "storageGetUrl".to_string(),
-                    into: Some("__return_value".to_string()),
+                    into: Some(SYNTHETIC_RETURN_VALUE_VAR.to_string()),
                     payload,
                 });
                 let mut return_payload = BTreeMap::new();
                 return_payload.insert(
                     "value".to_string(),
-                    Value::String("$var.__return_value".to_string()),
+                    Value::String(format!("$var.{}", SYNTHETIC_RETURN_VALUE_VAR)),
                 );
                 steps.push(ManifestStep {
                     op: "return".to_string(),
@@ -901,4 +1015,49 @@ fn extract_braced_block(input: &str, open_brace: usize) -> Result<(String, usize
     }
 
     Err("unterminated block".to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::compile_handler;
+
+    fn assert_reserved_return_slot_error(body: &str) {
+        let error = compile_handler(body, "ctx", "args", "users:create")
+            .expect_err("expected reserved synthetic return variable collision");
+        let message = error.to_string();
+        assert!(
+            message.contains("declares reserved variable '__return_value'"),
+            "unexpected error message: {message}"
+        );
+    }
+
+    #[test]
+    fn reject_reserved_return_slot_for_return_db_get() {
+        assert_reserved_return_slot_error(
+            r#"
+            const __return_value = "collision";
+            return await ctx.db.get("users", "abc");
+            "#,
+        );
+    }
+
+    #[test]
+    fn reject_reserved_return_slot_for_return_generate_upload_url() {
+        assert_reserved_return_slot_error(
+            r#"
+            const __return_value = "collision";
+            return await ctx.storage.generateUploadUrl();
+            "#,
+        );
+    }
+
+    #[test]
+    fn reject_reserved_return_slot_for_return_storage_get_url() {
+        assert_reserved_return_slot_error(
+            r#"
+            const __return_value = "collision";
+            return await ctx.storage.getUrl("storage-id");
+            "#,
+        );
+    }
 }

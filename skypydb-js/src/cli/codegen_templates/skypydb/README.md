@@ -16,7 +16,7 @@ import { readFunction, value } from "skypydb/functions";
 export const readDatabase = readFunction({
   // Validators for arguments.
   args: {
-    name: value.number(),
+    name: value.string(),
     email: value.string(),
   },
 
@@ -297,7 +297,7 @@ export default function databaseclient() {
 Write your upload functions here.
 Look at https://docs.ahen-studio.com/upload/functions for more information.
 
-A read function that reads image messages:
+A read function that read an image messages:
 
 ```ts
 // skypydb/read.ts
@@ -361,8 +361,8 @@ export const sendImage = writeFunction({
 Using these functions in a React component:
 
 ```ts
-// src/App.tsx
-import { FormEvent, useEffect, useRef, useState } from "react";
+// src/client.tsx
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { httpClient } from "skypydb/httpclient";
 import { api } from "../skypydb/deploy";
 import { callread, callwrite } from "skypydb/serverside";
@@ -439,17 +439,21 @@ const client = httpClient({
 });
 
 export default function App() {
-  const createUploadUrl = () =>
-    callwrite(api.users.createUploadUrl, client, {});
+  const createUploadUrl = useCallback(
+    () => callwrite(api.users.createUploadUrl, client, {}),
+    [],
+  );
   const [messages, setMessages] = useState<ImageMessage[]>([]);
 
   useEffect(() => {
     void callread(api.read.readImageMessages, client, {})
-      .then((list) => setMessages(list as ImageMessage[]))
+      .then((list) => {
+        setMessages(list as ImageMessage[]);
+      })
       .catch((error) => {
         console.error("Failed to load image messages:", error);
       });
-  }, []);
+  }, [client]);
 
   const imageInput = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -457,10 +461,14 @@ export default function App() {
   const [name] = useState(() => "User " + Math.floor(Math.random() * 10000));
   async function handleSendImage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!selectedImage) {
+      console.error("Select an image before submitting.");
+      return;
+    }
 
     // Get an upload URL
     const postUrl = await createUploadUrl();
-    const storageId = await uploadImage(postUrl, selectedImage!);
+    const storageId = await uploadImage(postUrl, selectedImage);
 
     // Save the storage id to the database
     await callwrite(api.users.sendImage, client, { storageId, author: name });
@@ -473,7 +481,9 @@ export default function App() {
     setMessages(list);
 
     setSelectedImage(null);
-    imageInput.current!.value = "";
+    if (imageInput.current) {
+      imageInput.current.value = "";
+    }
   }
   return (
     <form onSubmit={handleSendImage}>
@@ -481,7 +491,14 @@ export default function App() {
         type="file"
         accept="image/*"
         ref={imageInput}
-        onChange={(event) => setSelectedImage(event.target.files![0])}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (!file) {
+            setSelectedImage(null);
+            return;
+          }
+          setSelectedImage(file);
+        }}
         disabled={selectedImage !== null}
       />
       <input

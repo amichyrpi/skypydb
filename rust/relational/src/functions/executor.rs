@@ -1,6 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use chrono::{Duration, Utc};
 use serde_json::{Map, Value};
 use sqlx::{MySql, MySqlPool};
 use uuid::Uuid;
@@ -236,6 +235,9 @@ async fn execute_step_without_transaction(
         }
         "storageGetUrl" => {
             let storage_id = required_string_param(step, "storageId", context)?;
+            let Some(storage_id) = normalize_storage_id(&storage_id) else {
+                return Ok(Value::Null);
+            };
             let exists = storage_file_exists(pool, &storage_id, None).await?;
             if !exists {
                 return Ok(Value::Null);
@@ -311,6 +313,9 @@ async fn execute_step_with_transaction(
         }
         "storageGetUrl" => {
             let storage_id = required_string_param(step, "storageId", context)?;
+            let Some(storage_id) = normalize_storage_id(&storage_id) else {
+                return Ok(Value::Null);
+            };
             let exists = storage_file_exists(pool, &storage_id, Some(transaction)).await?;
             if !exists {
                 return Ok(Value::Null);
@@ -350,48 +355,87 @@ async fn create_upload_url(
 ) -> Result<String, AppError> {
     let token = Uuid::new_v4().to_string();
     let storage_id = Uuid::new_v4().to_string();
-    let expires_at = (Utc::now() + Duration::seconds(storage_upload_url_ttl_seconds as i64))
-        .naive_utc();
+    let ttl_seconds = i64::from(storage_upload_url_ttl_seconds);
+    let pending_file_name = format!("{}.bin", storage_id);
 
     if let Some(transaction) = transaction {
-        sqlx::query("DELETE FROM _storage_upload_tokens WHERE expires_at < UTC_TIMESTAMP(6)")
+        sqlx::query(
+            r#"
+            DELETE sf, ut
+            FROM _storage_upload_tokens ut
+            INNER JOIN _storage_files sf ON sf.id = ut.storage_id
+            WHERE ut.expires_at < UTC_TIMESTAMP(6)
+            "#,
+        )
             .execute(&mut **transaction)
             .await?;
 
         sqlx::query(
             r#"
-            INSERT INTO _storage_upload_tokens (token, storage_id, expires_at)
-            VALUES (?, ?, ?)
+            INSERT INTO _storage_files (id, content_type, byte_size, file_path)
+            VALUES (?, 'application/octet-stream', 0, ?)
             "#,
         )
-        .bind(&token)
         .bind(&storage_id)
-        .bind(expires_at)
+        .bind(&pending_file_name)
         .execute(&mut **transaction)
         .await?;
-    } else {
-        sqlx::query("DELETE FROM _storage_upload_tokens WHERE expires_at < UTC_TIMESTAMP(6)")
-            .execute(pool)
-            .await?;
 
         sqlx::query(
             r#"
             INSERT INTO _storage_upload_tokens (token, storage_id, expires_at)
-            VALUES (?, ?, ?)
+            VALUES (?, ?, UTC_TIMESTAMP(6) + INTERVAL ? SECOND)
             "#,
         )
         .bind(&token)
         .bind(&storage_id)
-        .bind(expires_at)
-        .execute(pool)
+        .bind(ttl_seconds)
+        .execute(&mut **transaction)
         .await?;
+    } else {
+        let mut tx = pool.begin().await?;
+        sqlx::query(
+            r#"
+            DELETE sf, ut
+            FROM _storage_upload_tokens ut
+            INNER JOIN _storage_files sf ON sf.id = ut.storage_id
+            WHERE ut.expires_at < UTC_TIMESTAMP(6)
+            "#,
+        )
+            .execute(&mut *tx)
+            .await?;
+
+        sqlx::query(
+            r#"
+            INSERT INTO _storage_files (id, content_type, byte_size, file_path)
+            VALUES (?, 'application/octet-stream', 0, ?)
+            "#,
+        )
+        .bind(&storage_id)
+        .bind(&pending_file_name)
+        .execute(&mut *tx)
+        .await?;
+
+        sqlx::query(
+            r#"
+            INSERT INTO _storage_upload_tokens (token, storage_id, expires_at)
+            VALUES (?, ?, UTC_TIMESTAMP(6) + INTERVAL ? SECOND)
+            "#,
+        )
+        .bind(&token)
+        .bind(&storage_id)
+        .bind(ttl_seconds)
+        .execute(&mut *tx)
+        .await?;
+
+        tx.commit().await?;
     }
 
     let base = normalize_public_api_url(public_api_url);
     if base.is_empty() {
-        Ok(format!("/v1/storage/upload/{}", token))
+        Ok(format!("/v1/storage/upload?token={}#{}", token, token))
     } else {
-        Ok(format!("{}/v1/storage/upload/{}", base, token))
+        Ok(format!("{}/v1/storage/upload?token={}#{}", base, token, token))
     }
 }
 
@@ -426,13 +470,39 @@ async fn storage_file_exists(
     Ok(count > 0)
 }
 
+fn normalize_storage_id(storage_id: &str) -> Option<String> {
+    Uuid::parse_str(storage_id)
+        .ok()
+        .map(|parsed| parsed.hyphenated().to_string())
+}
+
 fn build_storage_file_url(public_api_url: &str, storage_id: &str) -> String {
+    let encoded_storage_id = percent_encode_path_segment(storage_id);
     let base = normalize_public_api_url(public_api_url);
     if base.is_empty() {
-        format!("/v1/storage/files/{}", storage_id)
+        format!("/v1/storage/files/{}", encoded_storage_id)
     } else {
-        format!("{}/v1/storage/files/{}", base, storage_id)
+        format!("{}/v1/storage/files/{}", base, encoded_storage_id)
     }
+}
+
+fn percent_encode_path_segment(value: &str) -> String {
+    const HEX: &[u8; 16] = b"0123456789ABCDEF";
+    let mut encoded = String::with_capacity(value.len());
+    for byte in value.bytes() {
+        let unreserved = matches!(
+            byte,
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'.' | b'_' | b'~'
+        );
+        if unreserved {
+            encoded.push(byte as char);
+        } else {
+            encoded.push('%');
+            encoded.push(HEX[(byte >> 4) as usize] as char);
+            encoded.push(HEX[(byte & 0x0F) as usize] as char);
+        }
+    }
+    encoded
 }
 
 fn normalize_public_api_url(value: &str) -> String {
@@ -770,7 +840,9 @@ fn validate_arg_value(
 
 #[cfg(test)]
 mod tests {
-    use super::{evaluate_expression, validate_args};
+    use super::{
+        build_storage_file_url, evaluate_expression, normalize_storage_id, validate_args,
+    };
     use serde_json::{json, Map, Value};
     use skypydb_common::contracts::field_types::{FieldDefinition, FieldType};
     use std::collections::BTreeMap;
@@ -829,5 +901,19 @@ mod tests {
         assert!(result.is_err());
         let message = result.err().expect("validation error").to_string();
         assert!(message.contains("unknown function arg 'email'"));
+    }
+
+    #[test]
+    fn normalize_storage_id_rejects_non_uuid() {
+        assert!(normalize_storage_id("../bad?id=#frag").is_none());
+    }
+
+    #[test]
+    fn build_storage_file_url_percent_encodes_path_segment() {
+        let url = build_storage_file_url("https://api.example.com/", "ab/c?d#e");
+        assert_eq!(
+            url,
+            "https://api.example.com/v1/storage/files/ab%2Fc%3Fd%23e"
+        );
     }
 }

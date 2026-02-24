@@ -16,7 +16,9 @@ use skypydb_health_check::router as health_router;
 use skypydb_metrics::{init_metrics, MetricsConfig};
 use skypydb_mysql::run_bootstrap_migrations;
 use skypydb_relational::routes::functions::router as functions_router;
-use skypydb_relational::routes::storage::router as storage_router;
+use skypydb_relational::routes::storage::{
+    protected_router as protected_storage_router, public_router as public_storage_router,
+};
 use skypydb_telemetry::{init_tracing, trace_http_action};
 use skypydb_vector::routes::router as vector_router;
 use tokio::net::TcpListener;
@@ -31,10 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = AppConfig::from_env()?;
     init_metrics(MetricsConfig::from_env())?;
     init_tracing(&config.log_level)?;
-    info!(
-        functions_source_dir = %config.functions_source_dir,
-        "function source runtime enabled",
-    );
+    info!("function runtime enabled (deployed manifest)");
 
     let pool = build_mysql_pool(&config).await?;
     run_bootstrap_migrations(&pool).await?;
@@ -52,8 +51,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn build_router(state: AppState) -> Router {
-    let public_v1_router = Router::new().merge(storage_router());
+    let public_v1_router = Router::new().merge(public_storage_router());
     let protected_router = Router::new()
+        .merge(protected_storage_router())
         .merge(functions_router())
         .merge(vector_router())
         .layer(from_fn_with_state(state.clone(), require_api_key));
@@ -93,5 +93,41 @@ fn cors_layer(state: &AppState) -> CorsLayer {
             .allow_origin(allowed_origins)
             .allow_headers(Any)
             .allow_methods(Any)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::build_router;
+    use skypydb_application::config::AppConfig;
+    use skypydb_application::state::AppState;
+    use sqlx::mysql::MySqlPoolOptions;
+
+    fn test_state() -> AppState {
+        let config = AppConfig {
+            server_port: 8000,
+            api_key: "test-api-key".to_string(),
+            mysql_url: "mysql://user:pass@localhost/skypydb".to_string(),
+            mysql_pool_min: 1,
+            mysql_pool_max: 2,
+            log_level: "info".to_string(),
+            cors_origins: vec!["*".to_string()],
+            vector_max_dim: 4096,
+            query_max_limit: 500,
+            storage_dir: "./skypydb-storage".to_string(),
+            public_api_url: "http://localhost:8000".to_string(),
+            storage_upload_url_ttl_seconds: 900,
+            storage_max_upload_bytes: 25 * 1024 * 1024,
+        };
+        let pool = MySqlPoolOptions::new()
+            .connect_lazy("mysql://user:pass@localhost/skypydb")
+            .expect("test mysql URL should be valid");
+        AppState::new(config, pool)
+    }
+
+    #[tokio::test]
+    async fn build_router_constructs_without_panicking() {
+        let state = test_state();
+        let _app = build_router(state);
     }
 }

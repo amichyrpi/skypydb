@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": false,
@@ -15,5 +19,9 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["./src", "./skypydb", "vite.config.mts"]
+  "include": [
+    "./src",
+    "./skypydb",
+    "vite.config.mts"
+  ]
 }

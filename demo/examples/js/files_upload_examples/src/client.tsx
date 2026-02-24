@@ -5,16 +5,14 @@ import { callread, callwrite } from "skypydb/serverside";
 
 type ImageMessage = { _id: string; imageUrl: string; author: string };
 
-/**
- * Returns a trimmed non-empty string, otherwise null.
- */
+// Returns a trimmed non-empty string, otherwise null.
 function asNonEmptyString(value: unknown): string | null {
-  return typeof value === "string" && value.trim().length > 0 ? value : null;
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : null;
 }
 
-/**
- * Extracts a storage id from known upload response shapes.
- */
+// Extracts a storage id from known upload response shapes.
 function extractStorageId(payload: unknown): string | null {
   if (typeof payload !== "object" || payload === null) {
     return null;
@@ -32,13 +30,23 @@ function extractStorageId(payload: unknown): string | null {
   );
 }
 
-/**
- * Uploads a file to a storage URL and returns the created storage id.
- */
+// Uploads a file to a storage URL and returns the created storage id.
 async function uploadImage(postUrl: string, file: File): Promise<string> {
-  const result = await fetch(postUrl, {
+  const parsedUrl = new URL(postUrl, window.location.origin);
+  const uploadToken = parsedUrl.hash.startsWith("#")
+    ? parsedUrl.hash.slice(1).trim()
+    : "";
+  if (!uploadToken) {
+    throw new Error("Upload URL did not include a one-time upload token.");
+  }
+  parsedUrl.hash = "";
+
+  const result = await fetch(parsedUrl.toString(), {
     method: "POST",
-    headers: { "Content-Type": file.type },
+    headers: {
+      "Content-Type": file.type,
+      "X-Upload-Token": uploadToken,
+    },
     body: file,
   });
 
@@ -47,7 +55,14 @@ async function uploadImage(postUrl: string, file: File): Promise<string> {
     throw new Error(`Upload failed (${result.status}): ${body}`);
   }
 
-  const storageId = extractStorageId(await result.json());
+  let parsed: unknown;
+  try {
+    parsed = await result.json();
+  } catch {
+    throw new Error("Upload succeeded but response was not valid JSON.");
+  }
+
+  const storageId = extractStorageId(parsed);
   if (!storageId) {
     throw new Error("Upload response did not include a storage id.");
   }

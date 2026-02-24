@@ -99,7 +99,23 @@ pub async fn run_bootstrap_migrations(pool: &MySqlPool) -> Result<(), AppError> 
             token CHAR(36) PRIMARY KEY,
             storage_id CHAR(36) NOT NULL,
             expires_at DATETIME(6) NOT NULL,
-            _created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+            _created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+            CONSTRAINT fk_storage_upload_tokens_storage
+                FOREIGN KEY (storage_id) REFERENCES _storage_files(id)
+                ON DELETE CASCADE
+        )
+        "#,
+    )
+    .execute(&mut *transaction)
+    .await?;
+
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS _functions_deployments (
+            id TINYINT PRIMARY KEY,
+            manifest_json LONGTEXT NOT NULL,
+            deployment_mode VARCHAR(16) NOT NULL DEFAULT 'local',
+            deployed_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
         )
         "#,
     )

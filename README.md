@@ -42,7 +42,7 @@ npm install skypydb # typescript client
 ## TODO
 
 - [ ] Remake the docs
-- [ ] Fix the CLI
+- [ ] Fix the CLI (in progress)
 - [ ] Fix workflows
 - [ ] Fix deployment files
 

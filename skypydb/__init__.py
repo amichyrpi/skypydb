@@ -8,6 +8,7 @@ from skypydb.embeddings import (
     get_embedding_function,
 )
 from skypydb.errors import SkypydbError
+from skypydb.functions import api
 from skypydb.httpclient import (
     AsyncHttpClient,
     HttpRelationalClient,
@@ -28,4 +29,5 @@ __all__ = [
     "OpenAIEmbedding",
     "SentenceTransformerEmbedding",
     "get_embedding_function",
+    "api",
 ]

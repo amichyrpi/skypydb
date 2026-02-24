@@ -1,6 +1,6 @@
 import os
 
-from skypydb import HttpRelationalClient
+from skypydb import HttpRelationalClient, api
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,10 +15,14 @@ client = HttpRelationalClient(
     api_key=SKYPYDB_API_KEY,
 )
 
-# Create a writer to write to the database using the function define in the skypydb folder
-writer = client.write("users:createUser", {"name": "Theo", "email": "theo@example.com"})
+# Create a writer to write to the database using the function defined in the skypydb folder
+writer = client.write(
+    api.users.createUser, {"name": "Theo", "email": "theo@example.com"}
+)
 
-# Create a reader to read from the database using the function define in the skypydb folder
-reader = client.read("read:readDatabase", {"name": "Theo", "email": "theo@example.com"})
+# Create a reader to read from the database using the function defined in the skypydb folder
+reader = client.read(
+    api.read.readDatabase, {"name": "Theo", "email": "theo@example.com"}
+)
 
 print(writer, reader)

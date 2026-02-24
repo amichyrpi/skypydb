@@ -9,33 +9,41 @@
  * This file is automatically created and updated when you run the deploy command.
  */
 
+import {
+  SKYPYDB_FUNCTION_ENDPOINT,
+  SKYPYDB_FUNCTION_REFERENCE,
+  SKYPYDB_FUNCTION_TO_STRING,
+} from "skypydb/serverside";
 import type { ApiFromFunction, FunctionExporter } from "skypydb/serverside";
 import type { deploys } from "skypydb/functions";
 
-import type * as users from "./users";
 import type * as read from "./read";
+import type * as users from "./users";
 
 declare const Api: ApiFromFunction<{
-  users: typeof users;
   read: typeof read;
+  users: typeof users;
 }>;
 
 function createApi(path: string[] = []): unknown {
+  const toEndpoint = () => path.join(".");
   return new Proxy(
-    {},
     {
-      get(_target, property: string | symbol) {
-        if (property === "__skypydbReference") {
+      [SKYPYDB_FUNCTION_TO_STRING]: toEndpoint,
+    },
+    {
+      get(target, property: string | symbol) {
+        if (property === SKYPYDB_FUNCTION_REFERENCE) {
           return true;
         }
-        if (property === "endpoint") {
-          return path.join(".");
+        if (property === SKYPYDB_FUNCTION_ENDPOINT) {
+          return toEndpoint();
         }
-        if (property === "toString") {
-          return () => path.join(".");
+        if (property === SKYPYDB_FUNCTION_TO_STRING) {
+          return target[SKYPYDB_FUNCTION_TO_STRING];
         }
         if (property === Symbol.toPrimitive) {
-          return () => path.join(".");
+          return target[SKYPYDB_FUNCTION_TO_STRING];
         }
         if (typeof property !== "string") {
           return undefined;
@@ -47,32 +55,7 @@ function createApi(path: string[] = []): unknown {
 }
 
 /**
- * This is the API object that you can use to write data to your database.
- *
- * Usage:
- * ```js
- * const writer = callwrite(api.users.createUser);
- * function handleButtonPress() {
- *   // Write data to the database
- *   write({ name: "Theo", email: "theo@example.com" });
- *   // Or use the result once the mutation has completed
- *   write({ name: "Theo", email: "theo@example.com" }).then((result) =>
- *     console.log(result),
- *   );
- * }
- * ```
- */
-
-/**
- * This is the API object that you can use to read from your database.
- *
- * Usage:
- * ```js
- * const reader = callread(api.read.readDatabase, {
- *   name: "Theo",
- *   email: "theo@example.com",
- * });
- * ```
+ * API object for deployed functions, including both read and write modules.
  */
 export const api = createApi() as deploys<
   typeof Api,

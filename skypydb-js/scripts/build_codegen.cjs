@@ -2,19 +2,15 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const projectRoot = path.resolve(__dirname, "..");
-const sourcePath = path.join(
-  projectRoot,
-  "src",
-  "cli",
-  "codegen_templates",
-  "README.md",
-);
+const sourceDir = path.join(projectRoot, "src", "cli", "codegen_templates");
 const targetDir = path.join(projectRoot, "dist", "codegen_templates");
-const targetPath = path.join(targetDir, "README.md");
 
-if (!fs.existsSync(sourcePath)) {
-  throw new Error(`Missing CLI README template at ${sourcePath}`);
+if (!fs.existsSync(sourceDir) || !fs.statSync(sourceDir).isDirectory()) {
+  throw new Error(`Missing CLI codegen_templates directory at ${sourceDir}`);
 }
 
-fs.mkdirSync(targetDir, { recursive: true });
-fs.copyFileSync(sourcePath, targetPath);
+if (fs.existsSync(targetDir)) {
+  fs.rmSync(targetDir, { recursive: true, force: true });
+}
+
+fs.cpSync(sourceDir, targetDir, { recursive: true });

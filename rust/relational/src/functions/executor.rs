@@ -1,7 +1,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use chrono::{Duration, Utc};
 use serde_json::{Map, Value};
 use sqlx::{MySql, MySqlPool};
+use uuid::Uuid;
 
 use crate::functions::manifest::{FunctionKind, FunctionsManifest, ManifestFunction, ManifestStep};
 use crate::repositories::relational_repo::{
@@ -14,6 +16,8 @@ use skypydb_errors::AppError;
 pub async fn execute_manifest_function(
     pool: &MySqlPool,
     max_query_limit: u32,
+    public_api_url: &str,
+    storage_upload_url_ttl_seconds: u32,
     manifest: &FunctionsManifest,
     endpoint: &str,
     args: Map<String, Value>,
@@ -27,15 +31,27 @@ pub async fn execute_manifest_function(
 
     match function.kind {
         FunctionKind::Query => {
-            execute_steps_without_transaction(&repository, function, &validated_args, true).await
+            execute_steps_without_transaction(
+                pool,
+                &repository,
+                function,
+                &validated_args,
+                true,
+                public_api_url,
+                storage_upload_url_ttl_seconds,
+            )
+            .await
         }
         FunctionKind::Mutation => {
             let mut transaction = pool.begin().await?;
             let result = execute_steps_with_transaction(
+                pool,
                 &repository,
                 function,
                 &validated_args,
                 &mut transaction,
+                public_api_url,
+                storage_upload_url_ttl_seconds,
             )
             .await;
 
@@ -94,10 +110,13 @@ impl RuntimeContext {
 }
 
 async fn execute_steps_without_transaction(
+    pool: &MySqlPool,
     repository: &RelationalRepository,
     function: &ManifestFunction,
     args: &Map<String, Value>,
     read_only: bool,
+    public_api_url: &str,
+    storage_upload_url_ttl_seconds: u32,
 ) -> Result<Value, AppError> {
     let mut context = RuntimeContext::new(args.clone());
     let mut last_result = Value::Null;
@@ -111,7 +130,16 @@ async fn execute_steps_without_transaction(
         }
 
         let step_result =
-            execute_step_without_transaction(repository, read_only, &mut context, step).await?;
+            execute_step_without_transaction(
+                pool,
+                repository,
+                read_only,
+                &mut context,
+                step,
+                public_api_url,
+                storage_upload_url_ttl_seconds,
+            )
+            .await?;
 
         if let Some(into) = &step.into {
             context.vars.insert(into.clone(), step_result.clone());
@@ -127,17 +155,29 @@ async fn execute_steps_without_transaction(
 }
 
 async fn execute_steps_with_transaction(
+    pool: &MySqlPool,
     repository: &RelationalRepository,
     function: &ManifestFunction,
     args: &Map<String, Value>,
     transaction: &mut sqlx::Transaction<'_, MySql>,
+    public_api_url: &str,
+    storage_upload_url_ttl_seconds: u32,
 ) -> Result<Value, AppError> {
     let mut context = RuntimeContext::new(args.clone());
     let mut last_result = Value::Null;
 
     for step in &function.steps {
         let step_result =
-            execute_step_with_transaction(repository, &mut context, transaction, step).await?;
+            execute_step_with_transaction(
+                pool,
+                repository,
+                &mut context,
+                transaction,
+                step,
+                public_api_url,
+                storage_upload_url_ttl_seconds,
+            )
+            .await?;
 
         if let Some(into) = &step.into {
             context.vars.insert(into.clone(), step_result.clone());
@@ -153,14 +193,17 @@ async fn execute_steps_with_transaction(
 }
 
 fn is_write_step(step: &ManifestStep) -> bool {
-    matches!(step.op.as_str(), "insert")
+    matches!(step.op.as_str(), "insert" | "storageGenerateUploadUrl")
 }
 
 async fn execute_step_without_transaction(
+    pool: &MySqlPool,
     repository: &RelationalRepository,
     read_only: bool,
     context: &mut RuntimeContext,
     step: &ManifestStep,
+    public_api_url: &str,
+    storage_upload_url_ttl_seconds: u32,
 ) -> Result<Value, AppError> {
     match step.op.as_str() {
         "get" => {
@@ -179,6 +222,28 @@ async fn execute_step_without_transaction(
             let payload = required_json_param(step, "value", context)?;
             let id = repository.insert(&table, &payload).await?;
             Ok(Value::String(id))
+        }
+        "storageGenerateUploadUrl" => {
+            ensure_write_allowed(read_only, "storageGenerateUploadUrl")?;
+            let url = create_upload_url(
+                pool,
+                public_api_url,
+                storage_upload_url_ttl_seconds,
+                None,
+            )
+            .await?;
+            Ok(Value::String(url))
+        }
+        "storageGetUrl" => {
+            let storage_id = required_string_param(step, "storageId", context)?;
+            let exists = storage_file_exists(pool, &storage_id, None).await?;
+            if !exists {
+                return Ok(Value::Null);
+            }
+            Ok(Value::String(build_storage_file_url(
+                public_api_url,
+                &storage_id,
+            )))
         }
         "assert" => {
             let condition = required_json_param(step, "condition", context)?;
@@ -203,10 +268,13 @@ async fn execute_step_without_transaction(
 }
 
 async fn execute_step_with_transaction(
+    pool: &MySqlPool,
     repository: &RelationalRepository,
     context: &mut RuntimeContext,
     transaction: &mut sqlx::Transaction<'_, MySql>,
     step: &ManifestStep,
+    public_api_url: &str,
+    storage_upload_url_ttl_seconds: u32,
 ) -> Result<Value, AppError> {
     match step.op.as_str() {
         "get" => {
@@ -231,6 +299,27 @@ async fn execute_step_with_transaction(
                 .await?;
             Ok(Value::String(id))
         }
+        "storageGenerateUploadUrl" => {
+            let url = create_upload_url(
+                pool,
+                public_api_url,
+                storage_upload_url_ttl_seconds,
+                Some(transaction),
+            )
+            .await?;
+            Ok(Value::String(url))
+        }
+        "storageGetUrl" => {
+            let storage_id = required_string_param(step, "storageId", context)?;
+            let exists = storage_file_exists(pool, &storage_id, Some(transaction)).await?;
+            if !exists {
+                return Ok(Value::Null);
+            }
+            Ok(Value::String(build_storage_file_url(
+                public_api_url,
+                &storage_id,
+            )))
+        }
         "assert" => {
             let condition = required_json_param(step, "condition", context)?;
             let message = required_literal_string(step, "message")?;
@@ -251,6 +340,103 @@ async fn execute_step_with_transaction(
             step.op
         ))),
     }
+}
+
+async fn create_upload_url(
+    pool: &MySqlPool,
+    public_api_url: &str,
+    storage_upload_url_ttl_seconds: u32,
+    transaction: Option<&mut sqlx::Transaction<'_, MySql>>,
+) -> Result<String, AppError> {
+    let token = Uuid::new_v4().to_string();
+    let storage_id = Uuid::new_v4().to_string();
+    let expires_at = (Utc::now() + Duration::seconds(storage_upload_url_ttl_seconds as i64))
+        .naive_utc();
+
+    if let Some(transaction) = transaction {
+        sqlx::query("DELETE FROM _storage_upload_tokens WHERE expires_at < UTC_TIMESTAMP(6)")
+            .execute(&mut **transaction)
+            .await?;
+
+        sqlx::query(
+            r#"
+            INSERT INTO _storage_upload_tokens (token, storage_id, expires_at)
+            VALUES (?, ?, ?)
+            "#,
+        )
+        .bind(&token)
+        .bind(&storage_id)
+        .bind(expires_at)
+        .execute(&mut **transaction)
+        .await?;
+    } else {
+        sqlx::query("DELETE FROM _storage_upload_tokens WHERE expires_at < UTC_TIMESTAMP(6)")
+            .execute(pool)
+            .await?;
+
+        sqlx::query(
+            r#"
+            INSERT INTO _storage_upload_tokens (token, storage_id, expires_at)
+            VALUES (?, ?, ?)
+            "#,
+        )
+        .bind(&token)
+        .bind(&storage_id)
+        .bind(expires_at)
+        .execute(pool)
+        .await?;
+    }
+
+    let base = normalize_public_api_url(public_api_url);
+    if base.is_empty() {
+        Ok(format!("/v1/storage/upload/{}", token))
+    } else {
+        Ok(format!("{}/v1/storage/upload/{}", base, token))
+    }
+}
+
+async fn storage_file_exists(
+    pool: &MySqlPool,
+    storage_id: &str,
+    transaction: Option<&mut sqlx::Transaction<'_, MySql>>,
+) -> Result<bool, AppError> {
+    let count: i64 = if let Some(transaction) = transaction {
+        sqlx::query_scalar(
+            r#"
+            SELECT COUNT(1)
+            FROM _storage_files
+            WHERE id = ?
+            "#,
+        )
+        .bind(storage_id)
+        .fetch_one(&mut **transaction)
+        .await?
+    } else {
+        sqlx::query_scalar(
+            r#"
+            SELECT COUNT(1)
+            FROM _storage_files
+            WHERE id = ?
+            "#,
+        )
+        .bind(storage_id)
+        .fetch_one(pool)
+        .await?
+    };
+    Ok(count > 0)
+}
+
+fn build_storage_file_url(public_api_url: &str, storage_id: &str) -> String {
+    let base = normalize_public_api_url(public_api_url);
+    if base.is_empty() {
+        format!("/v1/storage/files/{}", storage_id)
+    } else {
+        format!("{}/v1/storage/files/{}", base, storage_id)
+    }
+}
+
+fn normalize_public_api_url(value: &str) -> String {
+    value.trim().trim_end_matches('/').to_string()
 }
 
 fn ensure_write_allowed(read_only: bool, op: &str) -> Result<(), AppError> {

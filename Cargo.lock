@@ -1934,6 +1934,7 @@ dependencies = [
  "skypydb-database",
  "skypydb-errors",
  "sqlx",
+ "tokio",
  "tracing",
  "uuid",
 ]

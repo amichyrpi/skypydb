@@ -25,6 +25,14 @@ pub struct AppConfig {
     pub query_max_limit: u32,
     /// Filesystem path to TypeScript functions source directory.
     pub functions_source_dir: String,
+    /// Filesystem directory where uploaded storage objects are persisted.
+    pub storage_dir: String,
+    /// Public base URL used to generate file upload and access URLs.
+    pub public_api_url: String,
+    /// Expiration window (seconds) for one-time upload URLs.
+    pub storage_upload_url_ttl_seconds: u32,
+    /// Maximum allowed upload size in bytes for storage uploads.
+    pub storage_max_upload_bytes: usize,
 }
 
 impl AppConfig {
@@ -42,6 +50,14 @@ impl AppConfig {
         let query_max_limit = parse_u32_with_default("SKYPYDB_QUERY_MAX_LIMIT", 500)?;
         let functions_source_dir =
             env::var("SKYPYDB_FUNCTIONS_SOURCE_DIR").unwrap_or_else(|_| "./skypydb".to_string());
+        let storage_dir =
+            env::var("SKYPYDB_STORAGE_DIR").unwrap_or_else(|_| "./skypydb-storage".to_string());
+        let public_api_url = env::var("SKYPYDB_PUBLIC_API_URL")
+            .unwrap_or_else(|_| format!("http://localhost:{}", server_port));
+        let storage_upload_url_ttl_seconds =
+            parse_u32_with_default("SKYPYDB_STORAGE_UPLOAD_URL_TTL_SECONDS", 900)?;
+        let storage_max_upload_bytes =
+            parse_usize_with_default("SKYPYDB_STORAGE_MAX_UPLOAD_BYTES", 25 * 1024 * 1024)?;
         let cors_origins = env::var("SKYPYDB_CORS_ORIGINS")
             .unwrap_or_else(|_| "*".to_string())
             .split(',')
@@ -67,6 +83,10 @@ impl AppConfig {
             vector_max_dim,
             query_max_limit,
             functions_source_dir,
+            storage_dir,
+            public_api_url,
+            storage_upload_url_ttl_seconds,
+            storage_max_upload_bytes,
         })
     }
 }

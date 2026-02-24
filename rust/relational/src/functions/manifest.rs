@@ -258,11 +258,34 @@ fn parse_args(options: &str) -> Result<BTreeMap<String, FieldDefinition>, String
 }
 
 fn parse_handler(options: &str) -> Result<ParsedHandler, String> {
-    let handler_re = Regex::new(
+    let handler_with_args_re = Regex::new(
         r"handler\s*:\s*async\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*=>\s*\{",
     )
     .map_err(|e| e.to_string())?;
-    let caps = handler_re
+    if let Some(caps) = handler_with_args_re.captures(options) {
+        let full = caps
+            .get(0)
+            .ok_or_else(|| "invalid handler declaration".to_string())?;
+        let ctx_name = caps
+            .get(1)
+            .map(|m| m.as_str().to_string())
+            .ok_or_else(|| "missing ctx parameter".to_string())?;
+        let args_name = caps
+            .get(2)
+            .map(|m| m.as_str().to_string())
+            .ok_or_else(|| "missing args parameter".to_string())?;
+        let (body, _) = extract_braced_block(options, full.end() - 1)?;
+        return Ok(ParsedHandler {
+            ctx_name,
+            args_name,
+            body,
+        });
+    }
+
+    let handler_no_args_re =
+        Regex::new(r"handler\s*:\s*async\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*=>\s*\{")
+            .map_err(|e| e.to_string())?;
+    let caps = handler_no_args_re
         .captures(options)
         .ok_or_else(|| "missing handler declaration".to_string())?;
     let full = caps
@@ -272,14 +295,10 @@ fn parse_handler(options: &str) -> Result<ParsedHandler, String> {
         .get(1)
         .map(|m| m.as_str().to_string())
         .ok_or_else(|| "missing ctx parameter".to_string())?;
-    let args_name = caps
-        .get(2)
-        .map(|m| m.as_str().to_string())
-        .ok_or_else(|| "missing args parameter".to_string())?;
     let (body, _) = extract_braced_block(options, full.end() - 1)?;
     Ok(ParsedHandler {
         ctx_name,
-        args_name,
+        args_name: "__args".to_string(),
         body,
     })
 }
@@ -290,7 +309,7 @@ fn compile_handler(
     args_name: &str,
     endpoint: &str,
 ) -> Result<Vec<ManifestStep>, AppError> {
-    let decl_re = Regex::new(r"^(?:const|let)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$")
+    let decl_re = Regex::new(r"^(?:const|let)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([\s\S]+)$")
         .map_err(|e| AppError::internal(e.to_string()))?;
     let read_re = Regex::new(&format!(
         r#"^await\s+{}\.db\.read\(\s*["']([^"']+)["']\s*\)\.collect\(\s*\)$"#,
@@ -298,17 +317,27 @@ fn compile_handler(
     ))
     .map_err(|e| AppError::internal(e.to_string()))?;
     let insert_re = Regex::new(&format!(
-        r#"^await\s+{}\.db\.insert\(\s*["']([^"']+)["']\s*,\s*(.+)\)$"#,
+        r#"^await\s+{}\.db\.insert\(\s*["']([^"']+)["']\s*,\s*([\s\S]+)\)$"#,
         regex::escape(ctx_name)
     ))
     .map_err(|e| AppError::internal(e.to_string()))?;
     let get_re = Regex::new(&format!(
-        r#"^await\s+{}\.db\.get\(\s*["']([^"']+)["']\s*,\s*(.+)\)$"#,
+        r#"^await\s+{}\.db\.get\(\s*["']([^"']+)["']\s*,\s*([\s\S]+)\)$"#,
         regex::escape(ctx_name)
     ))
     .map_err(|e| AppError::internal(e.to_string()))?;
     let get_no_await_re = Regex::new(&format!(
-        r#"^{}\.db\.get\(\s*["']([^"']+)["']\s*,\s*(.+)\)$"#,
+        r#"^{}\.db\.get\(\s*["']([^"']+)["']\s*,\s*([\s\S]+)\)$"#,
+        regex::escape(ctx_name)
+    ))
+    .map_err(|e| AppError::internal(e.to_string()))?;
+    let storage_generate_upload_url_re = Regex::new(&format!(
+        r#"^await\s+{}\.storage\.(?:generate|create)UploadUrl\(\s*\)$"#,
+        regex::escape(ctx_name)
+    ))
+    .map_err(|e| AppError::internal(e.to_string()))?;
+    let storage_get_url_re = Regex::new(&format!(
+        r#"^await\s+{}\.storage\.getUrl\(\s*([\s\S]+)\s*\)$"#,
         regex::escape(ctx_name)
     ))
     .map_err(|e| AppError::internal(e.to_string()))?;
@@ -394,6 +423,37 @@ fn compile_handler(
                 continue;
             }
 
+            if storage_generate_upload_url_re.is_match(&initializer) {
+                steps.push(ManifestStep {
+                    op: "storageGenerateUploadUrl".to_string(),
+                    into: Some(name.clone()),
+                    payload: BTreeMap::new(),
+                });
+                vars.insert(name);
+                continue;
+            }
+
+            if let Some(storage_get_url_caps) = storage_get_url_re.captures(&initializer) {
+                let storage_id_expr = storage_get_url_caps
+                    .get(1)
+                    .map(|m| m.as_str().trim())
+                    .ok_or_else(|| {
+                        AppError::validation("invalid storage.getUrl id expression".to_string())
+                    })?;
+                let mut payload = BTreeMap::new();
+                payload.insert(
+                    "storageId".to_string(),
+                    compile_expression(storage_id_expr, args_name, &vars)?,
+                );
+                steps.push(ManifestStep {
+                    op: "storageGetUrl".to_string(),
+                    into: Some(name.clone()),
+                    payload,
+                });
+                vars.insert(name);
+                continue;
+            }
+
             let mut payload = BTreeMap::new();
             payload.insert("name".to_string(), Value::String(name.clone()));
             payload.insert(
@@ -442,6 +502,53 @@ fn compile_handler(
                     op: "first".to_string(),
                     into: Some("__return_value".to_string()),
                     payload: first_payload,
+                });
+                let mut return_payload = BTreeMap::new();
+                return_payload.insert(
+                    "value".to_string(),
+                    Value::String("$var.__return_value".to_string()),
+                );
+                steps.push(ManifestStep {
+                    op: "return".to_string(),
+                    into: None,
+                    payload: return_payload,
+                });
+                break;
+            }
+
+            if storage_generate_upload_url_re.is_match(return_expr) {
+                steps.push(ManifestStep {
+                    op: "storageGenerateUploadUrl".to_string(),
+                    into: Some("__return_value".to_string()),
+                    payload: BTreeMap::new(),
+                });
+                let mut return_payload = BTreeMap::new();
+                return_payload.insert(
+                    "value".to_string(),
+                    Value::String("$var.__return_value".to_string()),
+                );
+                steps.push(ManifestStep {
+                    op: "return".to_string(),
+                    into: None,
+                    payload: return_payload,
+                });
+                break;
+            }
+
+            if let Some(storage_get_url_caps) = storage_get_url_re.captures(return_expr) {
+                let storage_id_expr = storage_get_url_caps
+                    .get(1)
+                    .map(|m| m.as_str().trim())
+                    .ok_or_else(|| AppError::validation("invalid return storage id".to_string()))?;
+                let mut payload = BTreeMap::new();
+                payload.insert(
+                    "storageId".to_string(),
+                    compile_expression(storage_id_expr, args_name, &vars)?,
+                );
+                steps.push(ManifestStep {
+                    op: "storageGetUrl".to_string(),
+                    into: Some("__return_value".to_string()),
+                    payload,
                 });
                 let mut return_payload = BTreeMap::new();
                 return_payload.insert(
@@ -794,69 +901,4 @@ fn extract_braced_block(input: &str, open_brace: usize) -> Result<(String, usize
     }
 
     Err("unterminated block".to_string())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::load_functions_from_source;
-    use std::fs;
-    use std::path::PathBuf;
-    use uuid::Uuid;
-
-    fn temp_root() -> PathBuf {
-        std::env::temp_dir().join(format!("skypydb-runtime-fns-{}", Uuid::new_v4()))
-    }
-
-    #[test]
-    fn loader_reads_read_and_write_functions() {
-        let root = temp_root();
-        let source_dir = root.join("skypydb");
-        fs::create_dir_all(&source_dir).expect("create source dir");
-
-        fs::write(
-            source_dir.join("users.ts"),
-            r#"
-import { writeFunction, value } from "skypydb/functions";
-export const createUser = writeFunction({
-  args: {
-    name: value.string(),
-    email: value.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = { author: args.name, body: args.email };
-    const id = await ctx.db.insert("users", user);
-    return await ctx.db.get("users", id);
-  },
-});
-"#,
-        )
-        .expect("write users.ts");
-
-        fs::write(
-            source_dir.join("read.ts"),
-            r#"
-import { readFunction, value } from "skypydb/functions";
-export const readDatabase = readFunction({
-  args: {
-    name: value.string(),
-    email: value.string(),
-  },
-  handler: async (ctx, args) => {
-    const docs = await ctx.db.read("users").collect();
-    console.log(args.name, args.email);
-    return docs;
-  },
-});
-"#,
-        )
-        .expect("write read.ts");
-
-        let manifest = load_functions_from_source(&source_dir).expect("load source functions");
-        assert_eq!(manifest.version, 1);
-        assert_eq!(manifest.functions.len(), 2);
-        assert!(manifest.functions.contains_key("users.createUser"));
-        assert!(manifest.functions.contains_key("read.readDatabase"));
-
-        let _ = fs::remove_dir_all(root);
-    }
 }

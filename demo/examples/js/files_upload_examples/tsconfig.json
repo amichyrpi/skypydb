@@ -15,5 +15,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["./src", "./skypydb"]
+  "include": ["./src", "./skypydb", "vite.config.mts"]
 }

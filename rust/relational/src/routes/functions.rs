@@ -40,6 +40,8 @@ async fn call_function(
     let result = execute_manifest_function(
         &state.pool,
         state.config.query_max_limit,
+        &state.config.public_api_url,
+        state.config.storage_upload_url_ttl_seconds,
         &manifest,
         &endpoint,
         args,

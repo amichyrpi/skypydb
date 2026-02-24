@@ -78,6 +78,34 @@ pub async fn run_bootstrap_migrations(pool: &MySqlPool) -> Result<(), AppError> 
     .execute(&mut *transaction)
     .await?;
 
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS _storage_files (
+            id CHAR(36) PRIMARY KEY,
+            content_type VARCHAR(255) NOT NULL DEFAULT 'application/octet-stream',
+            byte_size BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            file_path TEXT NOT NULL,
+            _created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+            _updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+        )
+        "#,
+    )
+    .execute(&mut *transaction)
+    .await?;
+
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS _storage_upload_tokens (
+            token CHAR(36) PRIMARY KEY,
+            storage_id CHAR(36) NOT NULL,
+            expires_at DATETIME(6) NOT NULL,
+            _created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+        )
+        "#,
+    )
+    .execute(&mut *transaction)
+    .await?;
+
     let index_exists = sqlx::query_scalar::<_, i64>(
         r#"
         SELECT COUNT(1)
@@ -94,6 +122,28 @@ pub async fn run_bootstrap_migrations(pool: &MySqlPool) -> Result<(), AppError> 
             r#"
             CREATE INDEX idx_vector_items_collection_id
             ON vector_items(collection_id)
+            "#,
+        )
+        .execute(&mut *transaction)
+        .await?;
+    }
+
+    let storage_token_index_exists = sqlx::query_scalar::<_, i64>(
+        r#"
+        SELECT COUNT(1)
+        FROM information_schema.statistics
+        WHERE table_schema = DATABASE()
+          AND table_name = '_storage_upload_tokens'
+          AND index_name = 'idx_storage_upload_tokens_expires_at'
+        "#,
+    )
+    .fetch_one(&mut *transaction)
+    .await?;
+    if storage_token_index_exists == 0 {
+        sqlx::query(
+            r#"
+            CREATE INDEX idx_storage_upload_tokens_expires_at
+            ON _storage_upload_tokens(expires_at)
             "#,
         )
         .execute(&mut *transaction)

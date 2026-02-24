@@ -16,6 +16,7 @@ use skypydb_health_check::router as health_router;
 use skypydb_metrics::{init_metrics, MetricsConfig};
 use skypydb_mysql::run_bootstrap_migrations;
 use skypydb_relational::routes::functions::router as functions_router;
+use skypydb_relational::routes::storage::router as storage_router;
 use skypydb_telemetry::{init_tracing, trace_http_action};
 use skypydb_vector::routes::router as vector_router;
 use tokio::net::TcpListener;
@@ -51,6 +52,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn build_router(state: AppState) -> Router {
+    let public_v1_router = Router::new().merge(storage_router());
     let protected_router = Router::new()
         .merge(functions_router())
         .merge(vector_router())
@@ -59,7 +61,7 @@ fn build_router(state: AppState) -> Router {
     Router::<AppState>::new()
         .merge(health_router())
         .route("/openapi.json", get(openapi_json))
-        .nest("/v1", protected_router)
+        .nest("/v1", public_v1_router.merge(protected_router))
         .layer(from_fn(trace_http_action))
         .layer(from_fn(attach_request_id))
         .layer(cors_layer(&state))

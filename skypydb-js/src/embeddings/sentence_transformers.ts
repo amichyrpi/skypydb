@@ -1,4 +1,3 @@
-import "onnxruntime-node";
 import {
   env,
   pipeline,
@@ -13,6 +12,31 @@ type SentenceTransformerOptions = {
   normalize_embeddings?: boolean;
   dimension?: number;
 };
+
+let node_backend_load: Promise<void> | null = null;
+
+function is_node_runtime(): boolean {
+  return (
+    typeof process !== "undefined" &&
+    typeof process.versions === "object" &&
+    typeof process.versions.node === "string"
+  );
+}
+
+async function ensure_node_onnx_backend_loaded(): Promise<void> {
+  if (!is_node_runtime()) {
+    return;
+  }
+
+  if (!node_backend_load) {
+    const module_name = "onnxruntime-node";
+    node_backend_load = import(/* @vite-ignore */ module_name).then(
+      () => undefined,
+    );
+  }
+
+  await node_backend_load;
+}
 
 function l2_normalize(vector: number[]): number[] {
   let sum = 0;
@@ -44,6 +68,7 @@ export class SentenceTransformerEmbedding extends EmbeddingsFunction {
     if (!this.pipeline_instance) {
       this.pipeline_instance = (async () => {
         try {
+          await ensure_node_onnx_backend_loaded();
           env.allowLocalModels = true;
           return await pipeline("feature-extraction", this.model, {
             device: this.device ?? "cpu",

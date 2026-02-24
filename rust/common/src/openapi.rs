@@ -27,6 +27,8 @@ pub async fn openapi_json() -> Json<Value> {
             "/healthz": {"get": {"summary": "Health check"}},
             "/readyz": {"get": {"summary": "Readiness check"}},
             "/v1/functions/call": {"post": {"summary": "Execute a runtime function"}},
+            "/v1/storage/upload/{token}": {"post": {"summary": "Upload binary file content to one-time storage URL"}},
+            "/v1/storage/files/{storage_id}": {"get": {"summary": "Fetch uploaded file bytes by storage id"}},
             "/v1/vector/collections": {"post": {"summary": "Create vector collection"}, "get": {"summary": "List vector collections"}},
             "/v1/vector/collections/{name}": {"delete": {"summary": "Delete vector collection"}},
             "/v1/vector/collections/{name}/items/add": {"post": {"summary": "Add vector items"}},

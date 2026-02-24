@@ -17,19 +17,19 @@
       "require": "./dist/index.cjs"
     },
     "./httpclient": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "types": "./dist/httpclient.d.ts",
+      "import": "./dist/httpclient.mjs",
+      "require": "./dist/httpclient.cjs"
     },
     "./functions": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "types": "./dist/functions.d.ts",
+      "import": "./dist/functions.mjs",
+      "require": "./dist/functions.cjs"
     },
     "./serverside": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "types": "./dist/serverside.d.ts",
+      "import": "./dist/serverside.mjs",
+      "require": "./dist/serverside.cjs"
     }
   },
   "files": [

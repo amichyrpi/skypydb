@@ -51,6 +51,10 @@ mod tests {
             vector_max_dim: 4096,
             query_max_limit: 100,
             functions_source_dir: "./skypydb".to_string(),
+            storage_dir: "./skypydb-storage".to_string(),
+            public_api_url: "http://localhost:8000".to_string(),
+            storage_upload_url_ttl_seconds: 900,
+            storage_max_upload_bytes: 25 * 1024 * 1024,
         };
         let pool = MySqlPoolOptions::new()
             .connect_lazy(&config.mysql_url)

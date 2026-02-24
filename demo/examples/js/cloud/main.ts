@@ -1,9 +1,9 @@
-import { httpClient } from "skypydb";
+import { httpClient } from "mesosphere";
 
 async function main(): Promise<void> {
   // Create a client.
   const client = httpClient({
-    api_url: "https://ahen-studio.com/skypydb",
+    api_url: "https://ahen-studio.com/mesosphere",
     api_key: "your-api-key",
   });
   // You can also use a self-hosted server:

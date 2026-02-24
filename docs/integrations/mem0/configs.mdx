@@ -2,7 +2,7 @@
 title: configs component
 ---
 
-Skypydb mem0 config is HTTP-only.
+Mesosphere mem0 config is HTTP-only.
 
 Required keys:
 
@@ -15,10 +15,10 @@ from typing import Any, Dict
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class SkypyDBConfig(BaseModel):
+class MesosphereConfig(BaseModel):
     collection_name: str = Field("mem0", description="Default name for the collection")
-    api_url: str = Field(..., description="Skypydb backend base URL")
-    api_key: str = Field(..., description="Skypydb API key")
+    api_url: str = Field(..., description="Mesosphere backend base URL")
+    api_key: str = Field(..., description="Mesosphere API key")
 
     @model_validator(mode="before")
     @classmethod

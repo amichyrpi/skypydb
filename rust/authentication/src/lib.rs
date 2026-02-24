@@ -1,9 +1,9 @@
-﻿use axum::extract::State;
+use axum::extract::State;
 use axum::http::{HeaderValue, Request};
 use axum::middleware::Next;
 use axum::response::Response;
-use skypydb_application::state::AppState;
-use skypydb_errors::AppError;
+use mesosphere_application::state::AppState;
+use mesosphere_errors::AppError;
 
 /// Ensures every protected request includes the configured `X-API-Key`.
 pub async fn require_api_key(
@@ -32,8 +32,8 @@ mod tests {
     use axum::middleware::from_fn_with_state;
     use axum::routing::get;
     use axum::Router;
-    use skypydb_application::config::AppConfig;
-    use skypydb_application::state::AppState;
+    use mesosphere_application::config::AppConfig;
+    use mesosphere_application::state::AppState;
     use sqlx::mysql::MySqlPoolOptions;
     use tower::ServiceExt;
 
@@ -43,14 +43,14 @@ mod tests {
         let config = AppConfig {
             server_port: 8000,
             api_key: "test-key".to_string(),
-            mysql_url: "mysql://user:pass@localhost:3306/skypydb".to_string(),
+            mysql_url: "mysql://user:pass@localhost:3306/mesosphere".to_string(),
             mysql_pool_min: 1,
             mysql_pool_max: 1,
             log_level: "debug".to_string(),
             cors_origins: vec!["*".to_string()],
             vector_max_dim: 4096,
             query_max_limit: 100,
-            storage_dir: "./skypydb-storage".to_string(),
+            storage_dir: "./mesosphere-storage".to_string(),
             public_api_url: "http://localhost:8000".to_string(),
             storage_upload_url_ttl_seconds: 900,
             storage_max_upload_bytes: 25 * 1024 * 1024,

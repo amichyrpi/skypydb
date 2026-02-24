@@ -1,6 +1,6 @@
-﻿[package]
-name = "skypydb-google-cloud-utils"
-version = "0.1.0"
+[package]
+name = "mesosphere-google-cloud-utils"
+version = "2.0.0"
 edition = "2021"
 
 [dependencies]

@@ -1,4 +1,4 @@
-import { httpClient } from "skypydb";
+import { httpClient } from "mesosphere";
 
 async function main(): Promise<void> {
   // Create a client
@@ -15,9 +15,6 @@ async function main(): Promise<void> {
   try {
     // Create a vector database or get it if it already exists
     const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Remove prior demo rows so this script can be rerun safely.
-    await vectordb.delete({ ids: ["vid1", "vid2"] });
 
     // Add data to your vector database
     await vectordb.add({

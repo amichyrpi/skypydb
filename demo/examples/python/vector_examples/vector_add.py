@@ -1,7 +1,7 @@
-import skypydb
+import mesosphere
 
 # Create a client
-client = skypydb.HttpClient(
+client = mesosphere.HttpClient(
     api_url="http://localhost:8000",
     api_key="local-dev-key",
     embedding_provider="ollama",
@@ -13,9 +13,6 @@ client = skypydb.HttpClient(
 
 # Create a vector database or get it if it already exists
 vectordb = client.get_or_create_collection("my-videos")
-
-# Remove prior demo rows so this script can be rerun safely.
-vectordb.delete(ids=["vid1", "vid2"])
 
 # Add data to your vector database
 vectordb.add(

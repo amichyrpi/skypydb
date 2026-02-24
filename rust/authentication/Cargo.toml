@@ -1,12 +1,12 @@
-﻿[package]
-name = "skypydb-authentication"
-version = "0.1.0"
+[package]
+name = "mesosphere-authentication"
+version = "2.0.0"
 edition = "2021"
 
 [dependencies]
 axum = "0.7"
-skypydb-application = { path = "../application" }
-skypydb-errors = { path = "../errors" }
+mesosphere-application = { path = "../application" }
+mesosphere-errors = { path = "../errors" }
 
 [dev-dependencies]
 sqlx = { version = "0.8", default-features = false, features = ["mysql", "runtime-tokio-rustls"] }

@@ -10,7 +10,7 @@ use sqlx::{MySql, MySqlPool, Row, Transaction};
 use tracing::instrument;
 use uuid::Uuid;
 
-use skypydb_errors::AppError;
+use mesosphere_errors::AppError;
 
 /// Sort descriptor used by runtime function query steps.
 #[derive(Debug, Clone, Serialize, Deserialize)]

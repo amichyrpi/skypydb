@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { httpClient } from "skypydb/httpclient";
-import { api } from "../skypydb/deploy";
-import { callread, callwrite } from "skypydb/serverside";
+import { httpClient } from "mesosphere/httpclient";
+import { api } from "../mesosphere/deploy";
+import { callread, callwrite } from "mesosphere/serverside";
 
 type ImageMessage = { _id: string; imageUrl: string; author: string };
 
@@ -72,8 +72,8 @@ async function uploadImage(postUrl: string, file: File): Promise<string> {
 
 // Initialize the client outside of the component to avoid recreating it on every render.
 const client = httpClient({
-  api_url: import.meta.env.VITE_SKYPYDB_API_URL,
-  api_key: import.meta.env.VITE_SKYPYDB_API_KEY,
+  api_url: import.meta.env.VITE_MESOSPHERE_API_URL,
+  api_key: import.meta.env.VITE_MESOSPHERE_API_KEY,
 });
 
 export default function App() {

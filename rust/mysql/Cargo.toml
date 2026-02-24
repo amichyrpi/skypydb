@@ -1,8 +1,8 @@
-﻿[package]
-name = "skypydb-mysql"
-version = "0.1.0"
+[package]
+name = "mesosphere-mysql"
+version = "2.0.0"
 edition = "2021"
 
 [dependencies]
-skypydb-errors = { path = "../errors" }
+mesosphere-errors = { path = "../errors" }
 sqlx = { version = "0.8", default-features = false, features = ["mysql"] }

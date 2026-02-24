@@ -1,6 +1,6 @@
-import { httpClient } from "skypydb/httpclient";
-import { api } from "../skypydb/deploy";
-import { callread, callwrite } from "skypydb/serverside";
+import { httpClient } from "mesosphere/httpclient";
+import { api } from "../mesosphere/deploy";
+import { callread, callwrite } from "mesosphere/serverside";
 
 // Normalized user shape returned by this relational example.
 export type UserRecord = {
@@ -37,15 +37,15 @@ function toUserRecord(value: unknown): UserRecord | null {
   };
 }
 
-const api_url = import.meta.env.VITE_SKYPYDB_API_URL;
-const api_key = import.meta.env.VITE_SKYPYDB_API_KEY;
+const api_url = import.meta.env.VITE_MESOSPHERE_API_URL;
+const api_key = import.meta.env.VITE_MESOSPHERE_API_KEY;
 const missing_env_vars = [
   typeof api_url === "string" && api_url.trim().length > 0
     ? null
-    : "VITE_SKYPYDB_API_URL",
+    : "VITE_MESOSPHERE_API_URL",
   typeof api_key === "string" && api_key.trim().length > 0
     ? null
-    : "VITE_SKYPYDB_API_KEY",
+    : "VITE_MESOSPHERE_API_KEY",
 ].filter((value): value is string => value !== null);
 
 if (missing_env_vars.length > 0) {

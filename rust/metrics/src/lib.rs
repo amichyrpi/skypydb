@@ -5,8 +5,8 @@ use chrono::Utc;
 use once_cell::sync::OnceCell;
 use reqwest::Client;
 use serde_json::{json, Map, Value};
-use skypydb_errors::AppError;
-use skypydb_google_cloud_utils::default_cloud_run_settings;
+use mesosphere_errors::AppError;
+use mesosphere_google_cloud_utils::default_cloud_run_settings;
 use tracing::{debug, info, warn};
 
 static POSTHOG_CLIENT: OnceCell<PostHogClient> = OnceCell::new();
@@ -33,33 +33,33 @@ pub struct MetricsConfig {
 impl MetricsConfig {
     /// Loads PostHog metrics settings from environment variables.
     pub fn from_env() -> Self {
-        let api_key = env::var("SKYPYDB_POSTHOG_API_KEY").ok();
-        let enabled = env::var("SKYPYDB_POSTHOG_ENABLED")
+        let api_key = env::var("MESOSPHERE_POSTHOG_API_KEY").ok();
+        let enabled = env::var("MESOSPHERE_POSTHOG_ENABLED")
             .ok()
             .map(|value| matches!(value.to_ascii_lowercase().as_str(), "1" | "true" | "yes"))
             .unwrap_or_else(|| api_key.is_some());
 
-        let host = env::var("SKYPYDB_POSTHOG_HOST")
+        let host = env::var("MESOSPHERE_POSTHOG_HOST")
             .unwrap_or_else(|_| "https://eu.i.posthog.com".to_string())
             .trim_end_matches('/')
             .to_string();
 
         let service_name = env::var("K_SERVICE")
             .ok()
-            .or_else(|| env::var("SKYPYDB_SERVICE_NAME").ok())
-            .unwrap_or_else(|| "skypydb".to_string());
+            .or_else(|| env::var("MESOSPHERE_SERVICE_NAME").ok())
+            .unwrap_or_else(|| "mesosphere".to_string());
 
-        let distinct_id = env::var("SKYPYDB_POSTHOG_DISTINCT_ID")
+        let distinct_id = env::var("MESOSPHERE_POSTHOG_DISTINCT_ID")
             .ok()
             .or_else(|| env::var("K_REVISION").ok())
-            .unwrap_or_else(|| "skypydb-backend".to_string());
+            .unwrap_or_else(|| "mesosphere-backend".to_string());
 
-        let environment = env::var("SKYPYDB_ENVIRONMENT")
+        let environment = env::var("MESOSPHERE_ENVIRONMENT")
             .ok()
             .or_else(|| env::var("GOOGLE_CLOUD_PROJECT").ok())
             .unwrap_or_else(|| "local".to_string());
 
-        let request_timeout_ms = env::var("SKYPYDB_POSTHOG_TIMEOUT_MS")
+        let request_timeout_ms = env::var("MESOSPHERE_POSTHOG_TIMEOUT_MS")
             .ok()
             .and_then(|value| value.parse::<u64>().ok())
             .unwrap_or(5_000);
@@ -93,7 +93,7 @@ pub fn init_metrics(config: MetricsConfig) -> Result<(), AppError> {
     }
 
     let api_key = config.api_key.ok_or_else(|| {
-        AppError::config("SKYPYDB_POSTHOG_API_KEY is required when metrics are enabled")
+        AppError::config("MESOSPHERE_POSTHOG_API_KEY is required when metrics are enabled")
     })?;
 
     let http = Client::builder()
@@ -114,7 +114,7 @@ pub fn init_metrics(config: MetricsConfig) -> Result<(), AppError> {
     );
     common_properties.insert(
         "library.name".to_string(),
-        Value::String("skypydb".to_string()),
+        Value::String("mesosphere".to_string()),
     );
     common_properties.insert(
         "metrics.initialized_at".to_string(),

@@ -49,7 +49,7 @@ jobs:
           echo "Changed files between tags:"
           echo "$CHANGED_FILES"
 
-          if echo "$CHANGED_FILES" | grep -E '^skypydb/.*\.py$|^examples/.*\.py$|^pyproject\.toml$|^requirements.*\.txt$|^setup\.(py|cfg)$' >/dev/null 2>&1; then
+          if echo "$CHANGED_FILES" | grep -E '^mesosphere/.*\.py$|^examples/.*\.py$|^pyproject\.toml$|^requirements.*\.txt$|^setup\.(py|cfg)$' >/dev/null 2>&1; then
             echo "Python package changes detected."
             echo "has_python_changes=true" >> "$GITHUB_OUTPUT"
           else

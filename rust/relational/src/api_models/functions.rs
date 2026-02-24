@@ -13,11 +13,11 @@ pub struct FunctionCallRequest {
 
 impl FunctionCallRequest {
     /// Returns args as an object map, defaulting null/empty to `{}`.
-    pub fn args_object(&self) -> Result<Map<String, Value>, skypydb_errors::AppError> {
+    pub fn args_object(&self) -> Result<Map<String, Value>, mesosphere_errors::AppError> {
         match &self.args {
             Value::Null => Ok(Map::new()),
             Value::Object(object) => Ok(object.clone()),
-            _ => Err(skypydb_errors::AppError::validation(
+            _ => Err(mesosphere_errors::AppError::validation(
                 "function call args must be a JSON object",
             )),
         }

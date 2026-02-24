@@ -1,11 +1,11 @@
-import skypydb
+import mesosphere
 
 # Create a client
-client = skypydb.HttpClient(
-    api_url="https://ahen-studio.com/skypydb", api_key="your-api-key"
+client = mesosphere.HttpClient(
+    api_url="https://ahen-studio.com/mesosphere", api_key="your-api-key"
 )
 # you can also use the self-hosted server
-# client = skypydb.HttpClient(
+# client = mesosphere.HttpClient(
 #     api_url="http://localhost:8000",
 #     api_key="local-dev-key"
 # )

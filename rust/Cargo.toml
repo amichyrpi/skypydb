@@ -1,29 +1,29 @@
 [package]
-name = "skypydb"
-version = "1.0.4"
+name = "mesosphere"
+version = "2.0.0"
 edition = "2021"
-description = "Rust backend for Skypydb relational and vector APIs"
-repository = "https://github.com/Ahen-Studio/skypydb"
+description = "Rust backend for Mesosphere relational and vector APIs"
+repository = "https://github.com/Ahen-Studio/mesosphere-backend"
 license = "Apache-2.0"
 
 [[bin]]
-name = "skypydb"
+name = "mesosphere"
 path = "main.rs"
 
 [dependencies]
-skypydb-application = { path = "./application" }
-skypydb-authentication = { path = "./authentication" }
-skypydb-common = { path = "./common" }
-skypydb-database = { path = "./database" }
-skypydb-db-connection = { path = "./db_connection" }
-skypydb-errors = { path = "./errors" }
-skypydb-file-storage = { path = "./file_storage" }
-skypydb-health-check = { path = "./health_check" }
-skypydb-metrics = { path = "./metrics" }
-skypydb-mysql = { path = "./mysql" }
-skypydb-relational = { path = "./relational" }
-skypydb-telemetry = { path = "./telemetry" }
-skypydb-vector = { path = "./vector" }
+mesosphere-application = { path = "./application" }
+mesosphere-authentication = { path = "./authentication" }
+mesosphere-common = { path = "./common" }
+mesosphere-database = { path = "./database" }
+mesosphere-db-connection = { path = "./db_connection" }
+mesosphere-errors = { path = "./errors" }
+mesosphere-file-storage = { path = "./file_storage" }
+mesosphere-health-check = { path = "./health_check" }
+mesosphere-metrics = { path = "./metrics" }
+mesosphere-mysql = { path = "./mysql" }
+mesosphere-relational = { path = "./relational" }
+mesosphere-telemetry = { path = "./telemetry" }
+mesosphere-vector = { path = "./vector" }
 
 dotenv = "0.15"
 axum = "0.7"

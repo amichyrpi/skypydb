@@ -1,3 +1,3 @@
 ## Rust Backend
 
-This crate hosts the production backend API for Skypydb.
+This crate hosts the production backend API for Mesosphere.

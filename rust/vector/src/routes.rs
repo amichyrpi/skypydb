@@ -2,7 +2,7 @@ use axum::extract::{Path, State};
 use axum::routing::{delete, post};
 use axum::{Json, Router};
 
-use skypydb_common::api::envelope::{AffectedRowsResponse, ApiEnvelope};
+use mesosphere_common::api::envelope::{AffectedRowsResponse, ApiEnvelope};
 
 use crate::api_models::{
     CollectionResponse, CreateCollectionRequest, VectorAddItemsRequest, VectorDeleteItemsRequest,
@@ -12,8 +12,8 @@ use crate::api_models::{
 use crate::repository::{
     NewVectorItem, UpdateVectorItem, VectorItemRecord, VectorQueryResult, VectorRepository,
 };
-use skypydb_application::state::AppState;
-use skypydb_errors::AppError;
+use mesosphere_application::state::AppState;
+use mesosphere_errors::AppError;
 
 /// Registers vector collection and item endpoints.
 pub fn router() -> Router<AppState> {

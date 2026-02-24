@@ -6,8 +6,8 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 
-use skypydb_common::contracts::field_types::{FieldDefinition, FieldType};
-use skypydb_errors::AppError;
+use mesosphere_common::contracts::field_types::{FieldDefinition, FieldType};
+use mesosphere_errors::AppError;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]

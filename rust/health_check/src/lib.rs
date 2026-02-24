@@ -1,7 +1,7 @@
-﻿use axum::routing::get;
+use axum::routing::get;
 use axum::{Json, Router};
 use serde::Serialize;
-use skypydb_application::state::AppState;
+use mesosphere_application::state::AppState;
 
 /// Simple liveness/readiness response payload.
 #[derive(Debug, Serialize)]

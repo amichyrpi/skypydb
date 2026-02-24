@@ -73,7 +73,7 @@ export default function App() {
         lineHeight: 1.45,
       }}
     >
-      <h1>SkyPyDB Relational Example</h1>
+      <h1>Mesosphere Relational Example</h1>
       <p>Create a user with a write function, then read all users.</p>
 
       <form

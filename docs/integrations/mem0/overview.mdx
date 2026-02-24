@@ -1,25 +1,25 @@
 ---
 title: Mem0 integrations
-description: "Skypydb is compatible with mem0 for adding memory to an LLM"
+description: "Mesosphere is compatible with mem0 for adding memory to an LLM"
 ---
 
-Skypydb supports mem0 via a third-party implementation.
+Mesosphere supports mem0 via a third-party implementation.
 
-To use skypydb with mem0, you will need to modify some files in the mem0 source code.
+To use mesosphere with mem0, you will need to modify some files in the mem0 source code.
 
 See the Mem0 component section for more information:
 
-## Use Skypydb with Mem0
+## Use Mesosphere with Mem0
 
 <Steps titleSize="h3">
-  <Step title="Install Skypydb with Mem0">
+  <Step title="Install Mesosphere with Mem0">
     <CodeGroup>
     ```bash pip
-    pip install skypydb[mem0]
+    pip install mesosphere[mem0]
     ```
 
     ```bash uv
-    uv pip install skypydb[mem0]
+    uv pip install mesosphere[mem0]
     ```
     </CodeGroup>
 
@@ -32,7 +32,7 @@ See the Mem0 component section for more information:
     # Local mem0 config
     config = {
         "vector_store": {
-            "provider": "skypydb",
+            "provider": "mesosphere",
             "config": {
                 "collection_name": "memory",
                 "path": "db/_generated/mem0_vector.db"

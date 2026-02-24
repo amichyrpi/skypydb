@@ -11,8 +11,8 @@ use opentelemetry::KeyValue;
 use opentelemetry_otlp::{SpanExporter, WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::trace::{self, Tracer};
 use opentelemetry_sdk::Resource;
-use skypydb_errors::AppError;
-use skypydb_metrics::capture_http_action;
+use mesosphere_errors::AppError;
+use mesosphere_metrics::capture_http_action;
 use tracing::{error, info, Instrument};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
@@ -113,12 +113,12 @@ fn classify_action(method: &str, path: &str) -> &'static str {
 }
 
 fn build_posthog_tracer() -> Result<Option<Tracer>, AppError> {
-    let endpoint = env::var("SKYPYDB_POSTHOG_OTEL_ENDPOINT").ok().or_else(|| {
-        let host = env::var("SKYPYDB_POSTHOG_HOST")
+    let endpoint = env::var("MESOSPHERE_POSTHOG_OTEL_ENDPOINT").ok().or_else(|| {
+        let host = env::var("MESOSPHERE_POSTHOG_HOST")
             .unwrap_or_else(|_| "https://eu.i.posthog.com".to_string());
         Some(format!("{}/v1/traces", host.trim_end_matches('/')))
     });
-    let api_key = env::var("SKYPYDB_POSTHOG_API_KEY").ok();
+    let api_key = env::var("MESOSPHERE_POSTHOG_API_KEY").ok();
 
     let (Some(endpoint), Some(api_key)) = (endpoint, api_key) else {
         return Ok(None);
@@ -134,8 +134,8 @@ fn build_posthog_tracer() -> Result<Option<Tracer>, AppError> {
         .build()
         .map_err(|error| AppError::internal(format!("failed to build OTLP exporter: {}", error)))?;
 
-    let service_name = env::var("SKYPYDB_SERVICE_NAME").unwrap_or_else(|_| "skypydb".to_string());
-    let environment = env::var("SKYPYDB_ENVIRONMENT").unwrap_or_else(|_| "local".to_string());
+    let service_name = env::var("MESOSPHERE_SERVICE_NAME").unwrap_or_else(|_| "mesosphere".to_string());
+    let environment = env::var("MESOSPHERE_ENVIRONMENT").unwrap_or_else(|_| "local".to_string());
 
     let resource = Resource::builder()
         .with_attributes(vec![
@@ -149,7 +149,7 @@ fn build_posthog_tracer() -> Result<Option<Tracer>, AppError> {
         .with_resource(resource)
         .build();
 
-    let tracer = provider.tracer("skypydb");
+    let tracer = provider.tracer("mesosphere");
     global::set_tracer_provider(provider);
 
     Ok(Some(tracer))

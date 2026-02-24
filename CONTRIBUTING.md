@@ -1,20 +1,20 @@
 # Contribution guidelines
 
-Welcome to the Skypydb!
+Welcome to the mesosphere-backend!
 
-This repository is governed by [the Contributor Covenant Code of Conduct](https://github.com/Ahen-Studio/skypydb/blob/main/CODE_OF_CONDUCT.md).
+This repository is governed by [the Contributor Covenant Code of Conduct](https://github.com/Ahen-Studio/mesosphere-backend/blob/main/CODE_OF_CONDUCT.md).
 
 ## Where to start.
 
-We welcome everyone who likes to contribute to Skypydb.
+We welcome everyone who likes to contribute to mesosphere.
 
 You can contribute not only with code but with bug reports, comments, questions, answers, or just a simple tweet to spread the word.
 
-- You can make pull requests on [Pull Requests](https://github.com/Ahen-Studio/skypydb/pulls)
+- You can make pull requests on [Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls)
 
-- You can report an issue on [Issues](https://github.com/Ahen-Studio/skypydb/issues)
+- You can report an issue on [Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues)
 
-- Or you can just send a message on the chat channel [Discussions](https://github.com/Ahen-Studio/skypydb/discussions)
+- Or you can just send a message on the chat channel [Discussions](https://github.com/Ahen-Studio/mesosphere-backend/discussions)
 
 Feel free to ping us at any step you need help using our communication channels.
 

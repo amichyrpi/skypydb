@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:8.4
-    container_name: skypydb-gce-mysql
+    container_name: mesosphere-gce-mysql
     restart: unless-stopped
     command:
       - --character-set-server=utf8mb4
@@ -11,8 +11,8 @@ services:
       - --slow_query_log=ON
       - --long_query_time=2
     environment:
-      MYSQL_DATABASE: skypydb
-      MYSQL_USER: skypydb
+      MYSQL_DATABASE: mesosphere
+      MYSQL_USER: mesosphere
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change-me-root}
     ports:
@@ -36,7 +36,7 @@ services:
 
   mysql-backup:
     image: mysql:8.4
-    container_name: skypydb-gce-mysql-backup
+    container_name: mesosphere-gce-mysql-backup
     restart: unless-stopped
     depends_on:
       mysql:
@@ -44,8 +44,8 @@ services:
     entrypoint: ["/bin/bash", "/scripts/backup.sh"]
     environment:
       MYSQL_HOST: mysql
-      MYSQL_DATABASE: skypydb
-      MYSQL_USER: skypydb
+      MYSQL_DATABASE: mesosphere
+      MYSQL_USER: mesosphere
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
       MYSQLDUMP_CRON_SECONDS: "3600"
     volumes:

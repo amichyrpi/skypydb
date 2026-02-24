@@ -1,1 +1,1 @@
-pub use skypydb_database::query_builder::{CompiledWhere, SqlParam};
+pub use mesosphere_database::query_builder::{CompiledWhere, SqlParam};

@@ -1,4 +1,4 @@
-import { httpClient } from "skypydb";
+import { httpClient } from "mesosphere";
 
 // Ollama provider
 

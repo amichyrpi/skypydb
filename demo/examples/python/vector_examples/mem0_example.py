@@ -5,11 +5,11 @@ from mem0 import Memory
 # Local mem0 config
 config = {
     "vector_store": {
-        "provider": "skypydb",
+        "provider": "mesosphere",
         "config": {
             "collection_name": "memory",
-            "api_url": os.getenv("SKYPYDB_API_URL", "http://localhost:8000"),
-            "api_key": os.getenv("SKYPYDB_API_KEY", "local-dev-key"),
+            "api_url": os.getenv("MESOSPHERE_API_URL", "http://localhost:8000"),
+            "api_key": os.getenv("MESOSPHERE_API_KEY", "local-dev-key"),
         },
     },
     "llm": {

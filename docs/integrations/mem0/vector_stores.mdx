@@ -7,7 +7,7 @@ Use the HTTP client in the mem0 adapter:
 ```python
 from typing import Dict, List, Optional
 from pydantic import BaseModel
-from skypydb import HttpClient
+from mesosphere import HttpClient
 from mem0.vector_stores.base import VectorStoreBase
 
 
@@ -17,7 +17,7 @@ class OutputData(BaseModel):
     payload: Optional[Dict]
 
 
-class SkypyDB(VectorStoreBase):
+class Mesosphere(VectorStoreBase):
     def __init__(
         self,
         collection_name: str,
@@ -32,4 +32,4 @@ class SkypyDB(VectorStoreBase):
 
 The full implementation used in this repository is:
 
-`demo/integration/mem0/vector_stores/skypydb.py`
+`demo/integration/mem0/vector_stores/mesosphere.py`

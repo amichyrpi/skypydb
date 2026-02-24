@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use crate::codec::{decode_embedding, encode_embedding, vector_norm};
 use crate::scoring::cosine_similarity;
-use skypydb_errors::AppError;
+use mesosphere_errors::AppError;
 
 /// Vector collection record.
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,5 +1,5 @@
-﻿use skypydb_application::config::AppConfig;
-use skypydb_errors::AppError;
+use mesosphere_application::config::AppConfig;
+use mesosphere_errors::AppError;
 use sqlx::mysql::MySqlPoolOptions;
 use sqlx::MySqlPool;
 

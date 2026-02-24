@@ -1,7 +1,7 @@
-import skypydb
+import mesosphere
 
 # Create a client
-client = skypydb.HttpClient(
+client = mesosphere.HttpClient(
     api_url="http://localhost:8000",
     api_key="local-dev-key",
     embedding_provider="ollama",

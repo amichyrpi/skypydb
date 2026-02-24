@@ -11,9 +11,9 @@ use crate::functions::executor::{ensure_runtime_tables, execute_manifest_functio
 use crate::functions::manifest::{
     load_functions_from_uploaded_sources, FunctionsManifest,
 };
-use skypydb_application::state::AppState;
-use skypydb_common::api::envelope::ApiEnvelope;
-use skypydb_errors::AppError;
+use mesosphere_application::state::AppState;
+use mesosphere_common::api::envelope::ApiEnvelope;
+use mesosphere_errors::AppError;
 
 const ACTIVE_DEPLOYMENT_ID: i32 = 1;
 const API_KEY_HEADER: &str = "X-API-Key";
@@ -175,7 +175,7 @@ fn validate_deploy_payload_limits(request: &FunctionDeployRequest) -> Result<(),
 async fn load_runtime_manifest(state: &AppState) -> Result<FunctionsManifest, AppError> {
     load_deployed_manifest(state).await?.ok_or_else(|| {
         AppError::not_found(
-            "no deployed functions available; run `npx skypydb deploy --local` or `npx skypydb deploy --cloud` first",
+            "no deployed functions available; run `npx mesosphere deploy --local` or `npx mesosphere deploy --cloud` first",
         )
     })
 }

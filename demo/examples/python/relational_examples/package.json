@@ -1,8 +1,8 @@
 {
-  "name": "skypydb-relational-example",
-  "version": "0.0.0",
+  "name": "mesosphere-relational-example",
+  "version": "2.0.0",
   "dependencies": {
-    "skypydb": "file:../../../../skypydb-js",
+    "mesosphere": "file:../../../../mesosphere-js",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },

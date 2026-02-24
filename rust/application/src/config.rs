@@ -1,6 +1,6 @@
-﻿use std::env;
+use std::env;
 
-use skypydb_errors::AppError;
+use mesosphere_errors::AppError;
 
 /// Runtime configuration loaded from environment variables.
 #[derive(Debug, Clone)]
@@ -36,32 +36,32 @@ pub struct AppConfig {
 impl AppConfig {
     /// Parses and validates all runtime configuration from env vars.
     pub fn from_env() -> Result<Self, AppError> {
-        let server_port = parse_u16_with_default("SKYPYDB_SERVER_PORT", 8000)?;
-        let api_key = env::var("SKYPYDB_API_KEY")
-            .map_err(|_| AppError::config("SKYPYDB_API_KEY is required"))?;
-        let mysql_url = env::var("SKYPYDB_MYSQL_URL")
-            .map_err(|_| AppError::config("SKYPYDB_MYSQL_URL is required"))?;
-        let mysql_pool_min = parse_u32_with_default("SKYPYDB_MYSQL_POOL_MIN", 1)?;
-        let mysql_pool_max = parse_u32_with_default("SKYPYDB_MYSQL_POOL_MAX", 10)?;
-        let log_level = env::var("SKYPYDB_LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
-        let vector_max_dim = parse_usize_with_default("SKYPYDB_VECTOR_MAX_DIM", 4096)?;
-        let query_max_limit = parse_u32_with_default("SKYPYDB_QUERY_MAX_LIMIT", 500)?;
+        let server_port = parse_u16_with_default("MESOSPHERE_SERVER_PORT", 8000)?;
+        let api_key = env::var("MESOSPHERE_API_KEY")
+            .map_err(|_| AppError::config("MESOSPHERE_API_KEY is required"))?;
+        let mysql_url = env::var("MESOSPHERE_MYSQL_URL")
+            .map_err(|_| AppError::config("MESOSPHERE_MYSQL_URL is required"))?;
+        let mysql_pool_min = parse_u32_with_default("MESOSPHERE_MYSQL_POOL_MIN", 1)?;
+        let mysql_pool_max = parse_u32_with_default("MESOSPHERE_MYSQL_POOL_MAX", 10)?;
+        let log_level = env::var("MESOSPHERE_LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
+        let vector_max_dim = parse_usize_with_default("MESOSPHERE_VECTOR_MAX_DIM", 4096)?;
+        let query_max_limit = parse_u32_with_default("MESOSPHERE_QUERY_MAX_LIMIT", 500)?;
         let storage_dir =
-            env::var("SKYPYDB_STORAGE_DIR").unwrap_or_else(|_| "./skypydb-storage".to_string());
-        let public_api_url = env::var("SKYPYDB_PUBLIC_API_URL").unwrap_or_else(|_| {
+            env::var("MESOSPHERE_STORAGE_DIR").unwrap_or_else(|_| "./mesosphere-storage".to_string());
+        let public_api_url = env::var("MESOSPHERE_PUBLIC_API_URL").unwrap_or_else(|_| {
             let fallback = format!("http://localhost:{}", server_port);
             eprintln!(
-                "WARNING: SKYPYDB_PUBLIC_API_URL not set; \
+                "WARNING: MESOSPHERE_PUBLIC_API_URL not set; \
                  generated storage URLs will use the localhost fallback: {}",
                 fallback
             );
             fallback
         });
         let storage_upload_url_ttl_seconds =
-            parse_u32_with_default("SKYPYDB_STORAGE_UPLOAD_URL_TTL_SECONDS", 900)?;
+            parse_u32_with_default("MESOSPHERE_STORAGE_UPLOAD_URL_TTL_SECONDS", 900)?;
         let storage_max_upload_bytes =
-            parse_usize_with_default("SKYPYDB_STORAGE_MAX_UPLOAD_BYTES", 25 * 1024 * 1024)?;
-        let cors_origins = env::var("SKYPYDB_CORS_ORIGINS")
+            parse_usize_with_default("MESOSPHERE_STORAGE_MAX_UPLOAD_BYTES", 25 * 1024 * 1024)?;
+        let cors_origins = env::var("MESOSPHERE_CORS_ORIGINS")
             .unwrap_or_else(|_| "*".to_string())
             .split(',')
             .map(str::trim)
@@ -71,17 +71,17 @@ impl AppConfig {
 
         if mysql_pool_min > mysql_pool_max {
             return Err(AppError::config(
-                "SKYPYDB_MYSQL_POOL_MIN cannot be greater than SKYPYDB_MYSQL_POOL_MAX",
+                "MESOSPHERE_MYSQL_POOL_MIN cannot be greater than MESOSPHERE_MYSQL_POOL_MAX",
             ));
         }
         if storage_upload_url_ttl_seconds == 0 {
             return Err(AppError::config(
-                "SKYPYDB_STORAGE_UPLOAD_URL_TTL_SECONDS must be greater than 0",
+                "MESOSPHERE_STORAGE_UPLOAD_URL_TTL_SECONDS must be greater than 0",
             ));
         }
         if storage_max_upload_bytes == 0 {
             return Err(AppError::config(
-                "SKYPYDB_STORAGE_MAX_UPLOAD_BYTES must be greater than 0",
+                "MESOSPHERE_STORAGE_MAX_UPLOAD_BYTES must be greater than 0",
             ));
         }
 

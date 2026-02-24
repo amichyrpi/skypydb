@@ -8,8 +8,8 @@ use crate::functions::manifest::{FunctionKind, FunctionsManifest, ManifestFuncti
 use crate::repositories::relational_repo::{
     OrderByClause, RelationalQueryOptions, RelationalRepository,
 };
-use skypydb_common::contracts::field_types::{FieldDefinition, FieldType};
-use skypydb_errors::AppError;
+use mesosphere_common::contracts::field_types::{FieldDefinition, FieldType};
+use mesosphere_errors::AppError;
 
 /// Executes a runtime-defined function call and returns its JSON result.
 pub async fn execute_manifest_function(
@@ -844,7 +844,7 @@ mod tests {
         build_storage_file_url, evaluate_expression, normalize_storage_id, validate_args,
     };
     use serde_json::{json, Map, Value};
-    use skypydb_common::contracts::field_types::{FieldDefinition, FieldType};
+    use mesosphere_common::contracts::field_types::{FieldDefinition, FieldType};
     use std::collections::BTreeMap;
 
     fn string_field() -> FieldDefinition {

@@ -1008,6 +1008,205 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79"
 
 [[package]]
+name = "mesosphere"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "chrono",
+ "dotenv",
+ "http",
+ "mesosphere-application",
+ "mesosphere-authentication",
+ "mesosphere-common",
+ "mesosphere-database",
+ "mesosphere-db-connection",
+ "mesosphere-errors",
+ "mesosphere-file-storage",
+ "mesosphere-health-check",
+ "mesosphere-metrics",
+ "mesosphere-mysql",
+ "mesosphere-relational",
+ "mesosphere-telemetry",
+ "mesosphere-vector",
+ "rand 0.8.5",
+ "regex",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
+name = "mesosphere-application"
+version = "2.0.0"
+dependencies = [
+ "mesosphere-errors",
+ "sqlx",
+]
+
+[[package]]
+name = "mesosphere-authentication"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "mesosphere-application",
+ "mesosphere-errors",
+ "sqlx",
+ "tokio",
+ "tower",
+]
+
+[[package]]
+name = "mesosphere-common"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "mesosphere-database",
+ "mesosphere-errors",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
+name = "mesosphere-database"
+version = "2.0.0"
+dependencies = [
+ "sqlx",
+]
+
+[[package]]
+name = "mesosphere-db-connection"
+version = "2.0.0"
+dependencies = [
+ "mesosphere-application",
+ "mesosphere-errors",
+ "sqlx",
+]
+
+[[package]]
+name = "mesosphere-errors"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "serde",
+ "sqlx",
+ "thiserror",
+]
+
+[[package]]
+name = "mesosphere-file-storage"
+version = "2.0.0"
+dependencies = [
+ "chrono",
+ "mesosphere-errors",
+ "mesosphere-google-cloud-utils",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "urlencoding",
+]
+
+[[package]]
+name = "mesosphere-google-cloud-utils"
+version = "2.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "mesosphere-health-check"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "mesosphere-application",
+ "serde",
+]
+
+[[package]]
+name = "mesosphere-metrics"
+version = "2.0.0"
+dependencies = [
+ "chrono",
+ "mesosphere-errors",
+ "mesosphere-google-cloud-utils",
+ "once_cell",
+ "reqwest",
+ "serde_json",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "mesosphere-mysql"
+version = "2.0.0"
+dependencies = [
+ "mesosphere-errors",
+ "sqlx",
+]
+
+[[package]]
+name = "mesosphere-relational"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "chrono",
+ "mesosphere-application",
+ "mesosphere-common",
+ "mesosphere-database",
+ "mesosphere-errors",
+ "regex",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "mesosphere-telemetry"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "mesosphere-errors",
+ "mesosphere-metrics",
+ "opentelemetry",
+ "opentelemetry-otlp",
+ "opentelemetry_sdk",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "mesosphere-vector"
+version = "2.0.0"
+dependencies = [
+ "axum",
+ "chrono",
+ "mesosphere-application",
+ "mesosphere-common",
+ "mesosphere-errors",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1769,205 +1968,6 @@ checksum = "77549399552de45a898a580c1b41d445bf730df867cc44e6c0233bbc4b8329de"
 dependencies = [
  "digest",
  "rand_core 0.6.4",
-]
-
-[[package]]
-name = "skypydb"
-version = "1.0.4"
-dependencies = [
- "axum",
- "chrono",
- "dotenv",
- "http",
- "rand 0.8.5",
- "regex",
- "serde",
- "serde_json",
- "skypydb-application",
- "skypydb-authentication",
- "skypydb-common",
- "skypydb-database",
- "skypydb-db-connection",
- "skypydb-errors",
- "skypydb-file-storage",
- "skypydb-health-check",
- "skypydb-metrics",
- "skypydb-mysql",
- "skypydb-relational",
- "skypydb-telemetry",
- "skypydb-vector",
- "sqlx",
- "tempfile",
- "thiserror",
- "tokio",
- "tower",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
-name = "skypydb-application"
-version = "0.1.0"
-dependencies = [
- "skypydb-errors",
- "sqlx",
-]
-
-[[package]]
-name = "skypydb-authentication"
-version = "0.1.0"
-dependencies = [
- "axum",
- "skypydb-application",
- "skypydb-errors",
- "sqlx",
- "tokio",
- "tower",
-]
-
-[[package]]
-name = "skypydb-common"
-version = "0.1.0"
-dependencies = [
- "axum",
- "serde",
- "serde_json",
- "skypydb-database",
- "skypydb-errors",
- "uuid",
-]
-
-[[package]]
-name = "skypydb-database"
-version = "0.1.0"
-dependencies = [
- "sqlx",
-]
-
-[[package]]
-name = "skypydb-db-connection"
-version = "0.1.0"
-dependencies = [
- "skypydb-application",
- "skypydb-errors",
- "sqlx",
-]
-
-[[package]]
-name = "skypydb-errors"
-version = "0.1.0"
-dependencies = [
- "axum",
- "serde",
- "sqlx",
- "thiserror",
-]
-
-[[package]]
-name = "skypydb-file-storage"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "reqwest",
- "serde",
- "serde_json",
- "skypydb-errors",
- "skypydb-google-cloud-utils",
- "sqlx",
- "tokio",
- "tracing",
- "urlencoding",
-]
-
-[[package]]
-name = "skypydb-google-cloud-utils"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "skypydb-health-check"
-version = "0.1.0"
-dependencies = [
- "axum",
- "serde",
- "skypydb-application",
-]
-
-[[package]]
-name = "skypydb-metrics"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "once_cell",
- "reqwest",
- "serde_json",
- "skypydb-errors",
- "skypydb-google-cloud-utils",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "skypydb-mysql"
-version = "0.1.0"
-dependencies = [
- "skypydb-errors",
- "sqlx",
-]
-
-[[package]]
-name = "skypydb-relational"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "regex",
- "serde",
- "serde_json",
- "skypydb-application",
- "skypydb-common",
- "skypydb-database",
- "skypydb-errors",
- "sqlx",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "skypydb-telemetry"
-version = "0.1.0"
-dependencies = [
- "axum",
- "opentelemetry",
- "opentelemetry-otlp",
- "opentelemetry_sdk",
- "skypydb-errors",
- "skypydb-metrics",
- "tracing",
- "tracing-opentelemetry",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "skypydb-vector"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "serde",
- "serde_json",
- "skypydb-application",
- "skypydb-common",
- "skypydb-errors",
- "sqlx",
- "tracing",
- "uuid",
 ]
 
 [[package]]

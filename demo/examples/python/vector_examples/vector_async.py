@@ -1,10 +1,10 @@
 import asyncio
-import skypydb
+import mesosphere
 
 
 async def main() -> None:
     # Create an async client.
-    client = skypydb.AsyncHttpClient(
+    client = mesosphere.AsyncHttpClient(
         api_url="http://localhost:8000",
         api_key="local-dev-key",
         embedding_provider="ollama",

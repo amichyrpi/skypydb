@@ -1,28 +1,28 @@
 services:
-  skypydb-api:
-    # Set SKYPYDB_IMAGE to run a prebuilt image instead of local build output.
-    image: ${SKYPYDB_IMAGE:-local-skypydb-api:latest}
+  mesosphere-api:
+    # Set MESOSPHERE_IMAGE to run a prebuilt image instead of local build output.
+    image: ${MESOSPHERE_IMAGE:-local-mesosphere-api:latest}
     build:
-      context: ${SKYPYDB_BUILD_CONTEXT:-../..}
-      dockerfile: ${SKYPYDB_DOCKERFILE:-rust/Dockerfile}
+      context: ${MESOSPHERE_BUILD_CONTEXT:-../..}
+      dockerfile: ${MESOSPHERE_DOCKERFILE:-rust/Dockerfile}
     stop_grace_period: 10s
     stop_signal: SIGINT
     restart: unless-stopped
     ports:
-      - "${SKYPYDB_PUBLISH_PORT:-8000}:8000"
+      - "${MESOSPHERE_PUBLISH_PORT:-8000}:8000"
     depends_on:
       mysql:
         condition: service_healthy
     environment:
-      - SKYPYDB_SERVER_PORT=8000
-      - SKYPYDB_API_KEY=${SKYPYDB_API_KEY:-local-dev-key}
-      - SKYPYDB_MYSQL_URL=mysql://${MYSQL_USER:-skypydb}:${MYSQL_PASSWORD:-skypydb}@mysql:3306/${MYSQL_DATABASE:-skypydb}
-      - SKYPYDB_MYSQL_POOL_MIN=${SKYPYDB_MYSQL_POOL_MIN:-1}
-      - SKYPYDB_MYSQL_POOL_MAX=${SKYPYDB_MYSQL_POOL_MAX:-10}
-      - SKYPYDB_LOG_LEVEL=${SKYPYDB_LOG_LEVEL:-info}
-      - SKYPYDB_CORS_ORIGINS=${SKYPYDB_CORS_ORIGINS:-*}
-      - SKYPYDB_VECTOR_MAX_DIM=${SKYPYDB_VECTOR_MAX_DIM:-4096}
-      - SKYPYDB_QUERY_MAX_LIMIT=${SKYPYDB_QUERY_MAX_LIMIT:-500}
+      - MESOSPHERE_SERVER_PORT=8000
+      - MESOSPHERE_API_KEY=${MESOSPHERE_API_KEY:-local-dev-key}
+      - MESOSPHERE_MYSQL_URL=mysql://${MYSQL_USER:-mesosphere}:${MYSQL_PASSWORD:-mesosphere}@mysql:3306/${MYSQL_DATABASE:-mesosphere}
+      - MESOSPHERE_MYSQL_POOL_MIN=${MESOSPHERE_MYSQL_POOL_MIN:-1}
+      - MESOSPHERE_MYSQL_POOL_MAX=${MESOSPHERE_MYSQL_POOL_MAX:-10}
+      - MESOSPHERE_LOG_LEVEL=${MESOSPHERE_LOG_LEVEL:-info}
+      - MESOSPHERE_CORS_ORIGINS=${MESOSPHERE_CORS_ORIGINS:-*}
+      - MESOSPHERE_VECTOR_MAX_DIM=${MESOSPHERE_VECTOR_MAX_DIM:-4096}
+      - MESOSPHERE_QUERY_MAX_LIMIT=${MESOSPHERE_QUERY_MAX_LIMIT:-500}
 
   mysql:
     image: mysql:8.4
@@ -33,9 +33,9 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-skypydb}
-      - MYSQL_USER=${MYSQL_USER:-skypydb}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-skypydb}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-mesosphere}
+      - MYSQL_USER=${MYSQL_USER:-mesosphere}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-mesosphere}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
     healthcheck:
       test:
@@ -48,7 +48,7 @@ services:
       retries: 10
       start_period: 15s
     volumes:
-      - skypydb_mysql_data:/var/lib/mysql
+      - mesosphere_mysql_data:/var/lib/mysql
 
   adminer:
     image: adminer:4
@@ -60,4 +60,4 @@ services:
       - "${ADMINER_PUBLISH_PORT:-8080}:8080"
 
 volumes:
-  skypydb_mysql_data:
+  mesosphere_mysql_data:

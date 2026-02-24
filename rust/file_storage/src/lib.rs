@@ -5,8 +5,8 @@ use std::time::Duration;
 use chrono::Utc;
 use serde::Deserialize;
 use serde_json::{Map, Value};
-use skypydb_errors::AppError;
-use skypydb_google_cloud_utils::default_cloud_run_settings;
+use mesosphere_errors::AppError;
+use mesosphere_google_cloud_utils::default_cloud_run_settings;
 use sqlx::mysql::MySqlRow;
 use sqlx::{Column, MySqlPool, Row};
 use tracing::info;
@@ -51,27 +51,27 @@ pub struct BackupArtifact {
 impl BackupConfig {
     /// Reads backup configuration from environment variables.
     pub fn from_env() -> Self {
-        let enabled_on_startup = env::var("SKYPYDB_MYSQL_BACKUP_ON_STARTUP")
+        let enabled_on_startup = env::var("MESOSPHERE_MYSQL_BACKUP_ON_STARTUP")
             .ok()
             .map(|value| matches!(value.to_ascii_lowercase().as_str(), "1" | "true" | "yes"))
             .unwrap_or(false);
 
-        let local_output_dir = env::var("SKYPYDB_MYSQL_BACKUP_DIR")
+        let local_output_dir = env::var("MESOSPHERE_MYSQL_BACKUP_DIR")
             .map(PathBuf::from)
-            .unwrap_or_else(|_| PathBuf::from("./skypydb-backups"));
+            .unwrap_or_else(|_| PathBuf::from("./mesosphere-backups"));
 
-        let gcs_bucket = env::var("SKYPYDB_GCS_BACKUP_BUCKET")
+        let gcs_bucket = env::var("MESOSPHERE_GCS_BACKUP_BUCKET")
             .ok()
             .map(|bucket| bucket.trim().to_string())
             .filter(|bucket| !bucket.is_empty());
 
-        let gcs_prefix = env::var("SKYPYDB_GCS_BACKUP_PREFIX")
+        let gcs_prefix = env::var("MESOSPHERE_GCS_BACKUP_PREFIX")
             .unwrap_or_default()
             .trim_matches('/')
             .to_string();
 
         let cloud_run = default_cloud_run_settings().is_cloud_run();
-        let target_mode = env::var("SKYPYDB_BACKUP_TARGET")
+        let target_mode = env::var("MESOSPHERE_BACKUP_TARGET")
             .unwrap_or_else(|_| "auto".to_string())
             .to_ascii_lowercase();
 
@@ -105,7 +105,7 @@ impl BackupConfig {
                 .unwrap_or(false);
             if !has_bucket {
                 return Err(AppError::config(
-                    "SKYPYDB_GCS_BACKUP_BUCKET is required when backup target is gcs",
+                    "MESOSPHERE_GCS_BACKUP_BUCKET is required when backup target is gcs",
                 ));
             }
         }
@@ -225,7 +225,7 @@ async fn build_snapshot(pool: &MySqlPool) -> Result<SnapshotPayload, AppError> {
             "created_at": now.to_rfc3339(),
             "table_count": table_names.len(),
             "row_count": total_rows,
-            "format": "skypydb/mysql-json-backup/v1"
+            "format": "mesosphere/mysql-json-backup/v1"
         },
         "tables": tables,
     });
@@ -279,7 +279,7 @@ async fn write_snapshot_to_gcs(
     let bucket = config
         .gcs_bucket
         .as_ref()
-        .ok_or_else(|| AppError::config("SKYPYDB_GCS_BACKUP_BUCKET is required"))?;
+        .ok_or_else(|| AppError::config("MESOSPHERE_GCS_BACKUP_BUCKET is required"))?;
 
     let filename = format!("mysql-backup-{}.json", snapshot.timestamp);
     let object_name = if config.gcs_prefix.is_empty() {
@@ -324,13 +324,13 @@ async fn write_snapshot_to_gcs(
 }
 
 async fn fetch_google_access_token() -> Result<String, AppError> {
-    if let Ok(token) = env::var("SKYPYDB_GCP_ACCESS_TOKEN") {
+    if let Ok(token) = env::var("MESOSPHERE_GCP_ACCESS_TOKEN") {
         if !token.trim().is_empty() {
             return Ok(token);
         }
     }
 
-    let token_endpoint = env::var("SKYPYDB_GCP_METADATA_TOKEN_URL").unwrap_or_else(|_| {
+    let token_endpoint = env::var("MESOSPHERE_GCP_METADATA_TOKEN_URL").unwrap_or_else(|_| {
         "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token"
             .to_string()
     });

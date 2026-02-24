@@ -8,7 +8,7 @@ description: "ReactiveClient was removed in favor of HttpClient"
 Use `HttpClient`:
 
 ```python
-from skypydb import HttpClient
+from mesosphere import HttpClient
 
 client = HttpClient(api_url="http://localhost:8000", api_key="local-dev-key")
 rows = client.relational("users").query(

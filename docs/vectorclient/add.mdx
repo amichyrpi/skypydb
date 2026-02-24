@@ -3,16 +3,16 @@ title: Add vector data to a collection
 description: "Add vector data to a collection require an embedding model"
 ---
 
-Skypydb support all the Ollama, OpenAI, Sentence Transformers, embeddings models, to use the vector part of our database you will need either download [Ollama](https://ollama.com/download) and install an embedding model or use an OpenAI API key.
+Mesosphere support all the Ollama, OpenAI, Sentence Transformers, embeddings models, to use the vector part of our database you will need either download [Ollama](https://ollama.com/download) and install an embedding model or use an OpenAI API key.
 
-By default Skypydb use [mxbai-embed-large](https://ollama.com/library/mxbai-embed-large).
+By default Mesosphere use [mxbai-embed-large](https://ollama.com/library/mxbai-embed-large).
 
 <Steps titleSize="h3">
   <Step title="Create a collection">
     To add data to a collection you will need to create a collection:
 
     ```python Python
-    from skypydb import HttpClient
+    from mesosphere import HttpClient
 
     client = HttpClient(
         api_url="http://localhost:8000",
@@ -29,7 +29,7 @@ By default Skypydb use [mxbai-embed-large](https://ollama.com/library/mxbai-embe
     Use the OpenAI model
 
     ```python Python
-    from skypydb import HttpClient
+    from mesosphere import HttpClient
 
     client = HttpClient(
         api_url="http://localhost:8000",
@@ -46,7 +46,7 @@ By default Skypydb use [mxbai-embed-large](https://ollama.com/library/mxbai-embe
     Use the Sentence Transformers model
 
     ```python Python
-    from skypydb import HttpClient
+    from mesosphere import HttpClient
 
     client = HttpClient(
         api_url="http://localhost:8000",

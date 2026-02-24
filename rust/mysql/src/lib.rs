@@ -1,4 +1,4 @@
-﻿use skypydb_errors::AppError;
+use mesosphere_errors::AppError;
 use sqlx::MySqlPool;
 
 /// Runs idempotent bootstrap migrations for system and vector tables.
@@ -7,7 +7,7 @@ pub async fn run_bootstrap_migrations(pool: &MySqlPool) -> Result<(), AppError> 
 
     sqlx::query(
         r#"
-        CREATE TABLE IF NOT EXISTS _skypydb_schema_meta (
+        CREATE TABLE IF NOT EXISTS _mesosphere_schema_meta (
             table_name VARCHAR(255) PRIMARY KEY,
             signature TEXT NOT NULL,
             managed BOOLEAN NOT NULL DEFAULT TRUE,
@@ -20,7 +20,7 @@ pub async fn run_bootstrap_migrations(pool: &MySqlPool) -> Result<(), AppError> 
 
     sqlx::query(
         r#"
-        CREATE TABLE IF NOT EXISTS _skypydb_schema_state (
+        CREATE TABLE IF NOT EXISTS _mesosphere_schema_state (
             key_name VARCHAR(255) PRIMARY KEY,
             value_json JSON NOT NULL,
             updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
@@ -32,7 +32,7 @@ pub async fn run_bootstrap_migrations(pool: &MySqlPool) -> Result<(), AppError> 
 
     sqlx::query(
         r#"
-        CREATE TABLE IF NOT EXISTS _skypydb_schema_migrations (
+        CREATE TABLE IF NOT EXISTS _mesosphere_schema_migrations (
             id BIGINT AUTO_INCREMENT PRIMARY KEY,
             migration_name VARCHAR(255) NOT NULL,
             applied_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),

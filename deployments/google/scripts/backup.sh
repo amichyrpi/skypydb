@@ -13,7 +13,7 @@ mkdir -p /backups
 echo "Starting mysql backup loop (interval=${INTERVAL_SECONDS}s)"
 while true; do
   TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
-  OUTPUT_FILE="/backups/skypydb-${TIMESTAMP}.sql.gz"
+  OUTPUT_FILE="/backups/mesosphere-${TIMESTAMP}.sql.gz"
   mysqldump \
     --host="${MYSQL_HOST}" \
     --user="${MYSQL_USER}" \

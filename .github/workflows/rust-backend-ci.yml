@@ -28,10 +28,10 @@ jobs:
           components: rustfmt, clippy
 
       - name: Format check
-        run: cargo fmt -p skypydb --check
+        run: cargo fmt -p mesosphere --check
 
       - name: Lint
-        run: cargo clippy -p skypydb --all-targets -- -D warnings
+        run: cargo clippy -p mesosphere --all-targets -- -D warnings
 
       - name: Tests
-        run: cargo test -p skypydb
+        run: cargo test -p mesosphere

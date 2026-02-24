@@ -1,31 +1,31 @@
-﻿use std::net::SocketAddr;
+use std::net::SocketAddr;
 
 use axum::middleware::{from_fn, from_fn_with_state};
 use axum::routing::get;
 use axum::serve;
 use axum::Router;
 use http::HeaderValue;
-use skypydb_application::config::AppConfig;
-use skypydb_application::state::AppState;
-use skypydb_authentication::require_api_key;
-use skypydb_common::middleware::request_id::attach_request_id;
-use skypydb_common::openapi::openapi_json;
-use skypydb_db_connection::build_mysql_pool;
-use skypydb_file_storage::maybe_backup_on_startup;
-use skypydb_health_check::router as health_router;
-use skypydb_metrics::{init_metrics, MetricsConfig};
-use skypydb_mysql::run_bootstrap_migrations;
-use skypydb_relational::routes::functions::router as functions_router;
-use skypydb_relational::routes::storage::{
+use mesosphere_application::config::AppConfig;
+use mesosphere_application::state::AppState;
+use mesosphere_authentication::require_api_key;
+use mesosphere_common::middleware::request_id::attach_request_id;
+use mesosphere_common::openapi::openapi_json;
+use mesosphere_db_connection::build_mysql_pool;
+use mesosphere_file_storage::maybe_backup_on_startup;
+use mesosphere_health_check::router as health_router;
+use mesosphere_metrics::{init_metrics, MetricsConfig};
+use mesosphere_mysql::run_bootstrap_migrations;
+use mesosphere_relational::routes::functions::router as functions_router;
+use mesosphere_relational::routes::storage::{
     protected_router as protected_storage_router, public_router as public_storage_router,
 };
-use skypydb_telemetry::{init_tracing, trace_http_action};
-use skypydb_vector::routes::router as vector_router;
+use mesosphere_telemetry::{init_tracing, trace_http_action};
+use mesosphere_vector::routes::router as vector_router;
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
-/// Starts the Skypydb HTTP backend and serves all REST endpoints.
+/// Starts the Mesosphere HTTP backend and serves all REST endpoints.
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
@@ -44,7 +44,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let address = SocketAddr::from(([0, 0, 0, 0], config.server_port));
     let listener = TcpListener::bind(address).await?;
-    info!("skypydb backend listening on {}", address);
+    info!("mesosphere backend listening on {}", address);
 
     serve(listener, app).await?;
     Ok(())
@@ -99,28 +99,28 @@ fn cors_layer(state: &AppState) -> CorsLayer {
 #[cfg(test)]
 mod tests {
     use super::build_router;
-    use skypydb_application::config::AppConfig;
-    use skypydb_application::state::AppState;
+    use mesosphere_application::config::AppConfig;
+    use mesosphere_application::state::AppState;
     use sqlx::mysql::MySqlPoolOptions;
 
     fn test_state() -> AppState {
         let config = AppConfig {
             server_port: 8000,
             api_key: "test-api-key".to_string(),
-            mysql_url: "mysql://user:pass@localhost/skypydb".to_string(),
+            mysql_url: "mysql://user:pass@localhost/mesosphere".to_string(),
             mysql_pool_min: 1,
             mysql_pool_max: 2,
             log_level: "info".to_string(),
             cors_origins: vec!["*".to_string()],
             vector_max_dim: 4096,
             query_max_limit: 500,
-            storage_dir: "./skypydb-storage".to_string(),
+            storage_dir: "./mesosphere-storage".to_string(),
             public_api_url: "http://localhost:8000".to_string(),
             storage_upload_url_ttl_seconds: 900,
             storage_max_upload_bytes: 25 * 1024 * 1024,
         };
         let pool = MySqlPoolOptions::new()
-            .connect_lazy("mysql://user:pass@localhost/skypydb")
+            .connect_lazy("mysql://user:pass@localhost/mesosphere")
             .expect("test mysql URL should be valid");
         AppState::new(config, pool)
     }

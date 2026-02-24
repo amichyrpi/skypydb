@@ -1,16 +1,16 @@
 ---
 title: Getting Started
-description: "Use the HTTP-only Skypydb SDK against the Rust backend"
+description: "Use the HTTP-only Mesosphere SDK against the Rust backend"
 ---
 
 <Note>
-  Skypydb SDKs are HTTP-only and connect to the backend on port `8000`.
+  Mesosphere SDKs are HTTP-only and connect to the backend on port `8000`.
 </Note>
 
 ## Python
 
 ```python
-from skypydb import HttpClient
+from mesosphere import HttpClient
 
 client = HttpClient(
     api_url="http://localhost:8000",
@@ -38,7 +38,7 @@ print(user_id, rows)
 ## TypeScript
 
 ```ts
-import { httpClient } from "skypydb";
+import { httpClient } from "mesosphere";
 
 const client = httpClient({
   api_url: "http://localhost:8000",

@@ -6,7 +6,7 @@ pub async fn openapi_json() -> Json<Value> {
     Json(json!({
         "openapi": "3.0.3",
         "info": {
-            "title": "Skypydb Rust Backend API",
+            "title": "Mesosphere Rust Backend API",
             "version": "1.0.0",
             "description": "REST API for relational and vector operations on MySQL."
         },

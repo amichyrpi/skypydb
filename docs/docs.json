@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
-  "name": "Skypydb",
+  "name": "Mesosphere",
   "colors": {
     "primary": "#000",
     "light": "#b5b5b5",
@@ -30,7 +30,7 @@
     "primary": {
       "type": "button",
       "label": "Stars use on Github",
-      "href": "https://github.com/Ahen-Studio/skypy-db"
+      "href": "https://github.com/Ahen-Studio/mesosphere-backend"
     }
   },
   "navigation": {
@@ -90,7 +90,7 @@
       "anchors": [
         {
           "anchor": "GitHub",
-          "href": "https://github.com/Ahen-Studio/skypy-db",
+          "href": "https://github.com/Ahen-Studio/mesosphere-backend",
           "icon": "github"
         }
       ]
@@ -121,7 +121,7 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/Ahen-Studio/skypy-db"
+      "github": "https://github.com/Ahen-Studio/mesosphere-backend"
     }
   }
 }

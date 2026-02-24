@@ -8,7 +8,7 @@ description: "Schema DSL runtime is removed; use HTTP schema admin API"
 Use `HttpClient.schema`:
 
 ```python
-from skypydb import HttpClient
+from mesosphere import HttpClient
 
 client = HttpClient(api_url="http://localhost:8000", api_key="local-dev-key")
 client.schema.apply(

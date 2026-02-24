@@ -1,6 +1,6 @@
-﻿[package]
-name = "skypydb-file-storage"
-version = "0.1.0"
+[package]
+name = "mesosphere-file-storage"
+version = "2.0.0"
 edition = "2021"
 
 [dependencies]
@@ -8,8 +8,8 @@ chrono = { version = "0.4", features = ["serde"] }
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-skypydb-errors = { path = "../errors" }
-skypydb-google-cloud-utils = { path = "../google_cloud_utils" }
+mesosphere-errors = { path = "../errors" }
+mesosphere-google-cloud-utils = { path = "../google_cloud_utils" }
 sqlx = { version = "0.8", default-features = false, features = ["mysql", "chrono", "json"] }
 tokio = { version = "1", features = ["fs"] }
 tracing = "0.1"

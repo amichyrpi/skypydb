@@ -1,8 +1,8 @@
 # Ollama provider
-import skypydb
+import mesosphere
 
 # Create a client
-client = skypydb.HttpClient(
+client = mesosphere.HttpClient(
     api_url="http://localhost:8000",
     api_key="local-dev-key",
     embedding_provider="ollama",
@@ -13,10 +13,10 @@ client = skypydb.HttpClient(
 )
 
 # OpenAI provider
-import skypydb
+import mesosphere
 
 # Create a client
-client = skypydb.HttpClient(
+client = mesosphere.HttpClient(
     api_url="http://localhost:8000",
     api_key="local-dev-key",
     embedding_provider="openai",
@@ -27,10 +27,10 @@ client = skypydb.HttpClient(
 )
 
 # Sentence Transformers provider
-import skypydb
+import mesosphere
 
 # Create a client
-client = skypydb.HttpClient(
+client = mesosphere.HttpClient(
     api_url="http://localhost:8000",
     api_key="local-dev-key",
     embedding_provider="sentence-transformers",

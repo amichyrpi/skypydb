@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: skypydb-api
+  name: mesosphere-api
   annotations:
     run.googleapis.com/ingress: all
 spec:
@@ -17,47 +17,47 @@ spec:
       containerConcurrency: 80
       timeoutSeconds: 300
       containers:
-        - image: REGION-docker.pkg.dev/PROJECT_ID/skypydb/skypydb-api:latest
+        - image: REGION-docker.pkg.dev/PROJECT_ID/mesosphere/mesosphere-api:latest
           ports:
             - name: http1
               containerPort: 8000
           env:
-            - name: SKYPYDB_SERVER_PORT
+            - name: MESOSPHERE_SERVER_PORT
               value: "8000"
-            - name: SKYPYDB_API_KEY
+            - name: MESOSPHERE_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: skypydb-api-key
+                  name: mesosphere-api-key
                   key: latest
-            - name: SKYPYDB_MYSQL_URL
+            - name: MESOSPHERE_MYSQL_URL
               valueFrom:
                 secretKeyRef:
-                  name: skypydb-mysql-url
+                  name: mesosphere-mysql-url
                   key: latest
-            - name: SKYPYDB_MYSQL_POOL_MIN
+            - name: MESOSPHERE_MYSQL_POOL_MIN
               value: "1"
-            - name: SKYPYDB_MYSQL_POOL_MAX
+            - name: MESOSPHERE_MYSQL_POOL_MAX
               value: "20"
-            - name: SKYPYDB_LOG_LEVEL
+            - name: MESOSPHERE_LOG_LEVEL
               value: "info"
-            - name: SKYPYDB_POSTHOG_HOST
+            - name: MESOSPHERE_POSTHOG_HOST
               value: "https://eu.i.posthog.com"
-            - name: SKYPYDB_CORS_ORIGINS
+            - name: MESOSPHERE_CORS_ORIGINS
               value: "*"
-            - name: SKYPYDB_VECTOR_MAX_DIM
+            - name: MESOSPHERE_VECTOR_MAX_DIM
               value: "4096"
-            - name: SKYPYDB_QUERY_MAX_LIMIT
+            - name: MESOSPHERE_QUERY_MAX_LIMIT
               value: "500"
-            - name: SKYPYDB_MYSQL_BACKUP_ON_STARTUP
+            - name: MESOSPHERE_MYSQL_BACKUP_ON_STARTUP
               value: "true"
-            - name: SKYPYDB_BACKUP_TARGET
+            - name: MESOSPHERE_BACKUP_TARGET
               value: "gcs"
-            - name: SKYPYDB_GCS_BACKUP_PREFIX
-              value: "skypydb/mysql-snapshots"
-            - name: SKYPYDB_GCS_BACKUP_BUCKET
+            - name: MESOSPHERE_GCS_BACKUP_PREFIX
+              value: "mesosphere/mysql-snapshots"
+            - name: MESOSPHERE_GCS_BACKUP_BUCKET
               valueFrom:
                 secretKeyRef:
-                  name: skypydb-gcs-backup-bucket
+                  name: mesosphere-gcs-backup-bucket
                   key: latest
           resources:
             limits:

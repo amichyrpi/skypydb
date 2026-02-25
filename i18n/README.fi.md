@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>mesosphere-backend - avoimen lähdekoodin relaatio- ja vektoriupotusten tietokanta</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## Ominaisuudet
 
-- Relational: create your functions and store your data in a relational database.
+- Relaatio: luo funktiot ja tallenna tietosi relaatiotietokantaan.
 
-- Vector embeddings: create, search and delete vectors collections.
+- Vektori upotukset: luo, etsi ja poista vektorikokoelmia.
 
-- File storage: store your files in a database.
+- Tiedostojen tallennus: tallenna tiedostosi tietokantaan.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- Muisti: lisää muistia LLM:ään käyttämällä [mem0](https://github.com/mem0ai/mem0) ja [integration](./demo/integration/mem0/).
 
-- Free & Open Source: Apache 2.0 Licensed
+- Ilmainen ja avoin lähdekoodi: Apache 2.0 -lisensoitu
 
-- Cross-platform: Windows, Linux, MacOS
-
-## Languages
-
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
-
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
+- Alustojen välinen: Windows, Linux, MacOS
 
 ## HttpClients
 
-### Typescript
+### TypeScript
 
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere tarjoaa TypeScript-asiakkaan tietokannan kanssa vuorovaikutukseen, voit käyttää joko vektori upotustietokantaa tai relaatiotietokantaa. Tarkastellaan ensin, kuinka vektoriupotusten tietokantaa käytetään.
 
-#### Vector model
+#### Vektorimalli
 
-You can use tree AI models provider to create your vector embeddings.
+Voit käyttää puun tekoälymallien toimittajaa luodaksesi vektori upotuksia.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Tässä on esimerkki tämän palveluntarjoajan käyttämisestä.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+Kun olet luonut asiakkaan, voit käyttää sitä vuorovaikutuksessa tietokannan kanssa.
 
-Add data to your vector database.
+Lisää tietoja vektoritietokantaasi.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+Poista tiedot vektoritietokannastasi.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+Pyydä tietoja vektoritietokannastasi.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### Suhteellinen
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+Katso esimerkiksi relaatioominaisuuksien käyttö [examples](./demo/examples/js/relational_examples/)-kansiosta.
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+Katso esimerkiksi tiedostojen tallennusominaisuuksien käyttö [examples](./demo/examples/js/files_upload_examples/)-kansiosta.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Lue lisää [Docs](https://docs.ahen-studio.com/)
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere tarjoaa Python-asiakkaan tietokannan kanssa vuorovaikutukseen, voit käyttää joko vektori upotustietokantaa tai relaatiotietokantaa. Tarkastellaan ensin, kuinka vektoriupotusten tietokantaa käytetään.
 
-#### Vector model
+#### Vektorimalli
 
-You can use tree AI models provider to create your vector embeddings.
+Voit käyttää puun tekoälymallien toimittajaa luodaksesi vektori upotuksia.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Tässä on esimerkki tämän palveluntarjoajan käyttämisestä.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+Kun olet luonut asiakkaan, voit käyttää sitä vuorovaikutuksessa tietokannan kanssa.
 
-Add data to your vector database.
+Lisää tietoja vektoritietokantaasi.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+Poista tiedot vektoritietokannastasi.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+Pyydä tietoja vektoritietokannastasi.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### Suhteellinen
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+Katso esimerkiksi relaatioominaisuuksien käyttö [examples](./demo/examples/python/relational_examples/)-kansiosta.
 
-For now the python client does not support the file storage feature.
+Python-asiakasohjelma ei toistaiseksi tue tiedostojen tallennusominaisuutta.
 
-#### Integration
+#### Integrointi
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Python-asiakasohjelma tarjoaa sinulle mahdollisuuden lisätä muistia tekoälyyn käyttämällä [mem0](https://github.com/mem0ai/mem0) ja [integration](./demo/integration/mem0/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Lue lisää [Docs](https://docs.ahen-studio.com/)
 
-## All Thanks To Our Contributors:
+## Kiitos avustajillemme:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## Lisenssi
 
 [Apache 2.0](./LICENSE)

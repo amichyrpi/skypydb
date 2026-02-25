@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>મેસોસ્ફિયર-બેકએન્ડ - ઓપન સોર્સ રિલેશનલ અને વેક્ટર એમ્બેડિંગ્સ ડેટાબેઝ</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## સુવિધાઓ
 
-- Relational: create your functions and store your data in a relational database.
+- રિલેશનલ: તમારા કાર્યો બનાવો અને તમારા ડેટાને રિલેશનલ ડેટાબેઝમાં સ્ટોર કરો.
 
-- Vector embeddings: create, search and delete vectors collections.
+- વેક્ટર એમ્બેડિંગ્સ: વેક્ટર સંગ્રહો બનાવો, શોધો અને કાઢી નાખો.
 
-- File storage: store your files in a database.
+- ફાઇલ સ્ટોરેજ: તમારી ફાઇલોને ડેટાબેઝમાં સ્ટોર કરો.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- મેમરી: [mem0](https://github.com/mem0ai/mem0) અને અમારા [integration](./demo/integration/mem0/)નો ઉપયોગ કરીને એલએલએમમાં ​​મેમરી ઉમેરો.
 
-- Free & Open Source: Apache 2.0 Licensed
+- ફ્રી અને ઓપન સોર્સ: અપાચે 2.0 લાઇસન્સ
 
-- Cross-platform: Windows, Linux, MacOS
-
-## Languages
-
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
-
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
+- ક્રોસ-પ્લેટફોર્મ: Windows, Linux, MacOS
 
 ## HttpClients
 
-### Typescript
+### TypeScript
 
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+મેસોસ્ફિયર ડેટાબેઝ સાથે ક્રિયાપ્રતિક્રિયા કરવા માટે TypeScript ક્લાયંટ આપે છે, તમે વેક્ટર એમ્બેડિંગ્સ ડેટાબેઝ અથવા રિલેશનલ ડેટાબેઝનો ઉપયોગ કરી શકો છો. વેક્ટર એમ્બેડિંગ્સ ડેટાબેઝનો ઉપયોગ કેવી રીતે કરવો તે આપણે પહેલા જોઈશું.
 
-#### Vector model
+#### વેક્ટર મોડેલ
 
-You can use tree AI models provider to create your vector embeddings.
+તમે તમારા વેક્ટર એમ્બેડિંગ્સ બનાવવા માટે ટ્રી AI મોડલ્સ પ્રદાતાનો ઉપયોગ કરી શકો છો.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+આ પ્રતિષ્ઠિત પ્રદાતાનો ઉપયોગ કેવી રીતે કરવો તેનું એક ઉદાહરણ અહીં છે.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+ક્લાયંટ બનાવ્યા પછી, તમે ડેટાબેઝ સાથે ક્રિયાપ્રતિક્રિયા કરવા માટે તેનો ઉપયોગ કરી શકો છો.
 
-Add data to your vector database.
+તમારા વેક્ટર ડેટાબેઝમાં ડેટા ઉમેરો.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+તમારા વેક્ટર ડેટાબેઝમાંથી ડેટા કાઢી નાખો.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+તમારા વેક્ટર ડેટાબેઝમાંથી ક્વેરી ડેટા.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### સંબંધી
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+ઉદાહરણ તરીકે રિલેશનલ ફીચર્સનો ઉપયોગ, [examples](./demo/examples/js/relational_examples/) ફોલ્ડર તપાસો.
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+ઉદાહરણ તરીકે ફાઇલ સ્ટોરેજ સુવિધાઓના ઉપયોગ માટે, [examples](./demo/examples/js/files_upload_examples/) ફોલ્ડર તપાસો.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+અમારા [Docs](https://docs.ahen-studio.com/) પર વધુ જાણો
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+મેસોસ્ફિયર ડેટાબેઝ સાથે ક્રિયાપ્રતિક્રિયા કરવા માટે Python ક્લાયંટ ઓફર કરે છે, તમે વેક્ટર એમ્બેડિંગ્સ ડેટાબેઝ અથવા રિલેશનલ ડેટાબેઝનો ઉપયોગ કરી શકો છો. વેક્ટર એમ્બેડિંગ્સ ડેટાબેઝનો ઉપયોગ કેવી રીતે કરવો તે આપણે પહેલા જોઈશું.
 
-#### Vector model
+#### વેક્ટર મોડેલ
 
-You can use tree AI models provider to create your vector embeddings.
+તમે તમારા વેક્ટર એમ્બેડિંગ્સ બનાવવા માટે ટ્રી AI મોડલ્સ પ્રદાતાનો ઉપયોગ કરી શકો છો.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+આ પ્રતિષ્ઠિત પ્રદાતાનો ઉપયોગ કેવી રીતે કરવો તેનું એક ઉદાહરણ અહીં છે.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+ક્લાયંટ બનાવ્યા પછી, તમે ડેટાબેઝ સાથે ક્રિયાપ્રતિક્રિયા કરવા માટે તેનો ઉપયોગ કરી શકો છો.
 
-Add data to your vector database.
+તમારા વેક્ટર ડેટાબેઝમાં ડેટા ઉમેરો.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+તમારા વેક્ટર ડેટાબેઝમાંથી ડેટા કાઢી નાખો.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+તમારા વેક્ટર ડેટાબેઝમાંથી ક્વેરી ડેટા.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### સંબંધી
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+ઉદાહરણ તરીકે રિલેશનલ ફીચર્સનો ઉપયોગ, [examples](./demo/examples/python/relational_examples/) ફોલ્ડર તપાસો.
 
-For now the python client does not support the file storage feature.
+હમણાં માટે python ક્લાયંટ ફાઇલ સ્ટોરેજ સુવિધાને સપોર્ટ કરતું નથી.
 
-#### Integration
+#### એકીકરણ
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Python ક્લાયન્ટ તમને [mem0](https://github.com/mem0ai/mem0) અને અમારા [integration](./demo/integration/mem0/)નો ઉપયોગ કરીને AI માં મેમરી ઉમેરવાની ક્ષમતા પ્રદાન કરે છે.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+અમારા [Docs](https://docs.ahen-studio.com/) પર વધુ જાણો
 
-## All Thanks To Our Contributors:
+## અમારા સહયોગીઓ માટે બધા આભાર:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## લાઇસન્સ
 
 [Apache 2.0](./LICENSE)

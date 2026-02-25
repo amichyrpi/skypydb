@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>mesosphere-backend - Cơ sở dữ liệu nhúng vectơ và quan hệ mã nguồn mở</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## Tính năng
 
-- Relational: create your functions and store your data in a relational database.
+- Quan hệ: tạo các hàm và lưu trữ dữ liệu của bạn trong cơ sở dữ liệu quan hệ.
 
-- Vector embeddings: create, search and delete vectors collections.
+- Nhúng vectơ: tạo, tìm kiếm và xóa bộ sưu tập vectơ.
 
-- File storage: store your files in a database.
+- Lưu trữ tệp: lưu trữ các tệp của bạn trong cơ sở dữ liệu.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- Bộ nhớ: thêm bộ nhớ vào LLM bằng cách sử dụng [mem0](https://github.com/mem0ai/mem0) và [integration](./demo/integration/mem0/) của chúng tôi.
 
-- Free & Open Source: Apache 2.0 Licensed
+- Nguồn mở & miễn phí: Được cấp phép Apache 2.0
 
-- Cross-platform: Windows, Linux, MacOS
+- Đa nền tảng: Windows, Linux, MacOS
 
-## Languages
+## HttpClient
 
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
+### TypeScript
 
-## TODO
+Mesosphere cung cấp ứng dụng khách TypeScript để tương tác với cơ sở dữ liệu, bạn có thể sử dụng cơ sở dữ liệu nhúng vectơ hoặc cơ sở dữ liệu quan hệ. Đầu tiên chúng ta sẽ xem cách sử dụng cơ sở dữ liệu nhúng vector.
 
-## Doable without any problem
+#### Mô hình vectơ
 
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
-
-## HttpClients
-
-### Typescript
-
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
-
-#### Vector model
-
-You can use tree AI models provider to create your vector embeddings.
+Bạn có thể sử dụng nhà cung cấp mô hình AI dạng cây để tạo các phần nhúng vectơ của mình.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Dưới đây là một ví dụ về cách sử dụng nhà cung cấp trì hoãn này.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+Sau khi tạo ứng dụng khách, bạn có thể sử dụng nó để tương tác với cơ sở dữ liệu.
 
-Add data to your vector database.
+Thêm dữ liệu vào cơ sở dữ liệu vector của bạn.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+Xóa dữ liệu khỏi cơ sở dữ liệu vector của bạn.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+Truy vấn dữ liệu từ cơ sở dữ liệu vector của bạn.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### Quan hệ
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+Ví dụ: cách sử dụng các tính năng quan hệ, hãy xem thư mục [examples](./demo/examples/js/relational_examples/).
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+Ví dụ: cách sử dụng các tính năng lưu trữ tệp, hãy xem thư mục [examples](./demo/examples/js/files_upload_examples/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Tìm hiểu thêm trên [Docs](https://docs.ahen-studio.com/) của chúng tôi
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere cung cấp ứng dụng khách Python để tương tác với cơ sở dữ liệu, bạn có thể sử dụng cơ sở dữ liệu nhúng vectơ hoặc cơ sở dữ liệu quan hệ. Đầu tiên chúng ta sẽ xem cách sử dụng cơ sở dữ liệu nhúng vector.
 
-#### Vector model
+#### Mô hình vectơ
 
-You can use tree AI models provider to create your vector embeddings.
+Bạn có thể sử dụng nhà cung cấp mô hình AI dạng cây để tạo các phần nhúng vectơ của mình.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Dưới đây là một ví dụ về cách sử dụng nhà cung cấp trì hoãn này.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+Sau khi tạo ứng dụng khách, bạn có thể sử dụng nó để tương tác với cơ sở dữ liệu.
 
-Add data to your vector database.
+Thêm dữ liệu vào cơ sở dữ liệu vector của bạn.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+Xóa dữ liệu khỏi cơ sở dữ liệu vector của bạn.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+Truy vấn dữ liệu từ cơ sở dữ liệu vector của bạn.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### Quan hệ
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+Ví dụ: cách sử dụng các tính năng quan hệ, hãy xem thư mục [examples](./demo/examples/python/relational_examples/).
 
-For now the python client does not support the file storage feature.
+Hiện tại, máy khách python không hỗ trợ tính năng lưu trữ tệp.
 
-#### Integration
+#### Tích hợp
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Ứng dụng khách Python cung cấp cho bạn khả năng thêm bộ nhớ vào AI bằng cách sử dụng [mem0](https://github.com/mem0ai/mem0) và [integration](./demo/integration/mem0/) của chúng tôi.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Tìm hiểu thêm trên [Docs](https://docs.ahen-studio.com/) của chúng tôi
 
-## All Thanks To Our Contributors:
+## Tất cả là nhờ những người đóng góp của chúng tôi:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## Giấy phép
 
 [Apache 2.0](./LICENSE)

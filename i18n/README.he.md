@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>mesosphere-backend - מסד נתונים יחסי והטמעות וקטוריות בקוד פתוח</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## תכונות
 
-- Relational: create your functions and store your data in a relational database.
+- יחסי: צור את הפונקציות שלך ואחסן את הנתונים שלך במסד נתונים יחסי.
 
-- Vector embeddings: create, search and delete vectors collections.
+- הטבעות וקטוריות: צור, חפש ומחק אוספי וקטורים.
 
-- File storage: store your files in a database.
+- אחסון קבצים: אחסן את הקבצים שלך במסד נתונים.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- זיכרון: הוסף זיכרון ל-LLM באמצעות [mem0](https://github.com/mem0ai/mem0) ו-[integration](./demo/integration/mem0/) שלנו.
 
-- Free & Open Source: Apache 2.0 Licensed
+- קוד חופשי ופתוח: Apache 2.0 ברישיון
 
-- Cross-platform: Windows, Linux, MacOS
+- בין פלטפורמות: Windows, Linux, MacOS
 
-## Languages
+## HTTPClients
 
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
+### TypeScript
 
-## TODO
+Mesosphere מציעה לקוח TypeScript לאינטראקציה עם מסד הנתונים, אתה יכול להשתמש במסד הנתונים של הטבעות וקטוריות או במסד הנתונים היחסי. תחילה נראה כיצד להשתמש במסד הנתונים של הטבעות וקטוריות.
 
-## Doable without any problem
+#### דגם וקטור
 
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
-
-## HttpClients
-
-### Typescript
-
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
-
-#### Vector model
-
-You can use tree AI models provider to create your vector embeddings.
+אתה יכול להשתמש בספק מודלים של עצים בינה מלאכותית כדי ליצור את ההטבעות הווקטוריות שלך.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+להלן דוגמה כיצד להשתמש בספק הראוי הזה.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+לאחר יצירת הלקוח, אתה יכול להשתמש בו כדי ליצור אינטראקציה עם מסד הנתונים.
 
-Add data to your vector database.
+הוסף נתונים למסד הנתונים הוקטורי שלך.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+מחק נתונים ממסד הנתונים הווקטוריים שלך.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+שאילתה נתונים ממסד הנתונים הווקטוריים שלך.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### יחסי
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+לדוגמה שימוש בתכונות היחסיות, בדוק את התיקיה [examples](./demo/examples/js/relational_examples/).
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+לדוגמה שימוש בתכונות אחסון הקבצים, בדוק את התיקיה [examples](./demo/examples/js/files_upload_examples/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+למידע נוסף ב-[Docs](https://docs.ahen-studio.com/) שלנו
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere מציעה לקוח Python לאינטראקציה עם מסד הנתונים, אתה יכול להשתמש במסד הנתונים של הטבעות וקטוריות או במסד הנתונים היחסי. תחילה נראה כיצד להשתמש במסד הנתונים של הטבעות וקטוריות.
 
-#### Vector model
+#### דגם וקטור
 
-You can use tree AI models provider to create your vector embeddings.
+אתה יכול להשתמש בספק מודלים של עצים בינה מלאכותית כדי ליצור את ההטבעות הווקטוריות שלך.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+להלן דוגמה כיצד להשתמש בספק הראוי הזה.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+לאחר יצירת הלקוח, אתה יכול להשתמש בו כדי ליצור אינטראקציה עם מסד הנתונים.
 
-Add data to your vector database.
+הוסף נתונים למסד הנתונים הוקטורי שלך.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+מחק נתונים ממסד הנתונים הווקטוריים שלך.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+שאילתה נתונים ממסד הנתונים הווקטוריים שלך.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### יחסי
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+לדוגמה שימוש בתכונות היחסיות, בדוק את התיקיה [examples](./demo/examples/python/relational_examples/).
 
-For now the python client does not support the file storage feature.
+לעת עתה לקוח python אינו תומך בתכונת אחסון הקבצים.
 
-#### Integration
+#### אינטגרציה
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+הלקוח Python מציע לך את היכולת להוסיף זיכרון ל-AI באמצעות [mem0](https://github.com/mem0ai/mem0) וה-[integration](./demo/integration/mem0/) שלנו.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+למידע נוסף ב-[Docs](https://docs.ahen-studio.com/) שלנו
 
-## All Thanks To Our Contributors:
+## הכל בזכות התורמים שלנו:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## רישיון
 
 [Apache 2.0](./LICENSE)

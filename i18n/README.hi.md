@@ -4,16 +4,16 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>मेसोस्फीयर-बैकएंड - ओपन सोर्स रिलेशनल और वेक्टर एंबेडिंग डेटाबेस</b>। <br />
 </p>
 
 <div align="center">
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/mesosphere-backend)
-[![PyPI](https://img.shields.io/pypi/v/mesosphere.svg)](https://pypi.org/project/mesosphere/)
+[![PyPI](https://img.shields.io/pypi/v/mesosphere.svg)]https://pypi.org/project/mesosphere/)
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
-[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
+[![Docs](https://img.shields.io/badge/Docs-blue.svg)]https://docs.ahen-studio.com/)
 
 </div>
 
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## विशेषताएँ
 
-- Relational: create your functions and store your data in a relational database.
+- रिलेशनल: अपने फ़ंक्शन बनाएं और अपने डेटा को रिलेशनल डेटाबेस में संग्रहीत करें।
 
-- Vector embeddings: create, search and delete vectors collections.
+- वेक्टर एम्बेडिंग: वेक्टर संग्रह बनाएं, खोजें और हटाएं।
 
-- File storage: store your files in a database.
+- फ़ाइल भंडारण: अपनी फ़ाइलों को डेटाबेस में संग्रहीत करें।
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- मेमोरी: [mem0](https://github.com/mem0ai/mem0) और हमारे [integration](./demo/integration/mem0/) का उपयोग करके एलएलएम में मेमोरी जोड़ें।
 
-- Free & Open Source: Apache 2.0 Licensed
+- नि:शुल्क और खुला स्रोत: अपाचे 2.0 लाइसेंस प्राप्त
 
-- Cross-platform: Windows, Linux, MacOS
+- क्रॉस-प्लेटफ़ॉर्म: विंडोज़, लिनक्स, मैकओएस
 
-## Languages
+## एचटीपीक्लाइंट्स
 
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
+### TypeScript
 
-## TODO
+मेसोस्फीयर डेटाबेस के साथ इंटरैक्ट करने के लिए TypeScript क्लाइंट प्रदान करता है, आप या तो वेक्टर एम्बेडिंग डेटाबेस या रिलेशनल डेटाबेस का उपयोग कर सकते हैं। हम सबसे पहले देखेंगे कि वेक्टर एम्बेडिंग डेटाबेस का उपयोग कैसे करें।
 
-## Doable without any problem
+#### वेक्टर मॉडल
 
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
-
-## HttpClients
-
-### Typescript
-
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
-
-#### Vector model
-
-You can use tree AI models provider to create your vector embeddings.
+आप अपने वेक्टर एम्बेडिंग बनाने के लिए ट्री एआई मॉडल प्रदाता का उपयोग कर सकते हैं।
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+इस सम्मानित प्रदाता का उपयोग कैसे करें इसका एक उदाहरण यहां दिया गया है।
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+क्लाइंट बनाने के बाद, आप इसका उपयोग डेटाबेस के साथ इंटरैक्ट करने के लिए कर सकते हैं।
 
-Add data to your vector database.
+अपने वेक्टर डेटाबेस में डेटा जोड़ें।
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+अपने वेक्टर डेटाबेस से डेटा हटाएं.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+अपने वेक्टर डेटाबेस से डेटा क्वेरी करें।
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### संबंधपरक
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+संबंधपरक सुविधाओं के उपयोग के उदाहरण के लिए, [examples](./demo/examples/js/relational_examples/) फ़ोल्डर देखें।
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+फ़ाइल संग्रहण सुविधाओं के उदाहरण के लिए, [examples](./demo/examples/js/files_upload_examples/) फ़ोल्डर देखें।
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+हमारे [Docs](https://docs.ahen-studio.com/) पर और जानें
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+मेसोस्फीयर डेटाबेस के साथ इंटरैक्ट करने के लिए Python क्लाइंट प्रदान करता है, आप या तो वेक्टर एम्बेडिंग डेटाबेस या रिलेशनल डेटाबेस का उपयोग कर सकते हैं। हम सबसे पहले देखेंगे कि वेक्टर एम्बेडिंग डेटाबेस का उपयोग कैसे करें।
 
-#### Vector model
+#### वेक्टर मॉडल
 
-You can use tree AI models provider to create your vector embeddings.
+आप अपने वेक्टर एम्बेडिंग बनाने के लिए ट्री एआई मॉडल प्रदाता का उपयोग कर सकते हैं।
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+इस सम्मानित प्रदाता का उपयोग कैसे करें इसका एक उदाहरण यहां दिया गया है।
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+क्लाइंट बनाने के बाद, आप इसका उपयोग डेटाबेस के साथ इंटरैक्ट करने के लिए कर सकते हैं।
 
-Add data to your vector database.
+अपने वेक्टर डेटाबेस में डेटा जोड़ें।
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+अपने वेक्टर डेटाबेस से डेटा हटाएं.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+अपने वेक्टर डेटाबेस से डेटा क्वेरी करें।
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### संबंधपरक
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+संबंधपरक सुविधाओं के उपयोग के उदाहरण के लिए, [examples](./demo/examples/python/relational_examples/) फ़ोल्डर देखें।
 
-For now the python client does not support the file storage feature.
+अभी के लिए पायथन क्लाइंट फ़ाइल संग्रहण सुविधा का समर्थन नहीं करता है।
 
-#### Integration
+#### एकीकरण
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Python क्लाइंट आपको [mem0](https://github.com/mem0ai/mem0) और हमारे [integration](./demo/integration/mem0/) का उपयोग करके एआई में मेमोरी जोड़ने की क्षमता प्रदान करता है।
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+हमारे [Docs](https://docs.ahen-studio.com/) पर और जानें
 
-## All Thanks To Our Contributors:
+## हमारे योगदानकर्ताओं को सभी धन्यवाद:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## लाइसेंस
 
 [Apache 2.0](./LICENSE)

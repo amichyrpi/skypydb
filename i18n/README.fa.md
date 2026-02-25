@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>mesosphere-backend - منبع باز پایگاه داده جاسازی های رابطه ای و برداری</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## ویژگی ها
 
-- Relational: create your functions and store your data in a relational database.
+- رابطه ای: توابع خود را ایجاد کنید و داده های خود را در یک پایگاه داده رابطه ای ذخیره کنید.
 
-- Vector embeddings: create, search and delete vectors collections.
+- جاسازی های برداری: مجموعه های بردار را ایجاد، جستجو و حذف کنید.
 
-- File storage: store your files in a database.
+- ذخیره سازی فایل: فایل های خود را در یک پایگاه داده ذخیره کنید.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- حافظه: با استفاده از [mem0](https://github.com/mem0ai/mem0) و [integration](./demo/integration/mem0/)، حافظه را به یک LLM اضافه کنید.
 
-- Free & Open Source: Apache 2.0 Licensed
+- رایگان و منبع باز: Apache 2.0 دارای مجوز
 
-- Cross-platform: Windows, Linux, MacOS
-
-## Languages
-
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
-
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
+- کراس پلتفرم: ویندوز، لینوکس، MacOS
 
 ## HttpClients
 
-### Typescript
+### TypeScript
 
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere یک سرویس گیرنده TypeScript را برای تعامل با پایگاه داده ارائه می دهد، شما می توانید از پایگاه داده embeddings برداری یا پایگاه داده رابطه ای استفاده کنید. ابتدا نحوه استفاده از پایگاه داده embeddings vector را بررسی خواهیم کرد.
 
-#### Vector model
+#### مدل برداری
 
-You can use tree AI models provider to create your vector embeddings.
+می‌توانید از ارائه‌دهنده مدل‌های هوش مصنوعی درختی برای ایجاد جاسازی‌های برداری خود استفاده کنید.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+در اینجا مثالی از نحوه استفاده از این ارائه دهنده متفاوت آورده شده است.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+پس از ایجاد مشتری، می توانید از آن برای تعامل با پایگاه داده استفاده کنید.
 
-Add data to your vector database.
+داده ها را به پایگاه داده برداری خود اضافه کنید.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+داده ها را از پایگاه داده برداری خود حذف کنید.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+داده ها را از پایگاه داده برداری خود جستجو کنید.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### رابطه ای
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+برای مثال استفاده از ویژگی های رابطه ای، پوشه [examples](./demo/examples/js/relational_examples/) را بررسی کنید.
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+برای مثال استفاده از ویژگی‌های ذخیره‌سازی فایل، پوشه [examples](./demo/examples/js/files_upload_examples/) را بررسی کنید.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+در [Docs](https://docs.ahen-studio.com/) ما بیشتر بیاموزید
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere یک سرویس گیرنده Python را برای تعامل با پایگاه داده ارائه می دهد، می توانید از پایگاه داده embeddings برداری یا پایگاه داده رابطه ای استفاده کنید. ابتدا نحوه استفاده از پایگاه داده embeddings vector را بررسی خواهیم کرد.
 
-#### Vector model
+#### مدل برداری
 
-You can use tree AI models provider to create your vector embeddings.
+می‌توانید از ارائه‌دهنده مدل‌های هوش مصنوعی درختی برای ایجاد جاسازی‌های برداری خود استفاده کنید.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+در اینجا مثالی از نحوه استفاده از این ارائه دهنده متفاوت آورده شده است.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+پس از ایجاد مشتری، می توانید از آن برای تعامل با پایگاه داده استفاده کنید.
 
-Add data to your vector database.
+داده ها را به پایگاه داده برداری خود اضافه کنید.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+داده ها را از پایگاه داده برداری خود حذف کنید.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+داده ها را از پایگاه داده برداری خود جستجو کنید.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### رابطه ای
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+برای مثال استفاده از ویژگی های رابطه ای، پوشه [examples](./demo/examples/python/relational_examples/) را بررسی کنید.
 
-For now the python client does not support the file storage feature.
+در حال حاضر کلاینت پایتون از ویژگی ذخیره سازی فایل پشتیبانی نمی کند.
 
-#### Integration
+#### یکپارچه سازی
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+مشتری Python این امکان را به شما ارائه می دهد که با استفاده از [mem0](https://github.com/mem0ai/mem0) و [integration](./demo/integration/mem0/)، حافظه را به هوش مصنوعی اضافه کنید.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+در [Docs](https://docs.ahen-studio.com/) ما بیشتر بیاموزید
 
-## All Thanks To Our Contributors:
+## همه با تشکر از همکاران ما:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## مجوز
 
 [Apache 2.0](./LICENSE)

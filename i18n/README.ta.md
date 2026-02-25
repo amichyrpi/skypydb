@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>மெசோஸ்பியர்-பேக்கெண்ட் - ஓப்பன் சோர்ஸ் ரிலேஷனல் மற்றும் வெக்டர் எம்பெடிங்ஸ் டேட்டாபேஸ்</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## அம்சங்கள்
 
-- Relational: create your functions and store your data in a relational database.
+- தொடர்புடையது: உங்கள் செயல்பாடுகளை உருவாக்கி, உங்கள் தரவை தொடர்புடைய தரவுத்தளத்தில் சேமிக்கவும்.
 
-- Vector embeddings: create, search and delete vectors collections.
+- வெக்டர் உட்பொதிப்புகள்: வெக்டார் சேகரிப்புகளை உருவாக்குதல், தேடுதல் மற்றும் நீக்குதல்.
 
-- File storage: store your files in a database.
+- கோப்பு சேமிப்பு: உங்கள் கோப்புகளை ஒரு தரவுத்தளத்தில் சேமிக்கவும்.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- நினைவகம்: [mem0](https://github.com/mem0ai/mem0) மற்றும் எங்கள் [integration](./demo/integration/mem0/) ஐப் பயன்படுத்தி LLMக்கு நினைவகத்தைச் சேர்க்கவும்.
 
-- Free & Open Source: Apache 2.0 Licensed
+- இலவச & திறந்த மூல: Apache 2.0 உரிமம் பெற்றது
 
-- Cross-platform: Windows, Linux, MacOS
-
-## Languages
-
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
-
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
+- குறுக்கு-தளம்: விண்டோஸ், லினக்ஸ், மேகோஸ்
 
 ## HttpClients
 
-### Typescript
+### TypeScript
 
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere தரவுத்தளத்துடன் தொடர்புகொள்வதற்கு TypeScript கிளையண்டை வழங்குகிறது, நீங்கள் திசையன் உட்பொதித்தல் தரவுத்தளத்தையோ அல்லது தொடர்புடைய தரவுத்தளத்தையோ பயன்படுத்தலாம். திசையன் உட்பொதித்தல் தரவுத்தளத்தை எவ்வாறு பயன்படுத்துவது என்பதை முதலில் பார்ப்போம்.
 
-#### Vector model
+#### வெக்டர் மாதிரி
 
-You can use tree AI models provider to create your vector embeddings.
+உங்கள் திசையன் உட்பொதிவுகளை உருவாக்க, மரம் AI மாதிரிகள் வழங்குநரைப் பயன்படுத்தலாம்.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+இந்த டிஃபெரன்ட் வழங்குநரை எவ்வாறு பயன்படுத்துவது என்பதற்கான எடுத்துக்காட்டு இங்கே.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+கிளையண்டை உருவாக்கிய பிறகு, தரவுத்தளத்துடன் தொடர்பு கொள்ள அதைப் பயன்படுத்தலாம்.
 
-Add data to your vector database.
+உங்கள் திசையன் தரவுத்தளத்தில் தரவைச் சேர்க்கவும்.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+உங்கள் திசையன் தரவுத்தளத்திலிருந்து தரவை நீக்கவும்.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+உங்கள் திசையன் தரவுத்தளத்திலிருந்து தரவை வினவவும்.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### உறவுமுறை
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+எடுத்துக்காட்டாக தொடர்புடைய அம்சங்களைப் பயன்படுத்த, [examples](./demo/examples/js/relational_examples/) கோப்புறையைப் பார்க்கவும்.
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+எடுத்துக்காட்டாக, கோப்பு சேமிப்பக அம்சங்களைப் பயன்படுத்த, [examples](./demo/examples/js/files_upload_examples/) கோப்புறையைப் பார்க்கவும்.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+எங்கள் [Docs](https://docs.ahen-studio.com/) இல் மேலும் அறிக
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+மெசோஸ்பியர் தரவுத்தளத்துடன் தொடர்புகொள்வதற்கு Python கிளையண்டை வழங்குகிறது, நீங்கள் திசையன் உட்பொதித்தல் தரவுத்தளத்தையோ அல்லது தொடர்புடைய தரவுத்தளத்தையோ பயன்படுத்தலாம். திசையன் உட்பொதித்தல் தரவுத்தளத்தை எவ்வாறு பயன்படுத்துவது என்பதை முதலில் பார்ப்போம்.
 
-#### Vector model
+#### வெக்டர் மாதிரி
 
-You can use tree AI models provider to create your vector embeddings.
+உங்கள் திசையன் உட்பொதிவுகளை உருவாக்க, மரம் AI மாதிரிகள் வழங்குநரைப் பயன்படுத்தலாம்.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+இந்த டிஃபெரன்ட் வழங்குநரை எவ்வாறு பயன்படுத்துவது என்பதற்கான எடுத்துக்காட்டு இங்கே.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+கிளையண்டை உருவாக்கிய பிறகு, தரவுத்தளத்துடன் தொடர்பு கொள்ள அதைப் பயன்படுத்தலாம்.
 
-Add data to your vector database.
+உங்கள் திசையன் தரவுத்தளத்தில் தரவைச் சேர்க்கவும்.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+உங்கள் திசையன் தரவுத்தளத்திலிருந்து தரவை நீக்கவும்.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+உங்கள் திசையன் தரவுத்தளத்திலிருந்து தரவை வினவவும்.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### உறவுமுறை
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+எடுத்துக்காட்டாக தொடர்புடைய அம்சங்களைப் பயன்படுத்த, [examples](./demo/examples/python/relational_examples/) கோப்புறையைப் பார்க்கவும்.
 
-For now the python client does not support the file storage feature.
+இப்போது பைதான் கிளையன்ட் கோப்பு சேமிப்பக அம்சத்தை ஆதரிக்கவில்லை.
 
-#### Integration
+#### ஒருங்கிணைப்பு
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Python கிளையன்ட் [mem0](https://github.com/mem0ai/mem0) மற்றும் எங்கள் [integration](./demo/integration/mem0/) ஐப் பயன்படுத்தி AIக்கு நினைவகத்தைச் சேர்க்கும் திறனை வழங்குகிறது.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+எங்கள் [Docs](https://docs.ahen-studio.com/) இல் மேலும் அறிக
 
-## All Thanks To Our Contributors:
+## எங்கள் பங்களிப்பாளர்களுக்கு நன்றி:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## உரிமம்
 
 [Apache 2.0](./LICENSE)

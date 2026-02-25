@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## Značajke
 
-- Relational: create your functions and store your data in a relational database.
+- Relacijska: kreirajte svoje funkcije i pohranite svoje podatke u relacijsku bazu podataka.
 
-- Vector embeddings: create, search and delete vectors collections.
+- Ugrađivanja vektora: kreirajte, pretražujte i brišite kolekcije vektora.
 
-- File storage: store your files in a database.
+- Pohrana datoteka: pohranite svoje datoteke u bazu podataka.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- Memorija: dodajte memoriju LLM-u koristeći [mem0](https://github.com/mem0ai/mem0) i naš [integration](./demo/integration/mem0/).
 
-- Free & Open Source: Apache 2.0 Licensed
+- Besplatan i otvoreni kod: Apache 2.0 licenciran
 
-- Cross-platform: Windows, Linux, MacOS
+- Više platformi: Windows, Linux, MacOS
 
-## Languages
+## HttpKlijenti
 
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
+### TypeScript
 
-## TODO
+Mesosphere nudi TypeScript klijent za interakciju s bazom podataka, možete koristiti bilo vektorsku bazu podataka ili relacijsku bazu podataka. Prvo ćemo pogledati kako koristiti bazu podataka o ugrađivanju vektora.
 
-## Doable without any problem
+#### Vektorski model
 
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
-
-## HttpClients
-
-### Typescript
-
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
-
-#### Vector model
-
-You can use tree AI models provider to create your vector embeddings.
+Možete upotrijebiti pružatelja modela stabla AI za izradu svojih vektorskih umetanja.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Ovdje je primjer kako se koristi ovaj deferent provider.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+Nakon što izradite klijenta, možete ga koristiti za interakciju s bazom podataka.
 
-Add data to your vector database.
+Dodajte podatke u svoju vektorsku bazu podataka.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+Izbrišite podatke iz svoje vektorske baze podataka.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+Upit za podatke iz vaše vektorske baze podataka.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### Relacijski
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+Na primjer, korištenje relacijskih značajki, provjerite mapu [examples](./demo/examples/js/relational_examples/).
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+Na primjer, korištenje značajki pohrane datoteka, provjerite mapu [examples](./demo/examples/js/files_upload_examples/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Saznajte više na našem [Docs](https://docs.ahen-studio.com/)
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere nudi Python klijenta za interakciju s bazom podataka, možete koristiti bilo vektorsku bazu podataka ili relacijsku bazu podataka. Prvo ćemo pogledati kako koristiti bazu podataka o ugrađivanju vektora.
 
-#### Vector model
+#### Vektorski model
 
-You can use tree AI models provider to create your vector embeddings.
+Možete upotrijebiti pružatelja modela stabla AI za izradu svojih vektorskih umetanja.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Ovdje je primjer kako se koristi ovaj deferent provider.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+Nakon što izradite klijenta, možete ga koristiti za interakciju s bazom podataka.
 
-Add data to your vector database.
+Dodajte podatke u svoju vektorsku bazu podataka.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+Izbrišite podatke iz svoje vektorske baze podataka.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+Upit za podatke iz vaše vektorske baze podataka.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### Relacijski
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+Na primjer, korištenje relacijskih značajki, provjerite mapu [examples](./demo/examples/python/relational_examples/).
 
-For now the python client does not support the file storage feature.
+Za sada python klijent ne podržava značajku pohrane datoteka.
 
-#### Integration
+#### Integracija
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Klijent Python nudi vam mogućnost dodavanja memorije AI pomoću [mem0](https://github.com/mem0ai/mem0) i našeg [integration](./demo/integration/mem0/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Saznajte više na našem [Docs](https://docs.ahen-studio.com/)
 
-## All Thanks To Our Contributors:
+## Hvala našim suradnicima:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## Licenca
 
 [Apache 2.0](./LICENSE)

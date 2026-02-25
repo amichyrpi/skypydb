@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>mesosphere-backend - Database di incorporamenti vettoriali e relazionali open source</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## Caratteristiche
 
-- Relational: create your functions and store your data in a relational database.
+- Relazionale: crea le tue funzioni e archivia i tuoi dati in un database relazionale.
 
-- Vector embeddings: create, search and delete vectors collections.
+- Incorporamenti di vettori: crea, cerca ed elimina raccolte di vettori.
 
-- File storage: store your files in a database.
+- Archiviazione file: archivia i tuoi file in un database.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- Memoria: aggiungi memoria a un LLM utilizzando [mem0](https://github.com/mem0ai/mem0) e il nostro [integration](./demo/integration/mem0/).
 
-- Free & Open Source: Apache 2.0 Licensed
+- Gratuito e Open Source: licenza Apache 2.0
 
-- Cross-platform: Windows, Linux, MacOS
-
-## Languages
-
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
-
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
+- Multipiattaforma: Windows, Linux, MacOS
 
 ## HttpClients
 
-### Typescript
+### TypeScript
 
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere offre un client TypeScript per interagire con il database, puoi utilizzare il database di incorporamenti vettoriali o il database relazionale. Vedremo innanzitutto come utilizzare il database degli incorporamenti di vettori.
 
-#### Vector model
+#### Modello vettoriale
 
-You can use tree AI models provider to create your vector embeddings.
+Puoi utilizzare il provider di modelli AI dell'albero per creare i tuoi incorporamenti vettoriali.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Ecco un esempio di come utilizzare questo provider deferente.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+Dopo aver creato il client, puoi usarlo per interagire con il database.
 
-Add data to your vector database.
+Aggiungi dati al tuo database vettoriale.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+Elimina i dati dal tuo database vettoriale.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+Interroga i dati dal tuo database vettoriale.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### Relazionale
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+Per un esempio di utilizzo delle funzionalità relazionali, controlla la cartella [examples](./demo/examples/js/relational_examples/).
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+Per un esempio di utilizzo delle funzionalità di archiviazione file, controlla la cartella [examples](./demo/examples/js/files_upload_examples/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Scopri di più sul nostro [Docs](https://docs.ahen-studio.com/)
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere offre un client Python per interagire con il database, puoi utilizzare il database di incorporamenti vettoriali o il database relazionale. Vedremo innanzitutto come utilizzare il database degli incorporamenti di vettori.
 
-#### Vector model
+#### Modello vettoriale
 
-You can use tree AI models provider to create your vector embeddings.
+Puoi utilizzare il provider di modelli AI dell'albero per creare i tuoi incorporamenti vettoriali.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Ecco un esempio di come utilizzare questo provider deferente.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+Dopo aver creato il client, puoi usarlo per interagire con il database.
 
-Add data to your vector database.
+Aggiungi dati al tuo database vettoriale.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+Elimina i dati dal tuo database vettoriale.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+Interroga i dati dal tuo database vettoriale.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### Relazionale
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+Per un esempio di utilizzo delle funzionalità relazionali, controlla la cartella [examples](./demo/examples/python/relational_examples/).
 
-For now the python client does not support the file storage feature.
+Per ora il client Python non supporta la funzionalità di archiviazione dei file.
 
-#### Integration
+#### Integrazione
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Il client Python ti offre la possibilità di aggiungere memoria a un'intelligenza artificiale utilizzando [mem0](https://github.com/mem0ai/mem0) e il nostro [integration](./demo/integration/mem0/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Scopri di più sul nostro [Docs](https://docs.ahen-studio.com/)
 
-## All Thanks To Our Contributors:
+## Tutti i ringraziamenti ai nostri contributori:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## Licenza
 
 [Apache 2.0](./LICENSE)

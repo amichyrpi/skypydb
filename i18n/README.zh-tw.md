@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>mesosphere-backend - 開源關係和向量嵌入資料庫</b>。 <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## 特點
 
-- Relational: create your functions and store your data in a relational database.
+- 關係：建立您的函數並將資料儲存在關聯式資料庫中。
 
-- Vector embeddings: create, search and delete vectors collections.
+- 向量嵌入：建立、搜尋和刪除向量集合。
 
-- File storage: store your files in a database.
+- 檔案儲存：將您的檔案儲存在資料庫中。
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- 記憶：使用[mem0](https://github.com/mem0ai/mem0)和我們的[integration](./demo/integration/mem0/)為法學碩士添加記憶。
 
-- Free & Open Source: Apache 2.0 Licensed
+- 免費與開源：Apache 2.0 許可
 
-- Cross-platform: Windows, Linux, MacOS
-
-## Languages
-
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
-
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
+- 跨平台：Windows、Linux、MacOS
 
 ## HttpClients
 
-### Typescript
+### TypeScript
 
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere 提供了 TypeScript 用戶端用於與資料庫交互，您可以使用向量嵌入資料庫或關聯式資料庫。我們先來看看如何使用向量嵌入資料庫。
 
-#### Vector model
+#### 向量模型
 
-You can use tree AI models provider to create your vector embeddings.
+您可以使用樹 AI 模型提供者來建立向量嵌入。
 
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
+- [x]HuggingFace Sentence Transformers
+- [x]Ollama
+- [x]OpenAI
 
-Here is an example of how to use this deferent provider.
+以下是如何使用此不同提供者的範例。
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+建立客戶端後，您可以使用它與資料庫進行互動。
 
-Add data to your vector database.
+將資料新增至您的向量資料庫。
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+從向量資料庫中刪除資料。
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+從向量資料庫查詢資料。
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### 關係型
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+有關關係功能的使用範例，請查看[examples](./demo/examples/js/relational_examples/) 資料夾。
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+有關檔案儲存功能的使用範例，請查看[examples](./demo/examples/js/files_upload_examples/) 資料夾。
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+了解更多關於我們的[Docs](https://docs.ahen-studio.com/)
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mesosphere 提供了 Python 用戶端用於與資料庫交互，您可以使用向量嵌入資料庫或關聯式資料庫。我們先來看看如何使用向量嵌入資料庫。
 
-#### Vector model
+#### 向量模型
 
-You can use tree AI models provider to create your vector embeddings.
+您可以使用樹 AI 模型提供者來建立向量嵌入。
 
-- [x] HuggingFace Sentence Transformers
+- [x]HuggingFace Sentence Transformers
 - [x] Ollama
-- [x] OpenAI
+- [x]OpenAI
 
-Here is an example of how to use this deferent provider.
+以下是如何使用此不同提供者的範例。
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+建立客戶端後，您可以使用它與資料庫進行互動。
 
-Add data to your vector database.
+將資料新增至您的向量資料庫。
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+從向量資料庫中刪除資料。
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+從向量資料庫查詢資料。
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### 關係型
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+有關關係功能的使用範例，請查看[examples](./demo/examples/python/relational_examples/) 資料夾。
 
-For now the python client does not support the file storage feature.
+目前python客戶端不支援檔案儲存功能。
 
-#### Integration
+#### 整合
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Python客戶端使您能夠使用[mem0](https://github.com/mem0ai/mem0)和我們的[integration](./demo/integration/mem0/)為AI添加記憶體。
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+了解更多關於我們的[Docs](https://docs.ahen-studio.com/)
 
-## All Thanks To Our Contributors:
+## 感謝我們的貢獻者：
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## 許可證
 
 [Apache 2.0](./LICENSE)

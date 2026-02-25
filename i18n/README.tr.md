@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>mesosfer-backend - Açık Kaynak İlişkisel ve Vektör Yerleştirme Veritabanı</b>. <br />
 </p>
 
 <div align="center">
@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## Özellikler
 
-- Relational: create your functions and store your data in a relational database.
+- İlişkisel: işlevlerinizi oluşturun ve verilerinizi ilişkisel bir veritabanında saklayın.
 
-- Vector embeddings: create, search and delete vectors collections.
+- Vektör yerleştirmeleri: vektör koleksiyonları oluşturun, arayın ve silin.
 
-- File storage: store your files in a database.
+- Dosya depolama: dosyalarınızı bir veritabanında saklayın.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- Bellek: [mem0](https://github.com/mem0ai/mem0) ve [integration](./demo/integration/mem0/) kullanarak bir LLM'ye bellek ekleyin.
 
-- Free & Open Source: Apache 2.0 Licensed
+- Ücretsiz ve Açık Kaynak: Apache 2.0 Lisanslı
 
-- Cross-platform: Windows, Linux, MacOS
+- Çapraz platform: Windows, Linux, MacOS
 
-## Languages
+## HttpClient'lar
 
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
+### TypeScript
 
-## TODO
+Mezosfer, veritabanıyla etkileşim için bir TypeScript istemcisi sunar; vektör gömme veritabanını veya ilişkisel veritabanını kullanabilirsiniz. İlk önce vektör yerleştirme veritabanının nasıl kullanılacağına bakacağız.
 
-## Doable without any problem
+#### Vektör modeli
 
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
-
-## HttpClients
-
-### Typescript
-
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
-
-#### Vector model
-
-You can use tree AI models provider to create your vector embeddings.
+Vektör yerleştirmelerinizi oluşturmak için ağaç AI modelleri sağlayıcısını kullanabilirsiniz.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+İşte bu farklı sağlayıcının nasıl kullanılacağına dair bir örnek.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+İstemciyi oluşturduktan sonra onu veritabanıyla etkileşimde bulunmak için kullanabilirsiniz.
 
-Add data to your vector database.
+Vektör veritabanınıza veri ekleyin.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+Vektör veritabanınızdaki verileri silin.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+Vektör veritabanınızdan verileri sorgulayın.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### İlişkisel
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+Örneğin ilişkisel özelliklerin kullanımı için [examples](./demo/examples/js/relational_examples/) klasörüne bakın.
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+Örneğin dosya depolama özelliklerinin kullanımı için [examples](./demo/examples/js/files_upload_examples/) klasörüne bakın.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+[Docs](https://docs.ahen-studio.com/) hakkında daha fazla bilgi edinin
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Mezosfer, veritabanıyla etkileşim için bir Python istemcisi sunar; vektör yerleştirme veritabanını veya ilişkisel veritabanını kullanabilirsiniz. İlk önce vektör yerleştirme veritabanının nasıl kullanılacağına bakacağız.
 
-#### Vector model
+#### Vektör modeli
 
-You can use tree AI models provider to create your vector embeddings.
+Vektör yerleştirmelerinizi oluşturmak için ağaç AI modelleri sağlayıcısını kullanabilirsiniz.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+İşte bu farklı sağlayıcının nasıl kullanılacağına dair bir örnek.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+İstemciyi oluşturduktan sonra onu veritabanıyla etkileşimde bulunmak için kullanabilirsiniz.
 
-Add data to your vector database.
+Vektör veritabanınıza veri ekleyin.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+Vektör veritabanınızdaki verileri silin.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+Vektör veritabanınızdan verileri sorgulayın.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### İlişkisel
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+Örneğin ilişkisel özelliklerin kullanımı için [examples](./demo/examples/python/relational_examples/) klasörüne bakın.
 
-For now the python client does not support the file storage feature.
+Şimdilik python istemcisi dosya depolama özelliğini desteklemiyor.
 
-#### Integration
+#### Entegrasyon
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Python istemcisi size [mem0](https://github.com/mem0ai/mem0) ve [integration](./demo/integration/mem0/) kullanarak bir yapay zekaya bellek ekleme yeteneği sunar.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+[Docs](https://docs.ahen-studio.com/) hakkında daha fazla bilgi edinin
 
-## All Thanks To Our Contributors:
+## Katkıda Bulunanlarımıza Teşekkürler:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## Lisans
 
 [Apache 2.0](./LICENSE)

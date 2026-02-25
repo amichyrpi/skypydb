@@ -25,61 +25,35 @@ pip install mesosphere # python database
 npm install mesosphere # typescript client
 ```
 
-## Features
+## Χαρακτηριστικά
 
-- Relational: create your functions and store your data in a relational database.
+- Relational: δημιουργήστε τις συναρτήσεις σας και αποθηκεύστε τα δεδομένα σας σε μια σχεσιακή βάση δεδομένων.
 
-- Vector embeddings: create, search and delete vectors collections.
+- Διανυσματικές ενσωματώσεις: δημιουργία, αναζήτηση και διαγραφή συλλογών διανυσμάτων.
 
-- File storage: store your files in a database.
+- Αποθήκευση αρχείων: αποθηκεύστε τα αρχεία σας σε μια βάση δεδομένων.
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+- Μνήμη: προσθέστε μνήμη σε ένα LLM χρησιμοποιώντας τα [mem0](https://github.com/mem0ai/mem0) και τα [integration](./demo/integration/mem0/) μας.
 
-- Free & Open Source: Apache 2.0 Licensed
+- Δωρεάν & ανοιχτού κώδικα: Άδεια χρήσης Apache 2.0
 
 - Cross-platform: Windows, Linux, MacOS
 
-## Languages
-
-Looking for your language? You'll find it at [languages](./i18n/languages.md)
-
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
-
 ## HttpClients
 
-### Typescript
+### TypeScript
 
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Το Mesosphere προσφέρει έναν πελάτη TypeScript για αλληλεπίδραση με τη βάση δεδομένων, μπορείτε να χρησιμοποιήσετε είτε τη βάση δεδομένων διανυσματικών ενσωματώσεων είτε τη σχεσιακή βάση δεδομένων. Πρώτα θα δούμε πώς να χρησιμοποιήσουμε τη βάση δεδομένων ενσωματώσεων διανυσμάτων.
 
-#### Vector model
+#### Διανυσματικό μοντέλο
 
-You can use tree AI models provider to create your vector embeddings.
+Μπορείτε να χρησιμοποιήσετε τον πάροχο μοντέλων τεχνητής νοημοσύνης δέντρου για να δημιουργήσετε τις διανυσματικές ενσωματώσεις σας.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Ακολουθεί ένα παράδειγμα του τρόπου χρήσης αυτού του διαφορετικού παρόχου.
 
 ```ts
 import { httpClient } from "mesosphere";
@@ -137,9 +111,9 @@ async function use_openai_provider(): Promise<void> {
 }
 ```
 
-After creating the client, you can use it to interact with the database.
+Αφού δημιουργήσετε τον πελάτη, μπορείτε να τον χρησιμοποιήσετε για να αλληλεπιδράσετε με τη βάση δεδομένων.
 
-Add data to your vector database.
+Προσθέστε δεδομένα στη διανυσματική βάση δεδομένων σας.
 
 ```ts
   try {
@@ -159,7 +133,7 @@ Add data to your vector database.
 }
 ```
 
-Delete data from your vector database.
+Διαγράψτε δεδομένα από τη διανυσματική βάση δεδομένων σας.
 
 ```ts
   try {
@@ -187,7 +161,7 @@ Delete data from your vector database.
 }
 ```
 
-Query data from your vector database.
+Ζητήστε δεδομένα από τη διανυσματική βάση δεδομένων σας.
 
 ```ts
   try {
@@ -222,27 +196,27 @@ Query data from your vector database.
 }
 ```
 
-#### Relational
+#### Σχεσιακό
 
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
+Για παράδειγμα, τη χρήση των σχεσιακών χαρακτηριστικών, ανατρέξτε στον φάκελο [examples](./demo/examples/js/relational_examples/).
 
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
+Για παράδειγμα, τη χρήση των δυνατοτήτων αποθήκευσης αρχείων, ανατρέξτε στον φάκελο [examples](./demo/examples/js/files_upload_examples/).
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Μάθετε περισσότερα στο [Docs](https://docs.ahen-studio.com/) μας
 
 ### Python
 
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
+Το Mesosphere προσφέρει έναν πελάτη Python για αλληλεπίδραση με τη βάση δεδομένων, μπορείτε να χρησιμοποιήσετε είτε τη βάση δεδομένων διανυσματικών ενσωματώσεων είτε τη σχεσιακή βάση δεδομένων. Πρώτα θα δούμε πώς να χρησιμοποιήσουμε τη βάση δεδομένων ενσωματώσεων διανυσμάτων.
 
-#### Vector model
+#### Διανυσματικό μοντέλο
 
-You can use tree AI models provider to create your vector embeddings.
+Μπορείτε να χρησιμοποιήσετε τον πάροχο μοντέλων τεχνητής νοημοσύνης δέντρου για να δημιουργήσετε τις διανυσματικές ενσωματώσεις σας.
 
 - [x] HuggingFace Sentence Transformers
 - [x] Ollama
 - [x] OpenAI
 
-Here is an example of how to use this deferent provider.
+Ακολουθεί ένα παράδειγμα του τρόπου χρήσης αυτού του διαφορετικού παρόχου.
 
 ```python
 # Sentence Transformers provider
@@ -289,9 +263,9 @@ client = mesosphere.HttpClient(
 )
 ```
 
-After creating the client, you can use it to interact with the database.
+Αφού δημιουργήσετε τον πελάτη, μπορείτε να τον χρησιμοποιήσετε για να αλληλεπιδράσετε με τη βάση δεδομένων.
 
-Add data to your vector database.
+Προσθέστε δεδομένα στη διανυσματική βάση δεδομένων σας.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -308,7 +282,7 @@ vectordb.add(
 )
 ```
 
-Delete data from your vector database.
+Διαγράψτε δεδομένα από τη διανυσματική βάση δεδομένων σας.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -333,7 +307,7 @@ vectordb.delete(
 )
 ```
 
-Query data from your vector database.
+Ζητήστε δεδομένα από τη διανυσματική βάση δεδομένων σας.
 
 ```python
 # Create a vector database or get it if it already exists
@@ -361,24 +335,24 @@ else:
         print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
 ```
 
-#### Relational
+#### Σχεσιακό
 
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
+Για παράδειγμα, τη χρήση των σχεσιακών χαρακτηριστικών, ανατρέξτε στον φάκελο [examples](./demo/examples/python/relational_examples/).
 
-For now the python client does not support the file storage feature.
+Προς το παρόν ο πελάτης python δεν υποστηρίζει τη δυνατότητα αποθήκευσης αρχείων.
 
-#### Integration
+#### Ενσωμάτωση
 
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Ο πελάτης Python σας προσφέρει τη δυνατότητα να προσθέσετε μνήμη σε ένα AI χρησιμοποιώντας τα [mem0](https://github.com/mem0ai/mem0) και τα [integration](./demo/integration/mem0/) μας.
 
-Learn more on our [Docs](https://docs.ahen-studio.com/)
+Μάθετε περισσότερα στο [Docs](https://docs.ahen-studio.com/) μας
 
-## All Thanks To Our Contributors:
+## Ευχαριστούμε όλους τους συντελεστές μας:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## License
+## Άδεια
 
 [Apache 2.0](./LICENSE)

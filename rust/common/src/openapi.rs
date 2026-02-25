@@ -26,6 +26,7 @@ pub async fn openapi_json() -> Json<Value> {
         "paths": {
             "/healthz": {"get": {"summary": "Health check"}},
             "/readyz": {"get": {"summary": "Readiness check"}},
+            "/v1/functions/stream": {"get": {"summary": "Stream function call events (SSE)"}},
             "/v1/functions/call": {"post": {"summary": "Execute a runtime function"}},
             "/v1/functions/deploy": {"post": {"summary": "Deploy TypeScript functions manifest (local/cloud)"}},
             "/v1/storage/upload": {"post": {"summary": "Upload binary file content with one-time token header", "parameters": [{"name": "X-Upload-Token", "description": "One-time upload token from `ctx.storage.createUploadUrl()` / `ctx.storage.generateUploadUrl()`. Tokens are single-use and expire shortly after issuance.", "in": "header", "required": true, "schema": {"type": "string", "format": "uuid"}}]}},

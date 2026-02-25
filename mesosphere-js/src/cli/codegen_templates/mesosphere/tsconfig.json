@@ -13,16 +13,11 @@
     "allowSyntheticDefaultImports": true,
     /* These compiler options cannot be modified. */
     "target": "ESNext",
-    "lib": [
-      "ESNext",
-      "dom"
-    ],
+    "lib": ["ESNext", "dom"],
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": [
-    "./**/*"
-  ]
+  "include": ["./**/*"]
 }

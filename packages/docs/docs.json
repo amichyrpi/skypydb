@@ -15,7 +15,6 @@
     }
   },
   "fonts": {
-    "family": "Inter",
     "heading": {
       "family": "Inter"
     },
@@ -29,7 +28,7 @@
   "navbar": {
     "primary": {
       "type": "button",
-      "label": "Stars use on Github",
+      "label": "Star us on GitHub",
       "href": "https://github.com/Ahen-Studio/mesosphere-backend"
     }
   },

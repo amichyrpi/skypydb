@@ -4,7 +4,7 @@
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>Mesosphere - Open Source Relational and Vector Embeddings Database</b>. <br />
 </p>
 
 <div align="center">

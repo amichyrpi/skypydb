@@ -18,7 +18,7 @@ function normalize_endpoint(reference: string | EndpointReference): string {
   const value =
     typeof reference === "string"
       ? reference
-      : reference[MESOSPHERE_FUNCTION_ENDPOINT] ?? reference.endpoint;
+      : (reference[MESOSPHERE_FUNCTION_ENDPOINT] ?? reference.endpoint);
   if (typeof value !== "string") {
     throw new Error("Function endpoint must be a non-empty string.");
   }

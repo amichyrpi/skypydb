@@ -2,7 +2,7 @@
  * You can deploy your database functions by running the following command in your terminal:
  *
  * ```bash
- * npx mesosphere deploy
+ * npx mesosphere dev
  * ```
  *
  * Do not modify this file manually, otherwise your functions will no longer work.

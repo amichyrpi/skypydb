@@ -47,7 +47,9 @@ function resolve_codegen_templates_dir(): string {
 
   for (const base_dir of base_dirs) {
     candidates.push(path.join(base_dir, "codegen_templates"));
-    candidates.push(path.join(base_dir, "..", "src", "cli", "codegen_templates"));
+    candidates.push(
+      path.join(base_dir, "..", "src", "cli", "codegen_templates"),
+    );
   }
 
   for (const candidate of candidates) {

@@ -1,15 +1,25 @@
+use std::convert::Infallible;
+use std::sync::OnceLock;
+use std::time::Duration;
+
+use async_stream::stream;
 use axum::extract::{DefaultBodyLimit, State};
 use axum::http::{HeaderMap, HeaderValue};
-use axum::routing::post;
+use axum::response::sse::{Event, KeepAlive, Sse};
+use axum::response::IntoResponse;
+use axum::routing::{get, post};
 use axum::{Json, Router};
+use serde::Serialize;
+use serde_json::json;
 use sqlx::Row;
+use tokio::sync::broadcast;
 
 use crate::api_models::functions::{
     FunctionCallRequest, FunctionCallResponse, FunctionDeployRequest, FunctionDeployResponse,
 };
 use crate::functions::executor::{ensure_runtime_tables, execute_manifest_function};
 use crate::functions::manifest::{
-    load_functions_from_uploaded_sources, FunctionsManifest,
+    load_functions_from_uploaded_sources, FunctionKind, FunctionsManifest,
 };
 use mesosphere_application::state::AppState;
 use mesosphere_common::api::envelope::ApiEnvelope;
@@ -21,15 +31,61 @@ const MAX_DEPLOY_FILES: usize = 256;
 const MAX_DEPLOY_FILE_BYTES: usize = 512 * 1024;
 const MAX_DEPLOY_TOTAL_BYTES: usize = 8 * 1024 * 1024;
 const MAX_DEPLOY_BODY_BYTES: usize = MAX_DEPLOY_TOTAL_BYTES + (1024 * 1024);
+const FUNCTIONS_STREAM_CHANNEL_CAPACITY: usize = 512;
+
+#[derive(Debug, Clone, Serialize)]
+struct FunctionStreamEvent {
+    endpoint: String,
+    result: serde_json::Value,
+}
+
+static FUNCTION_EVENTS: OnceLock<broadcast::Sender<FunctionStreamEvent>> = OnceLock::new();
 
 /// Registers function execution endpoints.
 pub fn router() -> Router<AppState> {
     Router::new()
+        .route("/functions/stream", get(stream_function_events))
         .route("/functions/call", post(call_function))
         .route(
             "/functions/deploy",
             post(deploy_functions).layer(DefaultBodyLimit::max(MAX_DEPLOY_BODY_BYTES)),
         )
+}
+
+async fn stream_function_events() -> impl IntoResponse {
+    let mut receiver = function_event_sender().subscribe();
+    let event_stream = stream! {
+        let connected_payload = json!({
+            "status": "connected",
+        });
+        yield Ok::<Event, Infallible>(
+            Event::default()
+                .event("connected")
+                .data(connected_payload.to_string()),
+        );
+
+        loop {
+            match receiver.recv().await {
+                Ok(function_event) => {
+                    let payload = match serde_json::to_string(&function_event) {
+                        Ok(serialized) => serialized,
+                        Err(_) => continue,
+                    };
+                    yield Ok(Event::default().event("function.call.completed").data(payload));
+                }
+                Err(broadcast::error::RecvError::Lagged(_)) => {
+                    continue;
+                }
+                Err(broadcast::error::RecvError::Closed) => break,
+            }
+        }
+    };
+
+    Sse::new(event_stream).keep_alive(
+        KeepAlive::new()
+            .interval(Duration::from_secs(15))
+            .text("keep-alive"),
+    )
 }
 
 async fn call_function(
@@ -44,12 +100,16 @@ async fn call_function(
     }
 
     let manifest = load_runtime_manifest(&state).await?;
-    if !manifest.functions.contains_key(&endpoint) {
-        return Err(AppError::not_found(format!(
-            "function endpoint '{}' not found in the active deployed manifest",
-            endpoint
-        )));
-    }
+    let function_kind = manifest
+        .functions
+        .get(&endpoint)
+        .map(|function| function.kind)
+        .ok_or_else(|| {
+            AppError::not_found(format!(
+                "function endpoint '{}' not found in the active deployed manifest",
+                endpoint
+            ))
+        })?;
     ensure_runtime_tables(&state.pool, state.config.query_max_limit, &manifest).await?;
 
     let args = request.args_object()?;
@@ -63,6 +123,11 @@ async fn call_function(
         args,
     )
     .await?;
+
+    if function_kind == FunctionKind::Mutation {
+        publish_function_event(&endpoint, &result);
+    }
+
     Ok(Json(ApiEnvelope::ok(FunctionCallResponse { result })))
 }
 
@@ -204,4 +269,18 @@ async fn load_deployed_manifest(state: &AppState) -> Result<Option<FunctionsMani
         ))
     })?;
     Ok(Some(manifest))
+}
+
+fn function_event_sender() -> &'static broadcast::Sender<FunctionStreamEvent> {
+    FUNCTION_EVENTS.get_or_init(|| {
+        let (sender, _receiver) = broadcast::channel(FUNCTIONS_STREAM_CHANNEL_CAPACITY);
+        sender
+    })
+}
+
+fn publish_function_event(endpoint: &str, result: &serde_json::Value) {
+    let _ = function_event_sender().send(FunctionStreamEvent {
+        endpoint: endpoint.to_string(),
+        result: result.clone(),
+    });
 }

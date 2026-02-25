@@ -100,10 +100,7 @@ function validate_destination_directories(
     const destination_dir = path.dirname(destination);
     const relative_dir = path.relative(cwd, destination_dir);
 
-    if (
-      relative_dir.startsWith("..") ||
-      path.isAbsolute(relative_dir)
-    ) {
+    if (relative_dir.startsWith("..") || path.isAbsolute(relative_dir)) {
       dependencies.error(
         `Cannot create '${template_file.relative_path}' because its destination resolves outside the current directory.`,
       );

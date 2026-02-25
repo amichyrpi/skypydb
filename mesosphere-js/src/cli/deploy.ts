@@ -315,7 +315,9 @@ export async function run_deploy_command(
   const deploy_ts_path = path.join(source_dir, "deploy.ts");
   const deploy_template = deploy_ts_template(modules);
   dependencies.write_atomic(deploy_ts_path, deploy_template);
-  const deploy_source_entry = source_files.find((file) => file.path === "deploy.ts");
+  const deploy_source_entry = source_files.find(
+    (file) => file.path === "deploy.ts",
+  );
   if (deploy_source_entry) {
     deploy_source_entry.content = deploy_template;
   } else {
@@ -400,7 +402,10 @@ export function register_deploy_command(
     )
     .option("--local", "Deploy to local backend (default)")
     .option("--cloud", "Deploy to cloud backend")
-    .option("--source <dir>", "Function source directory (default: ./mesosphere)")
+    .option(
+      "--source <dir>",
+      "Function source directory (default: ./mesosphere)",
+    )
     .option("--api-url <url>", "Mesosphere API base URL")
     .option("--api-key <key>", "Mesosphere API key")
     .action(async (options: DeployCommandOptions): Promise<void> => {

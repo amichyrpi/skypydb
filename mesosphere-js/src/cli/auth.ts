@@ -30,12 +30,13 @@ function upsert_env_key(content: string, key: string, value: string): string {
     });
   }
 
-  const separator =
-    content === "" ? "" : content.endsWith("\n") ? "" : "\n";
+  const separator = content === "" ? "" : content.endsWith("\n") ? "" : "\n";
   return `${content}${separator}${formatted_prefix}\n`;
 }
 
-export function configure_local_auth_env(dependencies: CliDependencies): number {
+export function configure_local_auth_env(
+  dependencies: CliDependencies,
+): number {
   const env_path = path.join(dependencies.cwd(), ".env");
   if (!dependencies.exists_sync(env_path)) {
     dependencies.error("Missing .env file in current directory.");
@@ -45,17 +46,29 @@ export function configure_local_auth_env(dependencies: CliDependencies): number 
   try {
     const current_content = dependencies.read_utf8(env_path);
     const api_url =
-      dependencies.env_get("MESOSPHERE_API_URL")?.trim() || LOCAL_API_URL_DEFAULT;
+      dependencies.env_get("MESOSPHERE_API_URL")?.trim() ||
+      LOCAL_API_URL_DEFAULT;
     const api_key =
-      dependencies.env_get("MESOSPHERE_API_KEY")?.trim() || LOCAL_API_KEY_DEFAULT;
+      dependencies.env_get("MESOSPHERE_API_KEY")?.trim() ||
+      LOCAL_API_KEY_DEFAULT;
 
-    const with_api_url = upsert_env_key(current_content, "MESOSPHERE_API_URL", api_url);
-    const with_api_key = upsert_env_key(with_api_url, "MESOSPHERE_API_KEY", api_key);
+    const with_api_url = upsert_env_key(
+      current_content,
+      "MESOSPHERE_API_URL",
+      api_url,
+    );
+    const with_api_key = upsert_env_key(
+      with_api_url,
+      "MESOSPHERE_API_KEY",
+      api_key,
+    );
     dependencies.write_atomic(env_path, with_api_key);
     dependencies.log("Configured local MESOSPHERE API URL and API key in .env");
     return 0;
   } catch (error) {
-    dependencies.error(`Failed to configure local auth in .env: ${String(error)}`);
+    dependencies.error(
+      `Failed to configure local auth in .env: ${String(error)}`,
+    );
     return 1;
   }
 }

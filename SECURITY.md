@@ -18,6 +18,12 @@
 | ------ | ------------------ |
 | 2.0.0  | :white_check_mark: |
 
+### Rust
+
+| Stable | Supported          |
+| ------ | ------------------ |
+| 2.0.0  | :white_check_mark: |
+
 ## Reporting a Vulnerability
 
 - If you notice a vulnerability in our project, please report it privately using GitHub's security advisory reporting feature for this repository.

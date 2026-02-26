@@ -17,31 +17,39 @@
 
 </div>
 
-```bash
-pip install mesosphere # python database
-```
+## How it works
 
-```bash
-npm install mesosphere # typescript client
-```
+[Mesosphere](https://mesosphere.ahen-studio.com) is an open-source relational and vector embeddings database with an Apache 2.0 Licensed it is designed to be simple, fast, and easy to use for web developers and backend developers. Read, Write data and perform hard logic by writing functions in Typescript with full type safety.
 
-## Features
+Mesosphere provides a database, where you write your functions in Typescript and store your data in a relational database. You can also store your files in a database. You can also create, search and delete vectors collections all that in realtime. we provide multiple client libraries to interact with the functions you wrote.
 
-- Relational: create your functions and store your data in a relational database.
+**Client Libraries**
 
-- Vector embeddings: create, search and delete vectors collections.
+Mesosphere is available in multiple languages. You can use it in your favorite language. We currently support Typescript, Python and Rust.
 
-- File storage: store your files in a database.
+**Architecture**
 
-- Memory: add memory to a LLM by using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
+Mesosphere is made to be simple, write you server functions in the ./mesosphere folder and deploy them to the backend. Start experimenting with Mesosphere by following our [tutorials](./demo/examples/js/tutorials/chat_app/).
 
-- Free & Open Source: Apache 2.0 Licensed
+## Integration
 
-- Cross-platform: Windows, Linux, MacOS
+We provide an integration layer with [mem0](https://github.com/mem0ai/mem0) for you to add memory to a LLM by using our [integration](./demo/examples/python/integration/)
 
 ## Languages
 
 Looking for your language? You'll find it at [languages](./i18n/languages.md)
+
+## Documentation
+
+For full documentation, visit [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+
+To see how to Contribute, visit [Contribution guidelines](./CONTRIBUTING.md)
+
+## Community & Support
+
+- [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Best for: help with building, discussion about database best practices.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Best for: bugs and errors you encounter using Supabase.
+- [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Best for: contributing to the codebase.
 
 ## TODO
 
@@ -64,314 +72,6 @@ Looking for your language? You'll find it at [languages](./i18n/languages.md)
   - [ ] deploy
 - [ ] Fix deployment files
   - [ ] Google cloud
-
-## HttpClients
-
-### Typescript
-
-Mesosphere offers a TypeScript client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
-
-#### Vector model
-
-You can use tree AI models provider to create your vector embeddings.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Here is an example of how to use this deferent provider.
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Sentence Transformers provider
-
-// Create a client
-async function use_sentence_transformers_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "sentence-transformers",
-    embedding_model_config: {
-      model: "all-MiniLM-L6-v2",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Ollama provider
-
-// Create a client
-async function use_ollama_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "ollama",
-    embedding_model_config: {
-      model: "mxbai-embed-large",
-      base_url: "http://localhost:11434",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// OpenAI provider
-
-// Create a client
-async function use_openai_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "openai",
-    embedding_model_config: {
-      api_key: "your-openai-api-key",
-      model: "text-embedding-3-small",
-    },
-  });
-}
-```
-
-After creating the client, you can use it to interact with the database.
-
-Add data to your vector database.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Delete data from your vector database.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Delete data from your vector database
-    await vectordb.delete({
-      by_ids: ["vid1", "vid2"],
-      // by_metadatas: [{ source: "youtube" }, { source: "dailymotion" }] // delete by metadatas
-      // by_data: ["Video Theo1", "Video Theo2"] // delete by data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Query data from your vector database.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Query for similar data
-    const results = await vectordb.query({
-      query_texts: ["This is a query"],
-      number_of_results: 2,
-    });
-
-    // Access results
-    for (let index = 0; index < results.ids[0].length; index += 1) {
-      const doc_id = results.ids[0][index];
-      const document = results.documents?.[0]?.[index];
-      const distance = results.distances?.[0]?.[index];
-      console.log(`${doc_id}, ${document}, ${distance}`);
-    }
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-#### Relational
-
-For example usage of the relational features, check out the [examples](./demo/examples/js/relational_examples/) folder.
-
-For example usage of the file storage features, check out the [examples](./demo/examples/js/files_upload_examples/) folder.
-
-Learn more on our [Docs](https://docs.ahen-studio.com/)
-
-### Python
-
-Mesosphere offers a Python client for interacting with the database, you can use either the vector embeddings database or the relational database. We'll first look at how to use the vector embeddings database.
-
-#### Vector model
-
-You can use tree AI models provider to create your vector embeddings.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Here is an example of how to use this deferent provider.
-
-```python
-# Sentence Transformers provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="sentence-transformers",
-    embedding_model_config={"model": "all-MiniLM-L6-v2"},
-)
-```
-
-```python
-# Ollama provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="ollama",
-    embedding_model_config={
-        "model": "mxbai-embed-large",
-        "base_url": "http://localhost:11434",
-    },
-)
-```
-
-```python
-# OpenAI provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="openai",
-    embedding_model_config={
-        "api_key": "your-openai-api-key",
-        "model": "text-embedding-3-small",
-    },
-)
-```
-
-After creating the client, you can use it to interact with the database.
-
-Add data to your vector database.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-```
-
-Delete data from your vector database.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Delete data from your vector database
-vectordb.delete(
-    ids=["vid1", "vid2"]  # delete by ids
-    # where={"source": "youtube"} # delete by metadata
-    # where_document={"$contains": "Video Theo1"} # delete by document text
-)
-```
-
-Query data from your vector database.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Query for similar data
-results = vectordb.query(query_texts=["This is a query"], n_results=2)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-#### Relational
-
-For example usage of the relational features, check out the [examples](./demo/examples/python/relational_examples/) folder.
-
-For now the python client does not support the file storage feature.
-
-#### Integration
-
-The Python client offers you the ability to add memory to an AI using [mem0](https://github.com/mem0ai/mem0) and our [integration](./demo/integration/mem0/).
-
-Learn more on our [Docs](https://docs.ahen-studio.com/)
 
 ## All Thanks To Our Contributors:
 

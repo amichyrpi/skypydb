@@ -29,7 +29,7 @@ Mesosphere is available in multiple languages. You can use it in your favorite l
 
 **Architecture**
 
-Mesosphere is made to be simple, write you server functions in the ./mesosphere folder and deploy them to the backend. Start experimenting with Mesosphere by following our [tutorials](./demo/examples/js/tutorials/chat_app/).
+Mesosphere is made to be simple, write you server functions in the ./mesosphere folder and deploy them to the backend. Start experimenting with Mesosphere by following our [tutorials](./demo/examples/js/tutorials/chat_app/). Mesosphere use tRPC to create a type-safe API for your functions and a Postgres database to store your data.
 
 ## Integration
 
@@ -56,6 +56,10 @@ To see how to Contribute, visit [Contribution guidelines](./CONTRIBUTING.md)
 ## Doable without any problem
 
 - [ ] Remake the docs
+- [ ] Remake the i18n translations
+- [ ] Make the dashboard
+- [ ] Remake examples
+- [ ] Remake the backend and the client libraries
 
 ## Doable with a lot of problems (need the saas website)
 

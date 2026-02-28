@@ -15,5 +15,8 @@ members = [
     "rust/relational",
     "rust/telemetry",
     "rust/vector",
+    "demo/examples/rust/tutorials/note_taker",
+    "demo/examples/rust/tutorials/vector_examples",
+    "mesosphere-rs",
 ]
 resolver = "2"

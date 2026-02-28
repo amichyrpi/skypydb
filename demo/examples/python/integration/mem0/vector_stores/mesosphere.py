@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 try:
-    from mesosphere import HttpClient
+    from mesosphere import MesosphereVectorClient
 except ImportError as exc:
     raise ImportError(
         "The 'mesosphere' library is required. Please install it using 'pip install mesosphere'."
@@ -25,7 +25,7 @@ class Mesosphere(VectorStoreBase):
     def __init__(
         self,
         collection_name: str,
-        client: Optional[HttpClient] = None,
+        client: Optional[MesosphereVectorClient] = None,
         api_url: Optional[str] = None,
         api_key: Optional[str] = None,
     ):
@@ -36,7 +36,7 @@ class Mesosphere(VectorStoreBase):
                 raise ValueError("Mesosphere mem0 adapter requires api_url.")
             if not api_key:
                 raise ValueError("Mesosphere mem0 adapter requires api_key.")
-            self.client = HttpClient(
+            self.client = MesosphereVectorClient(
                 api_url=api_url,
                 api_key=api_key,
             )
@@ -61,8 +61,16 @@ class Mesosphere(VectorStoreBase):
             results.append(
                 OutputData(
                     id=ids[index] if index < len(ids) else None,
-                    score=distances[index] if distances and index < len(distances) else None,
-                    payload=metadatas[index] if metadatas and index < len(metadatas) else None,
+                    score=(
+                        distances[index]
+                        if distances and index < len(distances)
+                        else None
+                    ),
+                    payload=(
+                        metadatas[index]
+                        if metadatas and index < len(metadatas)
+                        else None
+                    ),
                 )
             )
         return results
@@ -145,9 +153,13 @@ class Mesosphere(VectorStoreBase):
     def col_info(self) -> Dict:
         return {"name": self.collection_name, "count": self.collection.count()}
 
-    def list(self, filters: Optional[Dict] = None, limit: int = 100) -> List[OutputData]:
+    def list(
+        self, filters: Optional[Dict] = None, limit: int = 100
+    ) -> List[OutputData]:
         where_clause = self._generate_where_clause(filters) if filters else None
-        results = self.collection.get(where=where_clause, limit=limit, include=["metadatas"])
+        results = self.collection.get(
+            where=where_clause, limit=limit, include=["metadatas"]
+        )
         return self._parse_output(results)
 
     def reset(self):

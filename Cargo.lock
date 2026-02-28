@@ -1247,6 +1247,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "note_taker"
+version = "0.0.0"
+dependencies = [
+ "dotenvy",
+]
+
+[[package]]
 name = "nu-ansi-term"
 version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

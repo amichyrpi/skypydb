@@ -8,8 +8,8 @@ config = {
         "provider": "mesosphere",
         "config": {
             "collection_name": "memory",
-            "api_url": os.getenv("MESOSPHERE_API_URL", "http://localhost:8000"),
-            "api_key": os.getenv("MESOSPHERE_API_KEY", "local-dev-key"),
+            "api_url": os.getenv("MESOSPHERE_API_URL"),
+            "api_key": os.getenv("MESOSPHERE_API_KEY"),
         },
     },
     "llm": {

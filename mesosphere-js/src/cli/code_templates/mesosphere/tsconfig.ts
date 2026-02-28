@@ -1,0 +1,26 @@
+export function tsconfigTemplates() {
+  return `{
+  /* This TypeScript project config describes the environment that
+   * Mesosphere functions run in and is used to typecheck them.
+   * You can modify it, but some settings are required to use Mesosphere.
+   */
+  "compilerOptions": {
+    /* These settings can be modified. */
+    "allowJs": true,
+    "strict": true,
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    /* These compiler options cannot be modified. */
+    "target": "ESNext",
+    "lib": ["ESNext", "dom"],
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": ["./**/*"]
+  "exclude": ["./deploy"]
+}`;
+}

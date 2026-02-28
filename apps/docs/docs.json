@@ -1,0 +1,116 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Mesosphere Documentation",
+  "colors": {
+    "primary": "#1c1e21",
+    "light": "#ffffff",
+    "dark": "#1c1e21"
+  },
+  "fonts": {
+    "heading": {
+      "family": "system-ui"
+    },
+    "body": {
+      "family": "system-ui"
+    }
+  },
+  "styling": {
+    "codeblocks": "system"
+  },
+  "background": {
+    "color": {
+      "light": "#ffffff",
+      "dark": "#121212"
+    }
+  },
+  "favicon": "/public/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["index", "quickstart", "development"]
+          },
+          {
+            "group": "Customization",
+            "pages": ["essentials/settings", "essentials/navigation"]
+          },
+          {
+            "group": "Writing content",
+            "pages": [
+              "essentials/markdown",
+              "essentials/code",
+              "essentials/images",
+              "essentials/reusable-snippets"
+            ]
+          },
+          {
+            "group": "AI tools",
+            "pages": [
+              "ai-tools/cursor",
+              "ai-tools/claude-code",
+              "ai-tools/windsurf"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "API documentation",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Endpoint examples",
+            "pages": [
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete",
+              "api-reference/endpoint/webhook"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "href": "https://mintlify.com/docs",
+          "icon": "book-open-cover"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://mintlify.com/blog",
+          "icon": "newspaper"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/public/light.svg",
+    "dark": "/public/dark.svg"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://mesosphere.mintlify.com/dashboard"
+    },
+    "links": [
+      {
+        "type": "github",
+        "href": "https://github.com/ahen-studio/mesosphere-backend"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/ahen-studio/mesosphere-backend"
+    }
+  }
+}

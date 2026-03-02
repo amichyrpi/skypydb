@@ -29,8 +29,6 @@ export const uploadFile = uploadFunction({
     await mesosphere.storage.upload("messages", {
       body: args.storageId,
       user: args.user,
-      // You can specify the file type by using:
-      // fileType: "image/png",
     });
   },
 });

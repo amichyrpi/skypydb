@@ -1,0 +1,261 @@
+---
+title: "Simple Chat App"
+description: "A realtime chat app with Mesosphere handling read, write, and file-upload with live updates across all connected users."
+---
+
+# Simple Chat App
+
+Mesosphere give you a backend with cloud functions, a database, scheduling functions, all of this in real-time always.
+
+In this tutorial we will build a simple chat app with backend functions that read and write messages and upload files to the database and automatically updates the frontend.
+
+In a second part we will see how to deploy your functions to the database.
+
+## Start making apps with Mesosphere
+
+First, clone the tutorial repository:
+
+```shell
+git https://github.com/Ahen-Studio/mesosphere-js-tutorial.git
+cd mesosphere-js-tutorial
+npm install
+```
+
+Once the package is installed, simply run `npx mesosphere dev` in your terminal. You will be prompted to log in to your Mesosphere account, and your browser will open automatically. After logging in, you will be asked if you want to create a new project or a create a new one. Choose the option that suits you. The deployment of your function to the cloud will then begin.
+
+During deployment, the command-line interface will automatically create a `mesosphere/` folder containing a `deploy.ts` file and a `.env` file in your project's root directory. You write your functions in the `mesosphere/` folder. The `.env` file contains your secret API key for accessing your project; do not share it with anyone.
+
+**Make sure you keep the command (`npx mesosphere dev`) running in the background
+throughout this tutorial.** It's will automatically update your functions when you make changes.
+
+## How it works
+
+Mesosphere is a database that come with three main components:
+
+**Database**
+
+Mesosphere database is a relational database, that means you have tables with JSON documents in them. All documents have an auto-generated `_id` that can be used to create relations between documents. You interact with the database through write and read functions which are written in TypeScript.
+
+**Functions**
+
+**Write**
+
+Write is a TypeScript functions that can add, update and delete documents in the database. All Write functions in Mesosphere run as a database transaction. So either all the changes are committed, or none are.
+
+**Read**
+
+Read is a TypeScript functions that can read from the database, obviously. You can `hug` them from your app to keep them up to date.
+
+**Realtime**
+
+Your frontend listen to read functions through the **client library** and automatically updates when the data changes. Every things is in sync that what we call **Magic.**
+
+Now let's code
+
+## `read`
+
+Create a new file in your `mesosphere/` folder called `message.ts`. This is where you will write your Mesosphere functions for this tutorial.
+
+**Add this code to your `mesosphere/message.ts` file.**
+
+```typescript
+import {
+  readFunction,
+  writeFunction,
+  uploadFunction,
+} from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+// Add a message to the database.
+export const newMessage = writeFunction({
+  args: {
+    user: type.string(),
+    body: type.string(),
+  },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.add("messages", {
+      user: args.user,
+      body: args.body,
+    });
+  },
+});
+
+// Upload a file to the database.
+export const uploadFile = uploadFunction({
+  args: {
+    storageId: type.id("_storage"), // This is the id of the file in the storage.
+    user: type.string(),
+  },
+  handler: async (mesosphere, args) => {
+    await mesosphere.storage.upload("messages", {
+      body: args.storageId,
+      user: args.user,
+      // You can specify the file type by using:
+      // fileType: "image/png",
+    });
+  },
+});
+
+// Get the messages in the top of the list in the database.
+export const readMessages = readFunction({
+  args: {},
+  handler: async (mesosphere) => {
+    // Get the messages in the top of the list.
+    const messages = await mesosphere.database.read("messages");
+    return messages;
+  },
+});
+```
+
+Let's dissect this code:
+
+**What you add**
+
+You've added three specific functions to your `mesosphere/message.ts` file.
+
+1. You've added a `writeFunction` called `newMessage` that take two arguments or `args` that are `user` and `body`, `user` is the name of the user that send the message and `body` is the message content; then you exposed it as a public API.
+
+2. You've added a `uploadFunction` called `uploadFile` that take one arguments or `args` that is `user`, `user` is the name of the user that send the message; then you exposed it as a public API.
+
+3. You've added a `readFunction` called `readMessages` that take no arguments or `args`; then you exposed it as a public API.
+
+**Debugging**
+
+1. The whole function automatically runs as a transaction that will roll back if an error is thrown.
+
+2. This is just a TypeScript function so you can put a `console.log` lines to simply debug your functions. Here is an example:
+
+```typescript
+import {
+  readFunction,
+  writeFunction,
+  uploadFunction,
+} from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+// Add a message to the database.
+export const newMessage = writeFunction({
+  args: {
+    user: type.string(),
+    body: type.string(),
+  },
+  handler: async (mesosphere, args) => {
+    console.log("It's debug, my boy!"); // The line that debug every thing.
+    await mesosphere.database.add("messages", {
+      user: args.user,
+      body: args.body,
+    });
+  },
+});
+
+// Upload a file to the database.
+// ...
+
+// Get the messages in the top of the list in the database.
+// ...
+```
+
+Now, make a web app that uses these functions.
+
+**Create a new folder called `src/` and create a file called `App.tsx` in the src/ folder.**
+
+```tsx
+import { useState } from "react";
+import { callread, callwrite, callupload } from "mesosphere/reactlibrarie";
+import { api } from "../mesosphere/deploy";
+import { faker } from "@faker-js/faker";
+
+// Set a random name for the user.
+const NAME = getOrSetFakeName();
+
+// Generate a random name for the user with the faker library.
+function getOrSetFakeName() {
+  const NAME_KEY = "name";
+  const name = sessionStorage.getItem(NAME_KEY);
+  if (!name) {
+    const newName = faker.person.firstName();
+    sessionStorage.setItem(NAME_KEY, newName);
+    return newName;
+  }
+  return name;
+}
+
+export default function App() {
+  // Read all the messages from the database.
+  const messages = callread(api.message.readMessages);
+  // Write a new message to the database.
+  const sendMessage = callwrite(api.message.newMessage);
+  // Upload a file to the database.
+  const uploadFile = callupload(api.message.uploadFile);
+
+  const [TextMessage, setTextMessage] = useState("");
+
+  const [file, setFile] = useState<File | null>(null);
+
+  return (
+    <main className="chat">
+      <header>
+        <h1>Mesosphere Chat</h1>
+        <p>
+          Connected as <strong>{NAME}</strong>
+        </p>
+      </header>
+      {messages?.map((message) => (
+        <article
+          key={message._id}
+          className={message.user === NAME ? "message-mine" : ""}
+        >
+          <div>{message.user}</div>
+
+          <p>{message.body}</p>
+        </article>
+      ))}
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await sendMessage({ user: NAME, body: TextMessage });
+          setTextMessage("");
+        }}
+      >
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (file) {
+              await uploadFile({ user: NAME, file });
+              setFile(null);
+            }
+          }}
+        >
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
+          <button type="submit" disabled={!file}>
+            Upload
+          </button>
+        </form>
+        <input
+          value={TextMessage}
+          onChange={async (e) => {
+            const text = e.target.value;
+            setTextMessage(text);
+          }}
+          placeholder="Write a message…"
+          autoFocus
+        />
+        <button type="submit" disabled={!TextMessage}>
+          Send
+        </button>
+      </form>
+    </main>
+  );
+}
+```
+
+**Test**
+
+To test the app, you just need to run `npm run dev` and open `http://localhost:3000` in your browser.
+
+**Congratulation**
+
+You've successfully created a `Chat app` that is live-updated with functions to read and write messages and upload files.

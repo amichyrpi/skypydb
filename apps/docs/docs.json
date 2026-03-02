@@ -1,18 +1,22 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
+  "theme": "mint",
   "name": "Mesosphere Documentation",
   "colors": {
-    "primary": "#1c1e21",
-    "light": "#ffffff",
-    "dark": "#1c1e21"
+    "primary": "#5438DC",
+    "light": "#5438DC",
+    "dark": "#5438DC"
   },
   "fonts": {
     "heading": {
-      "family": "system-ui"
+      "family": "GT-America-Standard-Bold",
+      "format": "woff2",
+      "source": "/public/font/GT-America-Standard-Bold.woff2"
     },
     "body": {
-      "family": "system-ui"
+      "family": "GT-America-Standard-Bold",
+      "format": "woff2",
+      "source": "/public/font/GT-America-Standard-Bold.woff2"
     }
   },
   "styling": {
@@ -20,76 +24,292 @@
   },
   "background": {
     "color": {
-      "light": "#ffffff",
-      "dark": "#121212"
+      "light": "#F5F0F6",
+      "dark": "#141414"
     }
+  },
+  "search": {
+    "prompt": "Search the documentation..."
   },
   "favicon": "/public/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
-            "pages": ["index", "quickstart", "development"]
+            "group": " ",
+            "pages": ["/docs/home"]
           },
           {
-            "group": "Customization",
-            "pages": ["essentials/settings", "essentials/navigation"]
-          },
-          {
-            "group": "Writing content",
+            "group": "Get up and running",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              {
+                "group": "Tutorial",
+                "icon": "books",
+                "root": "/docs/tutorial/ts/chatapp",
+                "expanded": false,
+                "pages": [
+                  {
+                    "group": "React",
+                    "icon": "react",
+                    "expanded": false,
+                    "pages": ["/docs/tutorial/ts/chatapp"]
+                  },
+                  {
+                    "group": "Python",
+                    "icon": "python",
+                    "expanded": false,
+                    "pages": ["/docs/tutorial/python/simplenotetaker"]
+                  },
+                  {
+                    "group": "Rust",
+                    "icon": "rust",
+                    "expanded": false,
+                    "pages": ["/docs/tutorial/rust/simplenotetaker"]
+                  }
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "icon": "gear",
+                "expanded": false,
+                "root": "/docs/framework/quickstart",
+                "pages": [
+                  "/docs/framework/react",
+                  "/docs/framework/react-native",
+                  "/docs/framework/nodejs",
+                  "/docs/framework/nextjs",
+                  "/docs/framework/remix",
+                  "/docs/framework/svelte",
+                  "/docs/framework/tanstack-start",
+                  "/docs/framework/vue"
+                ]
+              },
+              {
+                "group": "Self Hosting",
+                "icon": "server",
+                "root": "/docs/self-hosting/quickstart",
+                "pages": ["/docs/self-hosting/quickstart"]
+              },
+              {
+                "group": "CLI",
+                "icon": "keyboard",
+                "root": "/docs/cli/quickstart",
+                "pages": ["/docs/cli/local"]
+              }
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Features",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              {
+                "group": "Realtime",
+                "icon": "magic",
+                "root": "/docs/realtime",
+                "pages": ["/docs/realtime"]
+              },
+              {
+                "group": "Functions",
+                "icon": "code",
+                "root": "/docs/functions/quickstart",
+                "expanded": false,
+                "pages": [
+                  "/docs/functions/write",
+                  "/docs/functions/read",
+                  "/docs/functions/sideactions",
+                  "/docs/functions/closefunctions",
+                  "/docs/functions/debugging",
+                  "/docs/functions/type"
+                ]
+              },
+              {
+                "group": "File Storage",
+                "icon": "file",
+                "root": "/docs/filestorage/quickstart",
+                "expanded": false,
+                "pages": [
+                  "/docs/filestorage/upload",
+                  "/docs/filestorage/delete"
+                ]
+              },
+              {
+                "group": "Authentication",
+                "icon": "key",
+                "root": "/docs/authentication/quickstart",
+                "expanded": false,
+                "pages": [
+                  "/docs/authentication/clerk",
+                  "/docs/authentication/workosauthkit",
+                  "/docs/authentication/auth0",
+                  "/docs/authentication/betterauth",
+                  "/docs/authentication/debugging"
+                ]
+              },
+              {
+                "group": "Database",
+                "icon": "database",
+                "root": "/docs/database/quickstart",
+                "expanded": false,
+                "pages": ["/docs/database/reading", "/docs/database/writing"]
+              },
+              {
+                "group": "Scheduling",
+                "icon": "timer",
+                "root": "/docs/schedule/quickstart",
+                "expanded": false,
+                "pages": ["/docs/schedule/cron", "/docs/schedule/scheduler"]
+              },
+              {
+                "group": "Vector Embeddings",
+                "icon": "magnifying-glass",
+                "root": "/docs/vector/quickstart",
+                "expanded": false,
+                "pages": [
+                  {
+                    "group": "Python",
+                    "icon": "python",
+                    "expanded": false,
+                    "pages": [
+                      {
+                        "group": "Examples",
+                        "icon": "pencil",
+                        "root": "/docs/vector/python/examples/quickstart",
+                        "expanded": false,
+                        "pages": [
+                          "/docs/vector/python/examples/provider",
+                          "/docs/vector/python/examples/add",
+                          "/docs/vector/python/examples/delete",
+                          "/docs/vector/python/examples/query"
+                        ]
+                      },
+                      {
+                        "group": "Integration",
+                        "icon": "handshake",
+                        "root": "/docs/vector/python/integration/quickstart",
+                        "expanded": false,
+                        "pages": ["/docs/vector/python/integration/quickstart"]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "TypeScript",
+                    "icon": "js",
+                    "expanded": false,
+                    "pages": [
+                      {
+                        "group": "Examples",
+                        "icon": "pencil",
+                        "root": "/docs/vector/ts/examples/quickstart",
+                        "expanded": false,
+                        "pages": [
+                          "/docs/vector/ts/examples/provider",
+                          "/docs/vector/ts/examples/add",
+                          "/docs/vector/ts/examples/delete",
+                          "/docs/vector/ts/examples/query"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Rust",
+                    "icon": "rust",
+                    "expanded": false,
+                    "pages": [
+                      {
+                        "group": "Examples",
+                        "icon": "pencil",
+                        "root": "/docs/vector/rust/examples/quickstart",
+                        "expanded": false,
+                        "pages": [
+                          "/docs/vector/rust/examples/provider",
+                          "/docs/vector/rust/examples/add",
+                          "/docs/vector/rust/examples/delete",
+                          "/docs/vector/rust/examples/query"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": ["api-reference/introduction"]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Client Libraries",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              {
+                "group": "React",
+                "icon": "react",
+                "expanded": false,
+                "pages": [
+                  {
+                    "group": "React",
+                    "expanded": false,
+                    "pages": ["/docs/client/react/react/quickstart"]
+                  },
+                  {
+                    "group": "react-native",
+                    "expanded": false,
+                    "pages": ["/docs/client/react/react-native/quickstart"]
+                  }
+                ]
+              },
+              {
+                "group": "JavaScript",
+                "icon": "js",
+                "root": "/docs/client/javascript/quickstart",
+                "expanded": false,
+                "pages": ["/docs/client/javascript/node"]
+              },
+              {
+                "group": "Next.js",
+                "icon": "/public/sidebar/nextjs.png",
+                "expanded": false,
+                "pages": [
+                  "/docs/client/nextjs/approuter",
+                  "/docs/client/nextjs/pagerouter"
+                ]
+              },
+              {
+                "group": "Tanstack Start",
+                "icon": "/public/sidebar/tanstackstart.png",
+                "expanded": false,
+                "pages": [
+                  {
+                    "group": "Tanstack Query",
+                    "expanded": false,
+                    "pages": ["/docs/client/tanstack/tanstack-query/quickstart"]
+                  },
+                  {
+                    "group": "Tanstack Start",
+                    "expanded": false,
+                    "pages": ["/docs/client/tanstack/tanstack-start/quickstart"]
+                  }
+                ]
+              },
+              {
+                "group": "Vue",
+                "icon": "/public/sidebar/vue.png",
+                "expanded": false,
+                "pages": ["/docs/client/vue/quickstart"]
+              },
+              {
+                "group": "Python",
+                "icon": "python",
+                "expanded": false,
+                "pages": ["/docs/client/python/quickstart"]
+              },
+              {
+                "group": "Rust",
+                "icon": "rust",
+                "expanded": false,
+                "pages": ["/docs/client/rust/quickstart"]
+              }
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/public/light.svg",
@@ -99,11 +319,12 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://mesosphere.mintlify.com/dashboard"
+      "href": "https://mesosphere.ahen-studio.com/dashboard"
     },
     "links": [
       {
-        "type": "github",
+        "icon": "github",
+        "label": " ",
         "href": "https://github.com/ahen-studio/mesosphere-backend"
       }
     ]

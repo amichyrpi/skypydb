@@ -33,8 +33,9 @@ npm install mesosphere
 Available commands are:
 
 ```bash
-npx mesosphere --help # show help
-npx mesosphere --version # show version
+npm create mesosphere@latest # create a new react app with mesosphere
+npx mesosphere -h # show help
+npx mesosphere -v # show version
 npx mesosphere login # login to your mesosphere account
 npx mesosphere logout # logout from your mesosphere account
 npx mesosphere dev # set up the project with a user interface and start deploying your functions to backend

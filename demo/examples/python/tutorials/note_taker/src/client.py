@@ -17,5 +17,5 @@ client.write("tasks:newtask", {"task": "task1", "succeed": True})
 # Read all tasks from the database and print them.
 task = client.read("tasks:readtask")
 
-for tasks in task:
+for tasks in client.hug("tasks:readtask"):
     print(tasks)

@@ -1,0 +1,127 @@
+---
+title: React Native
+description: "Add Mesosphere to a React Native project"
+---
+
+Learn how to use read and write functions in your React Native app.
+
+1. **Create a React Native app** using create `npx create-expo-app` command.
+
+```shell shell
+npx create-expo-app my-functions
+```
+
+Follow the steps indicated by Expo.
+
+2. **After creating your app**, install the Mesosphere package, but first you need to `cd` into the project:
+
+```shell shell
+cd my-functions
+npm install mesosphere
+```
+
+3. **Start the Mesosphere dev server** in a separate terminal window, it will automatically create a `mesosphere/` folder containing a `deploy.ts` file and a `.env` file in your project's root directory, don't forget to keep the command (`npx mesosphere dev`) running in the background. It will automatically update your functions when you make changes:
+
+```shell shell
+npx mesosphere dev
+```
+
+4. **Reset the React Expo project** by using this command:
+
+```shell shell
+npm run reset-project
+```
+
+5. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
+
+```typescript mesosphere/tasks.ts
+import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+// Add a task to the database with a task name and a boolean to indicate if it succeed or not.
+export const newtask = writeFunction({
+  args: {
+    task: type.string(),
+    succeed: type.boolean(),
+  },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.add("tasks", {
+      task: args.task,
+      succeed: args.succeed,
+    });
+  },
+});
+
+// Read all tasks from the database.
+export const readtask = readFunction({
+  args: {},
+  handler: async (database) => {
+    return await database.get("tasks");
+  },
+});
+```
+
+**What it does:** It creates a new task in the database with a task name and a boolean to indicate if it succeed or not, and it exports a read function that returns all tasks from the database.
+
+5. **Connect your react app to your backend.** In the `app/_layout.tsx` file, create a `ReactClient` and pass it to the `MesosphereProvider` and wrap your app with it:
+
+```typescript app/_layout.tsx
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { Stack } from "expo-router";
+
+const mesosphere = new ReactClient(
+  process.env.EXPO_PUBLIC_MESOSPHERE_URL!,
+  process.env.EXPO_PUBLIC_MESOSPHERE_API_KEY!, {
+  unsavedChangesWarning: false,
+});
+
+export default function RootLayout() {
+  return (
+    <MesosphereProvider client={mesosphere}>
+      <Stack>
+        <Stack.Screen name="index" />
+      </Stack>
+    </MesosphereProvider>
+  );
+}
+```
+
+6. **Use the functions in your React Native app.** in the `app/index.tsx` file, you can use the `newtask` and `readtask` functions to add and read tasks from the database:
+
+```typescript app/index.tsx
+import { Text, View } from "react-native";
+import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { api } from "../mesosphere/deploy";
+
+export default function App() {
+  // Read all the tasks from the database.
+  const newtasks = callread(api.tasks.newtask);
+  // Write a new message to the database.
+  const readtask = callwrite(api.tasks.readtask);
+
+  // Add a task to the database with a task name and a boolean to indicate if it succeed or not.
+  const addtack = await newtasks({ task: This is a task, succeed: True });
+
+  // Read all tasks from the database.
+  const tasks = await readtask({});
+
+  return (
+    <button
+      onClick={() => addtack()}>Add task</button>;
+    </button>;
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {tasks?.map(({ _id, text }) => <Text key={_id}>{text}</Text>)}
+    </View>
+  );
+}
+```
+
+7. **Run your app.** You can now run your app with `npm start`, open a QR code scanning app on your phone and see the tasks on your screen.
+
+See the full [React documentation](/docs/client/react/react/quickstart).

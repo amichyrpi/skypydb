@@ -1,5 +1,5 @@
 ---
-title: "Simple Chat App"
+title: "1. Simple Chat App"
 description: "A realtime chat app with Mesosphere handling read, write, and file-upload with live updates across all connected users."
 ---
 
@@ -15,7 +15,7 @@ In a second part we will see how to deploy your functions to the database.
 
 First, clone the tutorial repository:
 
-```shell
+```shell shell
 git https://github.com/Ahen-Studio/mesosphere-js-tutorial.git
 cd mesosphere-js-tutorial
 npm install
@@ -52,13 +52,13 @@ Your frontend listen to read functions through the **client library** and automa
 
 Now let's code
 
-## `read`
+## Message
 
 Create a new file in your `mesosphere/` folder called `message.ts`. This is where you will write your Mesosphere functions for this tutorial.
 
 **Add this code to your `mesosphere/message.ts` file.**
 
-```typescript
+```typescript mesosphere/message.ts
 import {
   readFunction,
   writeFunction,
@@ -123,7 +123,7 @@ You've added three specific functions to your `mesosphere/message.ts` file.
 
 2. This is just a TypeScript function so you can put a `console.log` lines to simply debug your functions. Here is an example:
 
-```typescript
+```typescript mesosphere/message.ts
 import {
   readFunction,
   writeFunction,
@@ -155,9 +155,9 @@ export const newMessage = writeFunction({
 
 Now, make a web app that uses these functions.
 
-**Create a new folder called `src/` and create a file called `App.tsx` in the src/ folder.**
+**In the `src/` folder, create a file called `App.tsx`.**
 
-```tsx
+```tsx src/App.tsx
 import { useState } from "react";
 import { callread, callwrite, callupload } from "mesosphere/reactlibrarie";
 import { api } from "../mesosphere/deploy";

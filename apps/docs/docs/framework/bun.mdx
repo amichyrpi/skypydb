@@ -1,27 +1,26 @@
 ---
-title: Node.js
-description: "Add Mesosphere to a Node.js project"
+title: Bun
+description: "Add Mesosphere to a Bun project"
 ---
 
 Learn how to use read and write functions in your React app.
 
-1. **Create a new npm project.**
+1. **Create a new Bun project.**
 
 ```shell shell
-npm init -y
+bun init -y
 ```
 
-2. **After creating your project**, install the Mesosphere and the dotenv package:
+2. **After creating your project**, install the Mesosphere package:
 
 ```shell shell
-npm install mesosphere
-npm install dotenv
+bun add mesosphere
 ```
 
-3. **Start the Mesosphere dev server** in a separate terminal window, it will automatically create a `mesosphere/` folder containing a `deploy.ts` file and a `.env` file in your project's root directory, don't forget to keep the command (`npx mesosphere dev`) running in the background. It will automatically update your functions when you make changes:
+3. **Start the Mesosphere dev server** in a separate terminal window, it will automatically create a `mesosphere/` folder containing a `deploy.ts` file and a `.env` file in your project's root directory, don't forget to keep the command (`bunx mesosphere dev`) running in the background. It will automatically update your functions when you make changes:
 
 ```shell shell
-npx mesosphere dev
+bunx mesosphere dev
 ```
 
 4. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
@@ -55,13 +54,11 @@ export const readtask = readFunction({
 
 **What it does:** It creates a new task in the database with a task name and a boolean to indicate if it succeed or not, and it exports a read function that returns all tasks from the database.
 
-5. **Connect your node application to your backend.** Create a new file name `app.js`, create a `MesosphereHttpClient` using the url and the api key of your development environment:
+5. **Connect your bun application to your backend.** Create a new file name `app.ts`, create a `MesosphereHttpClient` using the url and the api key of your development environment:
 
-```typescript app.js
+```typescript app.ts
 import { MesosphereHttpClient } from "mesosphere/http";
 import { api } from "../mesosphere/deploy";
-import * as dotenv from "dotenv";
-dotenv.config({ path: ".env" });
 
 const client = new MesosphereHttpClient(
   process.env[("MESOSPHERE_URL", "MESOSPHERE_API_KEY")],
@@ -69,9 +66,16 @@ const client = new MesosphereHttpClient(
 
 client.write(api.tasks.newtask, {}, { task: "task1", succeed: True });
 
-client.read(api.tasks.readtask).then(console.log);
+// `hug` the data feed to always stay up to date.
+const hugger = client.hug(api.tasks.newtask, {}, async (tasks) => {
+  console.log(tasks);
+});
+
+await Bun.sleep(500);
+hugger();
+await client.close();
 ```
 
-7. **Run your app.** You can now run your app with `node app.js` and see the tasks in your app.
+7. **Run your app.** You can now run your app with `bun app.ts` and see the tasks in your app.
 
-See the full [Node.js documentation](/docs/client/javascript/node).
+See the full [Bun documentation](/docs/client/javascript/bun).

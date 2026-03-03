@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "linden",
   "name": "Mesosphere Documentation",
   "colors": {
     "primary": "#5438DC",
@@ -9,14 +9,14 @@
   },
   "fonts": {
     "heading": {
-      "family": "GT-America-Standard-Bold",
+      "family": "TTNormsPro-ExtraBold",
       "format": "woff2",
-      "source": "/public/font/GT-America-Standard-Bold.woff2"
+      "source": "/public/font/TTNormsPro-ExtraBold.woff2"
     },
     "body": {
-      "family": "GT-America-Standard-Bold",
+      "family": "TTNormsPro-ExtraBold",
       "format": "woff2",
-      "source": "/public/font/GT-America-Standard-Bold.woff2"
+      "source": "/public/font/TTNormsPro-ExtraBold.woff2"
     }
   },
   "styling": {
@@ -25,7 +25,7 @@
   "background": {
     "color": {
       "light": "#F5F0F6",
-      "dark": "#141414"
+      "dark": "#050404"
     }
   },
   "search": {
@@ -35,7 +35,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": " ",
         "groups": [
           {
             "group": " ",
@@ -47,28 +47,9 @@
               {
                 "group": "Tutorial",
                 "icon": "books",
-                "root": "/docs/tutorial/ts/chatapp",
+                "root": "/docs/tutorial/chatapp",
                 "expanded": false,
-                "pages": [
-                  {
-                    "group": "React",
-                    "icon": "react",
-                    "expanded": false,
-                    "pages": ["/docs/tutorial/ts/chatapp"]
-                  },
-                  {
-                    "group": "Python",
-                    "icon": "python",
-                    "expanded": false,
-                    "pages": ["/docs/tutorial/python/simplenotetaker"]
-                  },
-                  {
-                    "group": "Rust",
-                    "icon": "rust",
-                    "expanded": false,
-                    "pages": ["/docs/tutorial/rust/simplenotetaker"]
-                  }
-                ]
+                "pages": ["/docs/tutorial/chatapp"]
               },
               {
                 "group": "Frameworks",
@@ -82,16 +63,14 @@
                   "/docs/framework/nextjs",
                   "/docs/framework/remix",
                   "/docs/framework/svelte",
-                  "/docs/framework/tanstack-start",
-                  "/docs/framework/vue"
+                  "/docs/framework/tanstack",
+                  "/docs/framework/vue",
+                  "/docs/framework/nuxt",
+                  "/docs/framework/bun",
+                  "/docs/framework/scripttag"
                 ]
               },
-              {
-                "group": "Self Hosting",
-                "icon": "server",
-                "root": "/docs/self-hosting/quickstart",
-                "pages": ["/docs/self-hosting/quickstart"]
-              },
+              "/docs/self-hosting",
               {
                 "group": "CLI",
                 "icon": "keyboard",
@@ -103,12 +82,7 @@
           {
             "group": "Features",
             "pages": [
-              {
-                "group": "Realtime",
-                "icon": "magic",
-                "root": "/docs/realtime",
-                "pages": ["/docs/realtime"]
-              },
+              "/docs/realtime",
               {
                 "group": "Functions",
                 "icon": "code",
@@ -242,16 +216,8 @@
                 "icon": "react",
                 "expanded": false,
                 "pages": [
-                  {
-                    "group": "React",
-                    "expanded": false,
-                    "pages": ["/docs/client/react/react/quickstart"]
-                  },
-                  {
-                    "group": "react-native",
-                    "expanded": false,
-                    "pages": ["/docs/client/react/react-native/quickstart"]
-                  }
+                  "/docs/client/react/react",
+                  "/docs/client/react/react-native"
                 ]
               },
               {
@@ -259,7 +225,11 @@
                 "icon": "js",
                 "root": "/docs/client/javascript/quickstart",
                 "expanded": false,
-                "pages": ["/docs/client/javascript/node"]
+                "pages": [
+                  "/docs/client/javascript/node",
+                  "/docs/client/javascript/bun",
+                  "/docs/client/javascript/scripttag"
+                ]
               },
               {
                 "group": "Next.js",
@@ -287,24 +257,11 @@
                   }
                 ]
               },
-              {
-                "group": "Vue",
-                "icon": "/public/sidebar/vue.png",
-                "expanded": false,
-                "pages": ["/docs/client/vue/quickstart"]
-              },
-              {
-                "group": "Python",
-                "icon": "python",
-                "expanded": false,
-                "pages": ["/docs/client/python/quickstart"]
-              },
-              {
-                "group": "Rust",
-                "icon": "rust",
-                "expanded": false,
-                "pages": ["/docs/client/rust/quickstart"]
-              }
+              "/docs/client/svelte",
+              "/docs/client/vue",
+              "/docs/client/nuxt",
+              "/docs/client/python",
+              "/docs/client/rust"
             ]
           }
         ]

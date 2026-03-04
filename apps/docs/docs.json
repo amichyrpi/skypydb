@@ -38,7 +38,7 @@
         "tab": " ",
         "groups": [
           {
-            "group": " ",
+            "group": "Welcome to Mesosphere",
             "pages": ["/docs/home"]
           },
           {
@@ -125,7 +125,13 @@
                 "icon": "database",
                 "root": "/docs/database/quickstart",
                 "expanded": false,
-                "pages": ["/docs/database/reading", "/docs/database/writing"]
+                "pages": [
+                  "/docs/database/writing",
+                  "/docs/database/reading",
+                  "/docs/database/documentid",
+                  "/docs/database/type",
+                  "/docs/database/systemtable"
+                ]
               },
               {
                 "group": "Scheduling",
@@ -246,15 +252,14 @@
                 "expanded": false,
                 "pages": [
                   {
-                    "group": "Tanstack Query",
-                    "expanded": false,
-                    "pages": ["/docs/client/tanstack/tanstack-query/quickstart"]
-                  },
-                  {
                     "group": "Tanstack Start",
                     "expanded": false,
-                    "pages": ["/docs/client/tanstack/tanstack-start/quickstart"]
-                  }
+                    "root": "/docs/client/tanstack/tanstack-start/quickstart",
+                    "pages": [
+                      "/docs/client/tanstack/tanstack-start/usewithauth"
+                    ]
+                  },
+                  "/docs/client/tanstack/tanstackquery"
                 ]
               },
               "/docs/client/svelte",

@@ -1,0 +1,13 @@
+---
+title: "Functions"
+---
+
+The Mesosphere Functions run on the backend, they are written in TypeScript, they are automatically exported as an API callable everywhere in clients.
+
+**Three main functions in Mesosphere:**
+
+1. write [Read](./read) functions that can read data from the database and are automatically cached, they can also be `hug` all in realtime.
+2. write [Write](./write) functions that can write data to the database and can be run as transaction.
+3. write [Side Actions](./sideactions) functions that can call third party services such as OpenAI for AI app, Stripe to implement payment in your app and other with in your function to perform operation.
+
+If your looking for Vector embeddings and Vector operation see the [Vector Quickstart](../vector/quickstart).

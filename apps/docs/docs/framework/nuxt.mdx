@@ -1,0 +1,101 @@
+---
+title: Nuxt
+description: "Add Mesosphere to a Nuxt project"
+---
+
+Learn how to use read and write functions in your Nuxt app.
+
+1. **Create a Nuxt app** using create nuxt command.
+
+```shell shell
+npm create nuxt@latest my-functions
+```
+
+Follow the steps indicated by Nuxt.
+
+2. **After creating your app**, install the Mesosphere package, but first you need to `cd` into the project:
+
+```shell shell
+cd my-functions
+npm install mesosphere
+```
+
+3. **Add your URL and API key to the nuxt config.** add your URL and API key to the `nuxt.config.ts` file:
+
+```typescript nuxt.config.ts
+export default defineNuxtConfig({
+  compatibilityDate: "2026-03-03",
+  devtools: { enabled: true },
+  mesosphere: {
+    url: process.env.MESOSPHERE_URL,
+    api_key: process.env.MESOSPHERE_API_KEY,
+  },
+});
+```
+
+4. **Start the Mesosphere dev server** in a separate terminal window, it will automatically create a `mesosphere/` folder containing a `deploy.ts` file and a `.env` file in your project's root directory, don't forget to keep the command (`npx mesosphere dev`) running in the background. It will automatically update your functions when you make changes:
+
+```shell shell
+npx mesosphere dev
+```
+
+5. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
+
+```typescript mesosphere/tasks.ts
+import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+// Add a task to the database with a task name and a boolean to indicate if it succeed or not.
+export const newtask = writeFunction({
+  args: {
+    task: type.string(),
+    succeed: type.boolean(),
+  },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.add("tasks", {
+      task: args.task,
+      succeed: args.succeed,
+    });
+  },
+});
+
+// Read all tasks from the database.
+export const readtask = readFunction({
+  args: {},
+  handler: async (database) => {
+    return await database.get("tasks");
+  },
+});
+```
+
+**What it does:** It creates a new task in the database with a task name and a boolean to indicate if it succeed or not, and it exports a read function that returns all tasks from the database.
+
+6. **Use the functions in your Nuxt app.** in the `app/app.vue` file, you can use the `newtask` and `readtask` functions to add and read tasks from the database:
+
+```vue app/app.vue
+<script setup lang="ts">
+import { callread, callwrite } from "mesosphere/vue";
+import { api } from "../mesosphere/deploy";
+
+const { newdata, error } = callwrite(api.tasks.newtask);
+const { notready, data } = callread(api.tasks.readtask);
+
+async function handleClick() {
+  // write returns an object that contains a result or error.
+  const { result, error: Writingerror } = newdata({ task: This is a task, succeed: True });
+}
+</script>
+
+<template>
+  <span v-if="notready"> Tasks are loading </span>
+  <ul v-else>
+    <li v-for="tasks remaining">
+      {{ todo.text }} {{ todo.isCompleted ? "yes" : "no" }}
+    </li>
+  </ul>
+</template>
+```
+
+7. **Run your app.** You can now run your app with `npm run dev` and see the tasks in your app.
+
+See the full [Nuxt documentation](/docs/client/nuxt).

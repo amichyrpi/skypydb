@@ -1,0 +1,117 @@
+---
+title: Svelte
+description: "Add Mesosphere to a Svelte project"
+---
+
+Learn how to use read and write functions in your Svelte app.
+
+1. **Create a SvelteKit app** using create sv command.
+
+```shell shell
+npx sv@latest create my-functions
+```
+
+Follow the steps indicated by Svelte.
+
+2. **After creating your app**, install the Mesosphere package, but first you need to `cd` into the project:
+
+```shell shell
+cd my-functions
+npm install mesosphere
+```
+
+3. **Change the functions directory.** Create a new file name `mesosphere.config.json` in the root of your project.
+
+<Warning>
+  SvelteKit doesn't like referencing code outside `src/` so change the functions
+  directory to be in `src/mesosphere`
+</Warning>
+
+```json mesosphere.config.json
+{
+  "functions": "src/mesosphere/"
+}
+```
+
+3. **Start the Mesosphere dev server** in a separate terminal window, it will automatically create a `mesosphere/` folder containing a `deploy.ts` file and a `.env` file in your project's root directory, don't forget to keep the command (`npx mesosphere dev`) running in the background. It will automatically update your functions when you make changes:
+
+```shell shell
+npx mesosphere dev
+```
+
+4. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
+
+```typescript mesosphere/tasks.ts
+import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+// Add a task to the database with a task name and a boolean to indicate if it succeed or not.
+export const newtask = writeFunction({
+  args: {
+    task: type.string(),
+    succeed: type.boolean(),
+  },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.add("tasks", {
+      task: args.task,
+      succeed: args.succeed,
+    });
+  },
+});
+
+// Read all tasks from the database.
+export const readtask = readFunction({
+  args: {},
+  handler: async (database) => {
+    return await database.get("tasks");
+  },
+});
+```
+
+**What it does:** It creates a new task in the database with a task name and a boolean to indicate if it succeed or not, and it exports a read function that returns all tasks from the database.
+
+5. **Connect your SvelteKit app to your backend.** In the `src/routes/+layout.svelte` file, create a `MesosphereClient` and wrap your app with it:
+
+```svelte src/routes/+layout.svelte
+<script lang="ts">
+	import { PUBLIC_MESOSPHERE_URL, PUBLIC_MESOSPHERE_API_KEY } from '$env/static/public';
+	import { MesosphereClient } from "mesosphere/svelte";
+
+	const { children } = $props();
+	MesosphereClient(PUBLIC_MESOSPHERE_URL, PUBLIC_MESOSPHERE_API_KEY);
+</script>
+
+{@render children()}
+```
+
+6. **Use the functions in your SvelteKit app.** in the `src/routes/+page.svelte` file, you can use the `newtask` and `readtask` functions to add and read tasks from the database:
+
+```svelte src/routes/+page.svelte
+<script lang="ts">
+  import { callread, callwrite } from "mesosphere/svelte";
+  import { api } from "../../mesosphere/deploy";
+
+  const read = callread(api.tasks.readtask, {});
+  const write = callwrite(api.tasks.newtask, { task: This is a task, succeed: True });
+</script>
+
+{#if read.isLoading}
+	Loading...
+{:else if read.error}
+	failed to load: {read.error.toString()}
+{:else}
+	<ul>
+		{#each read.data as task}
+			<li>
+				{task.isCompleted ? 'yes' : 'no'}
+				<span>{task.text}</span>
+				<span>assigned by {task.assigner}</span>
+			</li>
+		{/each}
+	</ul>
+{/if}
+```
+
+7. **Run your app.** You can now run your app with `npm run dev` and see the tasks in your app.
+
+See the full [Svelte documentation](/docs/client/svelte).

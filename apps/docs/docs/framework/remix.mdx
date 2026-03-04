@@ -1,0 +1,157 @@
+---
+title: Remix
+description: "Add Mesosphere to a Remix project"
+---
+
+Learn how to use read and write functions in your Remix app.
+
+1. **Create a Remix app** using create remix command.
+
+```shell shell
+npx create-remix@latest my-functions
+```
+
+2. **After creating your app**, install the Mesosphere package, but first you need to `cd` into the project:
+
+```shell shell
+cd my-functions
+npm install mesosphere
+```
+
+3. **Start the Mesosphere dev server** in a separate terminal window, it will automatically create a `mesosphere/` folder containing a `deploy.ts` file and a `.env` file in your project's root directory, don't forget to keep the command (`npx mesosphere dev`) running in the background. It will automatically update your functions when you make changes:
+
+```shell shell
+npx mesosphere dev
+```
+
+4. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
+
+```typescript mesosphere/tasks.ts
+import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+// Add a task to the database with a task name and a boolean to indicate if it succeed or not.
+export const newtask = writeFunction({
+  args: {
+    task: type.string(),
+    succeed: type.boolean(),
+  },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.add("tasks", {
+      task: args.task,
+      succeed: args.succeed,
+    });
+  },
+});
+
+// Read all tasks from the database.
+export const readtask = readFunction({
+  args: {},
+  handler: async (database) => {
+    return await database.get("tasks");
+  },
+});
+```
+
+**What it does:** It creates a new task in the database with a task name and a boolean to indicate if it succeed or not, and it exports a read function that returns all tasks from the database.
+
+5. **Connect your remix app to your backend.** In the `app/root.tsx` file, create a `ReactClient` and pass it to the `MesosphereProvider` and wrap your app with it:
+
+```typescript src/main.tsx
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+
+// Initialize the Mesosphere client with the URL and API key.
+const mesosphere = new ReactClient(
+  import.meta.env.VITE_MESOSPHERE_URL,
+  import.meta.env.VITE_MESOSPHERE_API_KEY,
+);
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <MesosphereProvider client={mesosphere}>
+      <App />
+    </MesosphereProvider>
+  </StrictMode>,
+);
+
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+} from "@remix-run/react";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { useState } from "react";
+
+export async function loader() {
+  const MESOSPHERE_URL = process.env["MESOSPHERE_URL"]!;
+  const MESOSPHERE_API_KEY = process.env["MESOSPHERE_API_KEY"]!;
+  return { ENV: { MESOSPHERE_URL, MESOSPHERE_API_KEY } };
+}
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  const { ENV } = useLoaderData<typeof loader>();
+  const [mesosphere] = useState(() => new ReactClient(ENV.MESOSPHERE_URL, ENV.MESOSPHERE_API_KEY));
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <MesosphereProvider client={mesosphere}>{children}</MesosphereProvider>
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+export default function App() {
+  return <Outlet />;
+}
+```
+
+6. **Use the functions in your Remix app.** in the `app/routes/_index.tsx` file, you can use the `newtask` and `readtask` functions to add and read tasks from the database:
+
+```typescript app/routes/_index.tsx
+import type { MetaFunction } from "@remix-run/node";
+import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { api } from "../../mesosphere/deploy";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "New Remix App" },
+    { name: "description", content: "Welcome to Remix!" },
+  ];
+};
+
+export default function Index() {
+  const tasks = callread(api.tasks.readtask);
+  const newtasks = callwrite(api.tasks.newtask)
+  const addtack = await newtasks({ task: This is a task, succeed: True });
+  return (
+    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
+      <h1>Welcome to Remix</h1>
+      <button
+        onClick={() => addtack()}>Add task
+      </button>;
+      {tasks === undefined
+        ? "loading..."
+        : tasks.map(({ _id, text }) => <div key={_id}>{text}</div>)}
+    </div>
+  );
+}
+```
+
+7. **Run your app.** You can now run your app with `npm run dev` and see the tasks in your app.
+
+Remix uses the React librarie provided by the Mesosphere package. See the full [React documentation](/docs/client/react/react).

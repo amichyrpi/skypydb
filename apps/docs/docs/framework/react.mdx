@@ -95,9 +95,9 @@ import { api } from "../mesosphere/deploy";
 
 export default function App() {
   // Read all the tasks from the database.
-  const newtasks = callread(api.tasks.newtask);
+  const readtask = callread(api.tasks.readtask);
   // Write a new message to the database.
-  const readtask = callwrite(api.tasks.readtask);
+  const newtasks = callwrite(api.tasks.newtask);
 
   // Add a task to the database with a task name and a boolean to indicate if it succeed or not.
   const addtack = await newtasks({ task: This is a task, succeed: True });
@@ -108,7 +108,7 @@ export default function App() {
   return (
     <div className="App">
       <button
-        onClick={() => addtack()}>Add task</button>;
+        onClick={() => addtack()}>Add task
       </button>;
       {tasks?.map(({ _id, text }) => <div key={_id}>{text}</div>)}
     </div>
@@ -118,4 +118,4 @@ export default function App() {
 
 7. **Run your app.** You can now run your app with `npm run dev` and see the tasks in your app.
 
-See the full [React documentation](/docs/client/react/react/quickstart).
+See the full [React documentation](/docs/client/react/react).

@@ -3,7 +3,7 @@ title: Node.js
 description: "Add Mesosphere to a Node.js project"
 ---
 
-Learn how to use read and write functions in your React app.
+Learn how to use read and write functions in your Node.js app.
 
 1. **Create a new npm project.**
 
@@ -59,7 +59,7 @@ export const readtask = readFunction({
 
 ```typescript app.js
 import { MesosphereHttpClient } from "mesosphere/http";
-import { api } from "../mesosphere/deploy";
+import { api } from "./mesosphere/deploy";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env" });
 

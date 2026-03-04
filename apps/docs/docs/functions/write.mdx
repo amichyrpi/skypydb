@@ -1,0 +1,159 @@
+---
+title: "Write Functions"
+---
+
+Write functions can add, update and remove data from the database, It can perform complex logical operations such as checking the authentication status of the user accessing your application, and much more; it can also send a response back to the client.
+
+Here is an example write function that take two arguments the name of the user and is email, write the data to the database and return the result:
+
+```typescript mesosphere/users.ts
+import { writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+// Add a new user to the database with the user name and email
+export const newuser = writeFunction({
+  args: {
+    name: type.string(),
+    email: type.string(),
+  },
+  handler: async (mesosphere, args) => {
+    const newuserID = await mesosphere.database.add("users", {
+      name: args.name,
+      email: args.email,
+    });
+    return newuserID;
+  },
+});
+```
+
+Try to understand this code; if you don't understand it, run it yourself.
+
+# Write function
+
+To make a write function in Mesosphere you use the `writeFunction` function, you pass it an object with an `handler` that will write your data to the database.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { writeFunction } from "mesosphere/reactlibrarie";
+
+export const yourwritefunction = writeFunction({
+  args: {},
+  handler: () => {
+    // Your write object will go here
+  },
+});
+```
+
+## Arguments
+
+Write functions accept named arguments, the arguments are accessible as fields parameter in the `handler`.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { writeFunction } from "mesosphere/reactlibrarie";
+
+export const yourwritefunction = writeFunction({
+  args: { a: number, b: number },
+  handler: (args) => {
+    // Your write object using the arguments will go here
+    // Use `args.a` and `args.b`
+  },
+});
+```
+
+In the previous example your arguments are not validated, to validate them you use the `type` function.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const yourwritefunction = writeFunction({
+  args: { a: type.number(), b: type.number() },
+  handler: (args) => {
+    // Your write object using the arguments will go here
+    // Use `args.a` and `args.b`
+  },
+});
+```
+
+See the [type function](./type) for the full list of supported type.
+
+## Write context
+
+The `writeFunction` can write data to the database, it can be use in other part of Mesosphere by passing a `WriteMesosphere` object to the handler function as the first parameter.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const yourwritefunction = writeFunction({
+  args: { a: type.number(), b: type.number() },
+  handler: (mesosphere, args) => {
+    // Your write object using the arguments will go here
+    // Use `mesosphere`
+  },
+});
+```
+
+To write to the database use the `database` field, we change the handler to an async function so we can await the promise returned by `mesosphere.database.add()`.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const yourwritefunction = writeFunction({
+  args: { name: type.string() },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.add("users", { name: args.name }):
+  },
+});
+```
+
+# Call your write function from your clients
+
+To call your write function form a [react](../client/react/react) client use the `callwrite` hook and the generated `api` object from `deploy`.
+
+Here is an example:
+
+```typescript src/App.tsx
+import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { api } from "../mesosphere/deploy";
+
+export default function App() {
+  const writeauser = useMutation(api.yourfunction.yourwritefunction);
+  const handleClick = () => {
+    writeauser({ name: Theo });
+  };
+  return (
+    <div className="App">
+      <button
+        onClick={() => addtack()}>Add task
+      </button>;
+    </div>
+  );
+}
+```
+
+Try this example and see what happens.
+
+When you call a write function from a [React](../client/react/react) client, they are call one at a time in a ordered queue.
+
+See the full [React](../client/react/react) client documentation for more information.
+
+# Transactions
+
+Write functions run as a transaction, this means that:
+
+All database reads performed within a transaction ensure a consistent view of the data. Therefore, you don't have to worry about concurrent updates that could modify the data being processed.
+
+All writes to the database are committed simultaneously. If a write function writes data to the database but later fail and generates an error, no data is actually written in the database, it's a safety measures.
+
+For all of that to work, the write function is deterministic. It can't call third party services, if you want to use third party services use [side actions](./sideactions).

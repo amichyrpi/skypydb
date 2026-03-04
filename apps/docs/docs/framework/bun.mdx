@@ -3,7 +3,7 @@ title: Bun
 description: "Add Mesosphere to a Bun project"
 ---
 
-Learn how to use read and write functions in your React app.
+Learn how to use read and write functions in your Bun app.
 
 1. **Create a new Bun project.**
 
@@ -58,7 +58,7 @@ export const readtask = readFunction({
 
 ```typescript app.ts
 import { MesosphereHttpClient } from "mesosphere/http";
-import { api } from "../mesosphere/deploy";
+import { api } from "./mesosphere/deploy";
 
 const client = new MesosphereHttpClient(
   process.env[("MESOSPHERE_URL", "MESOSPHERE_API_KEY")],

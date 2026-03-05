@@ -41,6 +41,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsup && node scripts/build_codegen.cjs",
+    "check-types": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

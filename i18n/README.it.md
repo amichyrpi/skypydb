@@ -1,10 +1,10 @@
 <div align="center">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-light-mode-only">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-dark-mode-only">
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Database di incorporamenti vettoriali e relazionali open source</b>. <br />
+    <b>Mesosfera: database relazionale e di incorporamento vettoriale open source</b>. <br />
 </p>
 
 <div align="center">
@@ -12,340 +12,47 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/mesosphere-backend)
 [![PyPI](https://img.shields.io/pypi/v/mesosphere.svg)](https://pypi.org/project/mesosphere/)
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
+[![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
 [![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
 
 </div>
 
-```bash
-pip install mesosphere # python database
-```
+Prodotto in Francia con ❤️
 
-```bash
-npm install mesosphere # typescript client
-```
+## Come funziona
 
-## Caratteristiche
+[Mesosphere](https://mesosphere.ahen-studio.com) è un database relazionale e di incorporamento vettoriale open source con licenza Apache 2.0, progettato per essere semplice, veloce e facile da usare per sviluppatori web e sviluppatori backend. Leggi, scrivi dati ed esegui logica complessa scrivendo funzioni in Typescript con piena sicurezza dei tipi.
 
-- Relazionale: crea le tue funzioni e archivia i tuoi dati in un database relazionale.
+Mesosphere fornisce un database in cui scrivi le tue funzioni in Typescript e memorizzi i tuoi dati in un database relazionale. Puoi anche archiviare i tuoi file in un database. Puoi anche creare, cercare ed eliminare raccolte di vettori, tutto questo in tempo reale. forniamo più librerie client per interagire con le funzioni che hai scritto.
 
-- Incorporamenti di vettori: crea, cerca ed elimina raccolte di vettori.
-
-- Archiviazione file: archivia i tuoi file in un database.
-
-- Memoria: aggiungi memoria a un LLM utilizzando [mem0](https://github.com/mem0ai/mem0) e il nostro [integration](./demo/integration/mem0/).
-
-- Gratuito e Open Source: licenza Apache 2.0
+**Biblioteche clienti**
 
-- Multipiattaforma: Windows, Linux, MacOS
-
-## HttpClients
+Mesosphere è disponibile in più lingue. Puoi usarlo nella tua lingua preferita. Attualmente supportiamo Typescript, Python e Rust.
 
-### TypeScript
-
-Mesosphere offre un client TypeScript per interagire con il database, puoi utilizzare il database di incorporamenti vettoriali o il database relazionale. Vedremo innanzitutto come utilizzare il database degli incorporamenti di vettori.
-
-#### Modello vettoriale
-
-Puoi utilizzare il provider di modelli AI dell'albero per creare i tuoi incorporamenti vettoriali.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Ecco un esempio di come utilizzare questo provider deferente.
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Sentence Transformers provider
-
-// Create a client
-async function use_sentence_transformers_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "sentence-transformers",
-    embedding_model_config: {
-      model: "all-MiniLM-L6-v2",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Ollama provider
-
-// Create a client
-async function use_ollama_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "ollama",
-    embedding_model_config: {
-      model: "mxbai-embed-large",
-      base_url: "http://localhost:11434",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// OpenAI provider
-
-// Create a client
-async function use_openai_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "openai",
-    embedding_model_config: {
-      api_key: "your-openai-api-key",
-      model: "text-embedding-3-small",
-    },
-  });
-}
-```
-
-Dopo aver creato il client, puoi usarlo per interagire con il database.
-
-Aggiungi dati al tuo database vettoriale.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Elimina i dati dal tuo database vettoriale.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Delete data from your vector database
-    await vectordb.delete({
-      by_ids: ["vid1", "vid2"],
-      // by_metadatas: [{ source: "youtube" }, { source: "dailymotion" }] // delete by metadatas
-      // by_data: ["Video Theo1", "Video Theo2"] // delete by data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Interroga i dati dal tuo database vettoriale.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Query for similar data
-    const results = await vectordb.query({
-      query_texts: ["This is a query"],
-      number_of_results: 2,
-    });
-
-    // Access results
-    for (let index = 0; index < results.ids[0].length; index += 1) {
-      const doc_id = results.ids[0][index];
-      const document = results.documents?.[0]?.[index];
-      const distance = results.distances?.[0]?.[index];
-      console.log(`${doc_id}, ${document}, ${distance}`);
-    }
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-#### Relazionale
-
-Per un esempio di utilizzo delle funzionalità relazionali, controlla la cartella [examples](./demo/examples/js/relational_examples/).
-
-Per un esempio di utilizzo delle funzionalità di archiviazione file, controlla la cartella [examples](./demo/examples/js/files_upload_examples/).
-
-Scopri di più sul nostro [Docs](https://docs.ahen-studio.com/)
-
-### Python
-
-Mesosphere offre un client Python per interagire con il database, puoi utilizzare il database di incorporamenti vettoriali o il database relazionale. Vedremo innanzitutto come utilizzare il database degli incorporamenti di vettori.
-
-#### Modello vettoriale
-
-Puoi utilizzare il provider di modelli AI dell'albero per creare i tuoi incorporamenti vettoriali.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Ecco un esempio di come utilizzare questo provider deferente.
-
-```python
-# Sentence Transformers provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="sentence-transformers",
-    embedding_model_config={"model": "all-MiniLM-L6-v2"},
-)
-```
-
-```python
-# Ollama provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="ollama",
-    embedding_model_config={
-        "model": "mxbai-embed-large",
-        "base_url": "http://localhost:11434",
-    },
-)
-```
-
-```python
-# OpenAI provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="openai",
-    embedding_model_config={
-        "api_key": "your-openai-api-key",
-        "model": "text-embedding-3-small",
-    },
-)
-```
-
-Dopo aver creato il client, puoi usarlo per interagire con il database.
-
-Aggiungi dati al tuo database vettoriale.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-```
-
-Elimina i dati dal tuo database vettoriale.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Delete data from your vector database
-vectordb.delete(
-    ids=["vid1", "vid2"]  # delete by ids
-    # where={"source": "youtube"} # delete by metadata
-    # where_document={"$contains": "Video Theo1"} # delete by document text
-)
-```
-
-Interroga i dati dal tuo database vettoriale.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Query for similar data
-results = vectordb.query(query_texts=["This is a query"], n_results=2)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-#### Relazionale
-
-Per un esempio di utilizzo delle funzionalità relazionali, controlla la cartella [examples](./demo/examples/python/relational_examples/).
-
-Per ora il client Python non supporta la funzionalità di archiviazione dei file.
-
-#### Integrazione
-
-Il client Python ti offre la possibilità di aggiungere memoria a un'intelligenza artificiale utilizzando [mem0](https://github.com/mem0ai/mem0) e il nostro [integration](./demo/integration/mem0/).
-
-Scopri di più sul nostro [Docs](https://docs.ahen-studio.com/)
+**Architettura**
+
+Mesosphere è fatto per essere semplice, scrivi le funzioni del tuo server nella cartella ./mesosphere e distribuiscile nel backend. Inizia a sperimentare con Mesosphere seguendo il nostro [tutorials](./demo/examples/js/tutorials/chat_app/). Mesosphere utilizza tRPC per creare un'API indipendente dai tipi per le tue funzioni e un database Postgres per archiviare i tuoi dati.
+
+## Integrazione
+
+Forniamo un livello di integrazione con [mem0](https://github.com/mem0ai/mem0) per aggiungere memoria a un LLM utilizzando il nostro [integration](./demo/examples/python/integration/)
+
+## Lingue
+
+Cerchi la tua lingua? Lo troverai a [languages](./i18n/languages.md)
+
+## Documentazione
+
+Per la documentazione completa, visita [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+
+Per vedere come contribuire, visita [Contribution guidelines](./CONTRIBUTING.md)
+
+## Comunità e supporto
+
+- [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Ideale per: aiuto nella creazione, discussione sulle migliori pratiche del database.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Ideale per: bug ed errori riscontrati utilizzando Supabase.
+- [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Ideale per: contribuire alla codebase.
 
 ## Tutti i ringraziamenti ai nostri contributori:
 

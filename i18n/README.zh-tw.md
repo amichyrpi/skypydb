@@ -1,10 +1,10 @@
 <div align="center">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-light-mode-only">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-dark-mode-only">
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - 開源關係和向量嵌入資料庫</b>。 <br />
+    <b>Mesosphere - 開源關係和向量嵌入資料庫</b>. <br />
 </p>
 
 <div align="center">
@@ -12,340 +12,47 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/mesosphere-backend)
 [![PyPI](https://img.shields.io/pypi/v/mesosphere.svg)](https://pypi.org/project/mesosphere/)
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
+[![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
 [![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
 
 </div>
 
-```bash
-pip install mesosphere # python database
-```
+法國製造，❤️
 
-```bash
-npm install mesosphere # typescript client
-```
+## 它是如何運作的
 
-## 特點
+[Mesosphere](https://mesosphere.ahen-studio.com) 是一個獲得 Apache 2.0 許可的開源關係和向量嵌入資料庫，其設計簡單、快速且易於 Web 開發人員和後端開發人員使用。透過在具有完全類型安全性的 Typescript 中編寫函數來讀取、寫入資料並執行硬邏輯。
 
-- 關係：建立您的函數並將資料儲存在關聯式資料庫中。
+Mesosphere 提供了一個資料庫，您可以在其中用 Typescript 編寫函數並將資料儲存在關聯式資料庫中。您也可以將檔案儲存在資料庫中。您也可以即時建立、搜尋和刪除向量集合。我們提供多個客戶端程式庫來與您編寫的函數進行互動。
 
-- 向量嵌入：建立、搜尋和刪除向量集合。
-
-- 檔案儲存：將您的檔案儲存在資料庫中。
-
-- 記憶：使用[mem0](https://github.com/mem0ai/mem0)和我們的[integration](./demo/integration/mem0/)為法學碩士添加記憶。
-
-- 免費與開源：Apache 2.0 許可
+**客戶端庫**
 
-- 跨平台：Windows、Linux、MacOS
-
-## HttpClients
+Mesosphere 有多種語言版本。您可以用您喜歡的語言使用它。我們目前支援 Typescript、Python 和 Rust。
 
-### TypeScript
-
-Mesosphere 提供了 TypeScript 用戶端用於與資料庫交互，您可以使用向量嵌入資料庫或關聯式資料庫。我們先來看看如何使用向量嵌入資料庫。
-
-#### 向量模型
-
-您可以使用樹 AI 模型提供者來建立向量嵌入。
-
-- [x]HuggingFace Sentence Transformers
-- [x]Ollama
-- [x]OpenAI
-
-以下是如何使用此不同提供者的範例。
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Sentence Transformers provider
-
-// Create a client
-async function use_sentence_transformers_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "sentence-transformers",
-    embedding_model_config: {
-      model: "all-MiniLM-L6-v2",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Ollama provider
-
-// Create a client
-async function use_ollama_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "ollama",
-    embedding_model_config: {
-      model: "mxbai-embed-large",
-      base_url: "http://localhost:11434",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// OpenAI provider
-
-// Create a client
-async function use_openai_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "openai",
-    embedding_model_config: {
-      api_key: "your-openai-api-key",
-      model: "text-embedding-3-small",
-    },
-  });
-}
-```
-
-建立客戶端後，您可以使用它與資料庫進行互動。
-
-將資料新增至您的向量資料庫。
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-從向量資料庫中刪除資料。
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Delete data from your vector database
-    await vectordb.delete({
-      by_ids: ["vid1", "vid2"],
-      // by_metadatas: [{ source: "youtube" }, { source: "dailymotion" }] // delete by metadatas
-      // by_data: ["Video Theo1", "Video Theo2"] // delete by data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-從向量資料庫查詢資料。
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Query for similar data
-    const results = await vectordb.query({
-      query_texts: ["This is a query"],
-      number_of_results: 2,
-    });
-
-    // Access results
-    for (let index = 0; index < results.ids[0].length; index += 1) {
-      const doc_id = results.ids[0][index];
-      const document = results.documents?.[0]?.[index];
-      const distance = results.distances?.[0]?.[index];
-      console.log(`${doc_id}, ${document}, ${distance}`);
-    }
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-#### 關係型
-
-有關關係功能的使用範例，請查看[examples](./demo/examples/js/relational_examples/) 資料夾。
-
-有關檔案儲存功能的使用範例，請查看[examples](./demo/examples/js/files_upload_examples/) 資料夾。
-
-了解更多關於我們的[Docs](https://docs.ahen-studio.com/)
-
-### Python
-
-Mesosphere 提供了 Python 用戶端用於與資料庫交互，您可以使用向量嵌入資料庫或關聯式資料庫。我們先來看看如何使用向量嵌入資料庫。
-
-#### 向量模型
-
-您可以使用樹 AI 模型提供者來建立向量嵌入。
-
-- [x]HuggingFace Sentence Transformers
-- [x] Ollama
-- [x]OpenAI
-
-以下是如何使用此不同提供者的範例。
-
-```python
-# Sentence Transformers provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="sentence-transformers",
-    embedding_model_config={"model": "all-MiniLM-L6-v2"},
-)
-```
-
-```python
-# Ollama provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="ollama",
-    embedding_model_config={
-        "model": "mxbai-embed-large",
-        "base_url": "http://localhost:11434",
-    },
-)
-```
-
-```python
-# OpenAI provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="openai",
-    embedding_model_config={
-        "api_key": "your-openai-api-key",
-        "model": "text-embedding-3-small",
-    },
-)
-```
-
-建立客戶端後，您可以使用它與資料庫進行互動。
-
-將資料新增至您的向量資料庫。
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-```
-
-從向量資料庫中刪除資料。
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Delete data from your vector database
-vectordb.delete(
-    ids=["vid1", "vid2"]  # delete by ids
-    # where={"source": "youtube"} # delete by metadata
-    # where_document={"$contains": "Video Theo1"} # delete by document text
-)
-```
-
-從向量資料庫查詢資料。
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Query for similar data
-results = vectordb.query(query_texts=["This is a query"], n_results=2)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-#### 關係型
-
-有關關係功能的使用範例，請查看[examples](./demo/examples/python/relational_examples/) 資料夾。
-
-目前python客戶端不支援檔案儲存功能。
-
-#### 整合
-
-Python客戶端使您能夠使用[mem0](https://github.com/mem0ai/mem0)和我們的[integration](./demo/integration/mem0/)為AI添加記憶體。
-
-了解更多關於我們的[Docs](https://docs.ahen-studio.com/)
+**建築學**
+
+Mesosphere 的設計很簡單，只需在 ./mesosphere 資料夾中編寫伺服器函數並將它們部署到後端即可。按照我們的 [tutorials](./demo/examples/js/tutorials/chat_app/) 開始嘗試 Mesosphere。 Mesosphere 使用 tRPC 為您的函數建立類型安全的 API，並使用 Postgres 資料庫來儲存您的資料。
+
+## 一體化
+
+我們提供帶有 [mem0](https://github.com/mem0ai/mem0) 的集成層，供您使用我們的 [integration](./demo/examples/python/integration/) 向 LLM 添加內存
+
+## 語言
+
+正在尋找您的語言？您可以在 [languages](./i18n/languages.md) 找到它
+
+## 文件
+
+如需完整文檔，請造訪 [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+
+若要了解如何貢獻，請造訪 [Contribution guidelines](./CONTRIBUTING.md)
+
+## 社區與支持
+
+- [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). 最適合：幫助建構、討論資料庫最佳實務。
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). 最適合：使用 Supabase 遇到的錯誤和錯誤。
+- [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). 最適合：為程式碼庫做出貢獻。
 
 ## 感謝我們的貢獻者：
 
@@ -353,6 +60,6 @@ Python客戶端使您能夠使用[mem0](https://github.com/mem0ai/mem0)和我們
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />
 </a>
 
-## 許可證
+## 執照
 
 [Apache 2.0](./LICENSE)

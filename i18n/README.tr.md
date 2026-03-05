@@ -1,10 +1,10 @@
 <div align="center">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-light-mode-only">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-dark-mode-only">
 </div>
 
 <p align="center">
-    <b>mesosfer-backend - Açık Kaynak İlişkisel ve Vektör Yerleştirme Veritabanı</b>. <br />
+    <b>Mezosfer - Açık Kaynak İlişkisel ve Vektör Gömme Veritabanı</b>. <br />
 </p>
 
 <div align="center">
@@ -12,340 +12,47 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/mesosphere-backend)
 [![PyPI](https://img.shields.io/pypi/v/mesosphere.svg)](https://pypi.org/project/mesosphere/)
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
+[![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
 [![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
 
 </div>
 
-```bash
-pip install mesosphere # python database
-```
+Fransa'da ❤️ ile yapıldı
 
-```bash
-npm install mesosphere # typescript client
-```
+## Nasıl çalışır?
 
-## Özellikler
+[Mesosphere](https://mesosphere.ahen-studio.com), Apache 2.0 Lisanslı, açık kaynaklı bir ilişkisel ve vektör yerleştirme veritabanıdır; web geliştiricileri ve arka uç geliştiricileri için basit, hızlı ve kullanımı kolay olacak şekilde tasarlanmıştır. Tam tip güvenliğiyle TypeScript'te işlevler yazarak verileri okuyun, yazın ve sabit mantık gerçekleştirin.
 
-- İlişkisel: işlevlerinizi oluşturun ve verilerinizi ilişkisel bir veritabanında saklayın.
+Mesosfer, işlevlerinizi TypeScript'te yazdığınız ve verilerinizi ilişkisel bir veritabanında sakladığınız bir veritabanı sağlar. Ayrıca dosyalarınızı bir veritabanında da saklayabilirsiniz. Ayrıca vektör koleksiyonlarını gerçek zamanlı olarak oluşturabilir, arayabilir ve silebilirsiniz. Yazdığınız işlevlerle etkileşim kurmak için birden fazla istemci kitaplığı sağlıyoruz.
 
-- Vektör yerleştirmeleri: vektör koleksiyonları oluşturun, arayın ve silin.
-
-- Dosya depolama: dosyalarınızı bir veritabanında saklayın.
-
-- Bellek: [mem0](https://github.com/mem0ai/mem0) ve [integration](./demo/integration/mem0/) kullanarak bir LLM'ye bellek ekleyin.
-
-- Ücretsiz ve Açık Kaynak: Apache 2.0 Lisanslı
+**İstemci Kitaplıkları**
 
-- Çapraz platform: Windows, Linux, MacOS
-
-## HttpClient'lar
+Mezosfer birden fazla dilde mevcuttur. En sevdiğiniz dilde kullanabilirsiniz. Şu anda TypeScript, Python ve Rust'u destekliyoruz.
 
-### TypeScript
-
-Mezosfer, veritabanıyla etkileşim için bir TypeScript istemcisi sunar; vektör gömme veritabanını veya ilişkisel veritabanını kullanabilirsiniz. İlk önce vektör yerleştirme veritabanının nasıl kullanılacağına bakacağız.
-
-#### Vektör modeli
-
-Vektör yerleştirmelerinizi oluşturmak için ağaç AI modelleri sağlayıcısını kullanabilirsiniz.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-İşte bu farklı sağlayıcının nasıl kullanılacağına dair bir örnek.
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Sentence Transformers provider
-
-// Create a client
-async function use_sentence_transformers_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "sentence-transformers",
-    embedding_model_config: {
-      model: "all-MiniLM-L6-v2",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Ollama provider
-
-// Create a client
-async function use_ollama_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "ollama",
-    embedding_model_config: {
-      model: "mxbai-embed-large",
-      base_url: "http://localhost:11434",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// OpenAI provider
-
-// Create a client
-async function use_openai_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "openai",
-    embedding_model_config: {
-      api_key: "your-openai-api-key",
-      model: "text-embedding-3-small",
-    },
-  });
-}
-```
-
-İstemciyi oluşturduktan sonra onu veritabanıyla etkileşimde bulunmak için kullanabilirsiniz.
-
-Vektör veritabanınıza veri ekleyin.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Vektör veritabanınızdaki verileri silin.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Delete data from your vector database
-    await vectordb.delete({
-      by_ids: ["vid1", "vid2"],
-      // by_metadatas: [{ source: "youtube" }, { source: "dailymotion" }] // delete by metadatas
-      // by_data: ["Video Theo1", "Video Theo2"] // delete by data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Vektör veritabanınızdan verileri sorgulayın.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Query for similar data
-    const results = await vectordb.query({
-      query_texts: ["This is a query"],
-      number_of_results: 2,
-    });
-
-    // Access results
-    for (let index = 0; index < results.ids[0].length; index += 1) {
-      const doc_id = results.ids[0][index];
-      const document = results.documents?.[0]?.[index];
-      const distance = results.distances?.[0]?.[index];
-      console.log(`${doc_id}, ${document}, ${distance}`);
-    }
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-#### İlişkisel
-
-Örneğin ilişkisel özelliklerin kullanımı için [examples](./demo/examples/js/relational_examples/) klasörüne bakın.
-
-Örneğin dosya depolama özelliklerinin kullanımı için [examples](./demo/examples/js/files_upload_examples/) klasörüne bakın.
-
-[Docs](https://docs.ahen-studio.com/) hakkında daha fazla bilgi edinin
-
-### Python
-
-Mezosfer, veritabanıyla etkileşim için bir Python istemcisi sunar; vektör yerleştirme veritabanını veya ilişkisel veritabanını kullanabilirsiniz. İlk önce vektör yerleştirme veritabanının nasıl kullanılacağına bakacağız.
-
-#### Vektör modeli
-
-Vektör yerleştirmelerinizi oluşturmak için ağaç AI modelleri sağlayıcısını kullanabilirsiniz.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-İşte bu farklı sağlayıcının nasıl kullanılacağına dair bir örnek.
-
-```python
-# Sentence Transformers provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="sentence-transformers",
-    embedding_model_config={"model": "all-MiniLM-L6-v2"},
-)
-```
-
-```python
-# Ollama provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="ollama",
-    embedding_model_config={
-        "model": "mxbai-embed-large",
-        "base_url": "http://localhost:11434",
-    },
-)
-```
-
-```python
-# OpenAI provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="openai",
-    embedding_model_config={
-        "api_key": "your-openai-api-key",
-        "model": "text-embedding-3-small",
-    },
-)
-```
-
-İstemciyi oluşturduktan sonra onu veritabanıyla etkileşimde bulunmak için kullanabilirsiniz.
-
-Vektör veritabanınıza veri ekleyin.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-```
-
-Vektör veritabanınızdaki verileri silin.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Delete data from your vector database
-vectordb.delete(
-    ids=["vid1", "vid2"]  # delete by ids
-    # where={"source": "youtube"} # delete by metadata
-    # where_document={"$contains": "Video Theo1"} # delete by document text
-)
-```
-
-Vektör veritabanınızdan verileri sorgulayın.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Query for similar data
-results = vectordb.query(query_texts=["This is a query"], n_results=2)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-#### İlişkisel
-
-Örneğin ilişkisel özelliklerin kullanımı için [examples](./demo/examples/python/relational_examples/) klasörüne bakın.
-
-Şimdilik python istemcisi dosya depolama özelliğini desteklemiyor.
-
-#### Entegrasyon
-
-Python istemcisi size [mem0](https://github.com/mem0ai/mem0) ve [integration](./demo/integration/mem0/) kullanarak bir yapay zekaya bellek ekleme yeteneği sunar.
-
-[Docs](https://docs.ahen-studio.com/) hakkında daha fazla bilgi edinin
+**Mimarlık**
+
+Mezosfer basit olacak şekilde tasarlanmıştır; sunucu işlevlerini ./mesosphere klasörüne yazın ve bunları arka uca dağıtın. [tutorials](./demo/examples/js/tutorials/chat_app/) adresimizi takip ederek Mezosfer ile denemeler yapmaya başlayın. Mesosfer, işlevleriniz için tür açısından güvenli bir API ve verilerinizi depolamak için bir Postgres veritabanı oluşturmak üzere tRPC'yi kullanır.
+
+## Entegrasyon
+
+[integration](./demo/examples/python/integration/) kullanarak bir LLM'ye bellek eklemeniz için [mem0](https://github.com/mem0ai/mem0) ile bir entegrasyon katmanı sağlıyoruz
+
+## Diller
+
+Dilinizi mi arıyorsunuz? [languages](./i18n/languages.md) adresinde bulacaksınız
+
+## Dokümantasyon
+
+Belgelerin tamamı için [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs) adresini ziyaret edin
+
+Nasıl Katkıda bulunacağınızı görmek için [Contribution guidelines](./CONTRIBUTING.md) adresini ziyaret edin
+
+## Topluluk ve Destek
+
+- [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). En iyisi: oluşturma konusunda yardım, veritabanı en iyi uygulamaları hakkında tartışma.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Şunun için en iyisi: Supabase'i kullanırken karşılaştığınız hatalar ve hatalar.
+- [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). En iyisi: kod tabanına katkıda bulunmak.
 
 ## Katkıda Bulunanlarımıza Teşekkürler:
 

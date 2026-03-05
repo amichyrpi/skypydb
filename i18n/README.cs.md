@@ -1,10 +1,10 @@
 <div align="center">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-light-mode-only">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-dark-mode-only">
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source databáze relačních a vektorových vložení</b>. <br />
+    <b>Mesosphere - Open Source relační a vektorová databáze vložení</b>. <br />
 </p>
 
 <div align="center">
@@ -12,342 +12,49 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/mesosphere-backend)
 [![PyPI](https://img.shields.io/pypi/v/mesosphere.svg)](https://pypi.org/project/mesosphere/)
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
+[![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
 [![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
 
 </div>
 
-```bash
-pip install mesosphere # python database
-```
+Vyrobeno ve Francii s ❤️
 
-```bash
-npm install mesosphere # typescript client
-```
+## Jak to funguje
 
-## Funkce
+[Mesosphere](https://mesosphere.ahen-studio.com) je open-source relační a vektorová databáze pro vkládání s licencí Apache 2.0 a je navržena tak, aby byla jednoduchá, rychlá a snadno použitelná pro webové vývojáře a backendové vývojáře. Čtěte, zapisujte data a provádějte tvrdou logiku zápisem funkcí v Typescript s plnou bezpečností typu.
 
-- Relační: vytvořte své funkce a uložte svá data do relační databáze.
+Mesosphere poskytuje databázi, kde zapisujete své funkce v Typescript a ukládáte svá data do relační databáze. Soubory můžete také ukládat do databáze. Můžete také vytvářet, vyhledávat a mazat kolekce vektorů, to vše v reálném čase. poskytujeme několik klientských knihoven pro interakci s funkcemi, které jste napsali.
 
-- Vektorové vkládání: vytváření, vyhledávání a odstraňování vektorových kolekcí.
-
-- Ukládání souborů: ukládejte své soubory do databáze.
-
-- Paměť: přidejte paměť do LLM pomocí [mem0](https://github.com/mem0ai/mem0) a našeho [integration](./demo/integration/mem0/).
-
-- Free & Open Source: Apache 2.0 Licensed
+**Klientské knihovny**
 
-- Multiplatformní: Windows, Linux, MacOS
-
-## HttpClients
+Mesosphere je k dispozici ve více jazycích. Můžete jej používat ve svém oblíbeném jazyce. V současné době podporujeme Typescript, Python a Rust.
 
-### TypeScript
-
-Mesosphere nabízí klienta TypeScript pro interakci s databází, můžete použít buď databázi vektorových vložení nebo relační databázi. Nejprve se podíváme na to, jak používat databázi vektorových vkládání.
-
-#### Vektorový model
-
-K vytvoření vektorových vložení můžete použít poskytovatele stromových modelů AI.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Zde je příklad použití tohoto odloženého poskytovatele.
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Sentence Transformers provider
-
-// Create a client
-async function use_sentence_transformers_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "sentence-transformers",
-    embedding_model_config: {
-      model: "all-MiniLM-L6-v2",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Ollama provider
-
-// Create a client
-async function use_ollama_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "ollama",
-    embedding_model_config: {
-      model: "mxbai-embed-large",
-      base_url: "http://localhost:11434",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// OpenAI provider
-
-// Create a client
-async function use_openai_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "openai",
-    embedding_model_config: {
-      api_key: "your-openai-api-key",
-      model: "text-embedding-3-small",
-    },
-  });
-}
-```
-
-Po vytvoření klienta jej můžete použít k interakci s databází.
-
-Přidejte data do vaší vektorové databáze.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Odstraňte data z vaší vektorové databáze.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Delete data from your vector database
-    await vectordb.delete({
-      by_ids: ["vid1", "vid2"],
-      // by_metadatas: [{ source: "youtube" }, { source: "dailymotion" }] // delete by metadatas
-      // by_data: ["Video Theo1", "Video Theo2"] // delete by data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Dotaz na data z vaší vektorové databáze.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Query for similar data
-    const results = await vectordb.query({
-      query_texts: ["This is a query"],
-      number_of_results: 2,
-    });
-
-    // Access results
-    for (let index = 0; index < results.ids[0].length; index += 1) {
-      const doc_id = results.ids[0][index];
-      const document = results.documents?.[0]?.[index];
-      const distance = results.distances?.[0]?.[index];
-      console.log(`${doc_id}, ${document}, ${distance}`);
-    }
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-#### Vztahové
-
-Například použití relačních funkcí se podívejte do složky [examples](./demo/examples/js/relational_examples/).
-
-Například použití funkcí ukládání souborů, podívejte se do složky [examples](./demo/examples/js/files_upload_examples/).
-
-Více se dozvíte na našem [Docs](https://docs.ahen-studio.com/)
-
-### Python
-
-Mesosphere nabízí klienta Python pro interakci s databází, můžete použít buď databázi vektorových vložení nebo relační databázi. Nejprve se podíváme na to, jak používat databázi vektorových vkládání.
-
-#### Vektorový model
-
-K vytvoření vektorových vložení můžete použít poskytovatele stromových modelů AI.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Zde je příklad použití tohoto odloženého poskytovatele.
-
-```python
-# Sentence Transformers provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="sentence-transformers",
-    embedding_model_config={"model": "all-MiniLM-L6-v2"},
-)
-```
-
-```python
-# Ollama provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="ollama",
-    embedding_model_config={
-        "model": "mxbai-embed-large",
-        "base_url": "http://localhost:11434",
-    },
-)
-```
-
-```python
-# OpenAI provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="openai",
-    embedding_model_config={
-        "api_key": "your-openai-api-key",
-        "model": "text-embedding-3-small",
-    },
-)
-```
-
-Po vytvoření klienta jej můžete použít k interakci s databází.
-
-Přidejte data do vaší vektorové databáze.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-```
-
-Odstraňte data z vaší vektorové databáze.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Delete data from your vector database
-vectordb.delete(
-    ids=["vid1", "vid2"]  # delete by ids
-    # where={"source": "youtube"} # delete by metadata
-    # where_document={"$contains": "Video Theo1"} # delete by document text
-)
-```
-
-Dotaz na data z vaší vektorové databáze.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Query for similar data
-results = vectordb.query(query_texts=["This is a query"], n_results=2)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-#### Vztahové
-
-Například použití relačních funkcí se podívejte do složky [examples](./demo/examples/python/relational_examples/).
-
-Python klient prozatím nepodporuje funkci ukládání souborů.
-
-#### Integrace
-
-Klient Python vám nabízí možnost přidat paměť do AI pomocí [mem0](https://github.com/mem0ai/mem0) a našeho [integration](./demo/integration/mem0/).
-
-Více se dozvíte na našem [Docs](https://docs.ahen-studio.com/)
-
-## Děkujeme našim přispěvatelům:
+**Architektura**
+
+Mesosphere je jednoduché, zapište si funkce serveru do složky ./mesosphere a nasaďte je do backendu. Začněte experimentovat s Mesosphere podle našich [tutorials](./demo/examples/js/tutorials/chat_app/). Mesosphere používá tRPC k vytvoření typově bezpečného API pro vaše funkce a databáze Postgres k ukládání vašich dat.
+
+## Integrace
+
+Poskytujeme integrační vrstvu s [mem0](https://github.com/mem0ai/mem0) pro přidání paměti do LLM pomocí našeho [integration](./demo/examples/python/integration/)
+
+## Jazyky
+
+Hledáte svůj jazyk? Najdete ho na [languages](./i18n/languages.md)
+
+## Dokumentace
+
+Úplnou dokumentaci naleznete na adrese [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+
+Chcete-li zjistit, jak přispívat, navštivte [Contribution guidelines](./CONTRIBUTING.md)
+
+## Komunita a podpora
+
+- [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Nejlepší pro: pomoc s budováním, diskuse o osvědčených postupech databáze.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Nejlepší pro: chyby a chyby, na které narazíte při používání Supabase.
+- [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Nejlepší pro: přispívání do kódové základny.
+
+## Všem díky našim přispěvatelům:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />

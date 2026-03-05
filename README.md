@@ -59,9 +59,7 @@ To see how to Contribute, visit [Contribution guidelines](./CONTRIBUTING.md)
 ## Doable without any problem
 
 - [ ] Remake the docs
-- [ ] Remake the i18n translations
 - [ ] Make the dashboard
-- [ ] Remake examples
 - [ ] Remake the backend and the client libraries
 
 ## Doable with a lot of problems (need the saas website)

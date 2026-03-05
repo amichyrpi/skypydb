@@ -1,10 +1,10 @@
 <div align="center">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-light-mode-only">
- <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/docs/logo/dark.svg#gh-dark-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="https://github.com/Ahen-Studio/mesosphere-backend/blob/main/apps/docs/public/dark.svg#gh-dark-mode-only">
 </div>
 
 <p align="center">
-    <b>mesosphere-backend - Open Source Relational and Vector Embeddings Database</b>. <br />
+    <b>Mesosfera - Relacijska i vektorska baza podataka otvorenog koda</b>. <br />
 </p>
 
 <div align="center">
@@ -12,342 +12,49 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Ahen-Studio/mesosphere-backend)
 [![PyPI](https://img.shields.io/pypi/v/mesosphere.svg)](https://pypi.org/project/mesosphere/)
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
+[![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
 [![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
 
 </div>
 
-```bash
-pip install mesosphere # python database
-```
+Proizvedeno u Francuskoj s ❤️
 
-```bash
-npm install mesosphere # typescript client
-```
+## Kako radi
 
-## Značajke
+[Mesosphere](https://mesosphere.ahen-studio.com) je relacijska i vektorska baza podataka otvorenog koda s licencom Apache 2.0, dizajnirana je da bude jednostavna, brza i laka za korištenje za web programere i pozadinske programere. Čitajte, pišite podatke i izvodite čvrstu logiku pisanjem funkcija u Typescript uz punu sigurnost tipa.
 
-- Relacijska: kreirajte svoje funkcije i pohranite svoje podatke u relacijsku bazu podataka.
+Mesosphere pruža bazu podataka, gdje pišete svoje funkcije u Typescriptu i pohranjujete svoje podatke u relacijsku bazu podataka. Također možete pohraniti svoje datoteke u bazu podataka. Također možete stvarati, pretraživati ​​i brisati zbirke vektora i sve to u stvarnom vremenu. nudimo višestruke klijentske biblioteke za interakciju s funkcijama koje ste napisali.
 
-- Ugrađivanja vektora: kreirajte, pretražujte i brišite kolekcije vektora.
-
-- Pohrana datoteka: pohranite svoje datoteke u bazu podataka.
-
-- Memorija: dodajte memoriju LLM-u koristeći [mem0](https://github.com/mem0ai/mem0) i naš [integration](./demo/integration/mem0/).
-
-- Besplatan i otvoreni kod: Apache 2.0 licenciran
+**Knjižnice klijenata**
 
-- Više platformi: Windows, Linux, MacOS
-
-## HttpKlijenti
+Mesosphere je dostupan na više jezika. Možete ga koristiti na svom omiljenom jeziku. Trenutno podržavamo Typescript, Python i Rust.
 
-### TypeScript
-
-Mesosphere nudi TypeScript klijent za interakciju s bazom podataka, možete koristiti bilo vektorsku bazu podataka ili relacijsku bazu podataka. Prvo ćemo pogledati kako koristiti bazu podataka o ugrađivanju vektora.
-
-#### Vektorski model
-
-Možete upotrijebiti pružatelja modela stabla AI za izradu svojih vektorskih umetanja.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Ovdje je primjer kako se koristi ovaj deferent provider.
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Sentence Transformers provider
-
-// Create a client
-async function use_sentence_transformers_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "sentence-transformers",
-    embedding_model_config: {
-      model: "all-MiniLM-L6-v2",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// Ollama provider
-
-// Create a client
-async function use_ollama_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "ollama",
-    embedding_model_config: {
-      model: "mxbai-embed-large",
-      base_url: "http://localhost:11434",
-    },
-  });
-}
-```
-
-```ts
-import { httpClient } from "mesosphere";
-
-// OpenAI provider
-
-// Create a client
-async function use_openai_provider(): Promise<void> {
-  const client = httpClient({
-    api_url: "http://localhost:8000",
-    api_key: "local-dev-key",
-    embedding_provider: "openai",
-    embedding_model_config: {
-      api_key: "your-openai-api-key",
-      model: "text-embedding-3-small",
-    },
-  });
-}
-```
-
-Nakon što izradite klijenta, možete ga koristiti za interakciju s bazom podataka.
-
-Dodajte podatke u svoju vektorsku bazu podataka.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Izbrišite podatke iz svoje vektorske baze podataka.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Delete data from your vector database
-    await vectordb.delete({
-      by_ids: ["vid1", "vid2"],
-      // by_metadatas: [{ source: "youtube" }, { source: "dailymotion" }] // delete by metadatas
-      // by_data: ["Video Theo1", "Video Theo2"] // delete by data
-    });
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-Upit za podatke iz vaše vektorske baze podataka.
-
-```ts
-  try {
-    // Create a vector database or get it if it already exists
-    const vectordb = await client.get_or_create_collection("my-videos");
-
-    // Firts add data to your vector database
-    // Add data to your vector database
-    await vectordb.add({
-      data: ["Video Theo1", "Video Theo2"], // data to add
-      metadatas: [{ source: "youtube" }, { source: "dailymotion" }], // metadata to add to the data
-      ids: ["vid1", "vid2"], // unique ids for the data
-    });
-
-    // Query for similar data
-    const results = await vectordb.query({
-      query_texts: ["This is a query"],
-      number_of_results: 2,
-    });
-
-    // Access results
-    for (let index = 0; index < results.ids[0].length; index += 1) {
-      const doc_id = results.ids[0][index];
-      const document = results.documents?.[0]?.[index];
-      const distance = results.distances?.[0]?.[index];
-      console.log(`${doc_id}, ${document}, ${distance}`);
-    }
-  } finally {
-    // Close local resources
-    await client.close();
-  }
-}
-```
-
-#### Relacijski
-
-Na primjer, korištenje relacijskih značajki, provjerite mapu [examples](./demo/examples/js/relational_examples/).
-
-Na primjer, korištenje značajki pohrane datoteka, provjerite mapu [examples](./demo/examples/js/files_upload_examples/).
-
-Saznajte više na našem [Docs](https://docs.ahen-studio.com/)
-
-### Python
-
-Mesosphere nudi Python klijenta za interakciju s bazom podataka, možete koristiti bilo vektorsku bazu podataka ili relacijsku bazu podataka. Prvo ćemo pogledati kako koristiti bazu podataka o ugrađivanju vektora.
-
-#### Vektorski model
-
-Možete upotrijebiti pružatelja modela stabla AI za izradu svojih vektorskih umetanja.
-
-- [x] HuggingFace Sentence Transformers
-- [x] Ollama
-- [x] OpenAI
-
-Ovdje je primjer kako se koristi ovaj deferent provider.
-
-```python
-# Sentence Transformers provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="sentence-transformers",
-    embedding_model_config={"model": "all-MiniLM-L6-v2"},
-)
-```
-
-```python
-# Ollama provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="ollama",
-    embedding_model_config={
-        "model": "mxbai-embed-large",
-        "base_url": "http://localhost:11434",
-    },
-)
-```
-
-```python
-# OpenAI provider
-import mesosphere
-
-# Create a client
-client = mesosphere.HttpClient(
-    api_url="http://localhost:8000",
-    api_key="local-dev-key",
-    embedding_provider="openai",
-    embedding_model_config={
-        "api_key": "your-openai-api-key",
-        "model": "text-embedding-3-small",
-    },
-)
-```
-
-Nakon što izradite klijenta, možete ga koristiti za interakciju s bazom podataka.
-
-Dodajte podatke u svoju vektorsku bazu podataka.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-```
-
-Izbrišite podatke iz svoje vektorske baze podataka.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Delete data from your vector database
-vectordb.delete(
-    ids=["vid1", "vid2"]  # delete by ids
-    # where={"source": "youtube"} # delete by metadata
-    # where_document={"$contains": "Video Theo1"} # delete by document text
-)
-```
-
-Upit za podatke iz vaše vektorske baze podataka.
-
-```python
-# Create a vector database or get it if it already exists
-vectordb = client.get_or_create_collection("my-videos")
-
-# Firts add data to your vector database
-# Add data to your vector database
-vectordb.add(
-    documents=["Video Theo1", "Video Theo2"],  # data to add
-    metadatas=[
-        {"source": "youtube"},
-        {"source": "dailymotion"},
-    ],  # metadata to add to the data
-    ids=["vid1", "vid2"],  # unique ids for the data
-)
-
-# Query for similar data
-results = vectordb.query(query_texts=["This is a query"], n_results=2)
-
-# Access results
-if not results:
-    print("No results found.")
-else:
-    for i, doc_id in enumerate(results["ids"][0]):
-        print(f"{doc_id}, {results['documents'][0][i]}, {results['distances'][0][i]}")
-```
-
-#### Relacijski
-
-Na primjer, korištenje relacijskih značajki, provjerite mapu [examples](./demo/examples/python/relational_examples/).
-
-Za sada python klijent ne podržava značajku pohrane datoteka.
-
-#### Integracija
-
-Klijent Python nudi vam mogućnost dodavanja memorije AI pomoću [mem0](https://github.com/mem0ai/mem0) i našeg [integration](./demo/integration/mem0/).
-
-Saznajte više na našem [Docs](https://docs.ahen-studio.com/)
-
-## Hvala našim suradnicima:
+**Arhitektura**
+
+Mesosphere je napravljen tako da bude jednostavan, zapišite funkcije poslužitelja u mapu ./mesosphere i implementirajte ih u pozadinu. Započnite eksperimentirati s Mesosphere prateći naš [tutorials](./demo/examples/js/tutorials/chat_app/). Mesosphere koristi tRPC za stvaranje API-ja sigurnog tipa za vaše funkcije i baze podataka Postgres za pohranu vaših podataka.
+
+## Integracija
+
+Pružamo integracijski sloj s [mem0](https://github.com/mem0ai/mem0) kako biste mogli dodati memoriju LLM-u koristeći naš [integration](./demo/examples/python/integration/)
+
+## jezici
+
+Tražite svoj jezik? Pronaći ćete ga na [languages](./i18n/languages.md)
+
+## Dokumentacija
+
+Za potpunu dokumentaciju posjetite [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+
+Da vidite kako doprinijeti, posjetite [Contribution guidelines](./CONTRIBUTING.md)
+
+## Zajednica i podrška
+
+- [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Najbolje za: pomoć pri izgradnji, rasprava o najboljim praksama baze podataka.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Najbolje za: bugove i pogreške na koje naiđete koristeći Supabase.
+- [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Najbolje za: doprinos bazi koda.
+
+## Sve zahvaljujući našim suradnicima:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Ahen-Studio/mesosphere-backend" />

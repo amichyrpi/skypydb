@@ -62,4 +62,4 @@ Per veure com contribuir, visiteu [Contribution guidelines](./CONTRIBUTING.md)
 
 ## llicència
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

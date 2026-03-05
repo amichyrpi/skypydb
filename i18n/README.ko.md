@@ -62,4 +62,4 @@ Mesosphere는 간단하게 만들어졌습니다. ./mesosphere 폴더에 서버 
 
 ## 특허
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

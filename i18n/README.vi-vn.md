@@ -62,4 +62,4 @@ Chúng tôi cung cấp lớp tích hợp với [mem0](https://github.com/mem0ai/
 
 ## Giấy phép
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

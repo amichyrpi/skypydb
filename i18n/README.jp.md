@@ -62,4 +62,4 @@ Mesosphere はシンプルに作られており、サーバー関数を ./mesosp
 
 ## ライセンス
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

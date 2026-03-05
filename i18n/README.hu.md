@@ -62,4 +62,4 @@ A hozzájárulás módjának megtekintéséhez látogassa meg a [Contribution gu
 
 ## Engedély
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

@@ -62,4 +62,4 @@ Katso ohjeet osallistumiseen käymällä osoitteessa [Contribution guidelines](.
 
 ## Lisenssi
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

@@ -62,4 +62,4 @@ Ak chcete zistiť, ako prispievať, navštívte stránku [Contribution guideline
 
 ## Licencia
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

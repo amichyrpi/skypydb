@@ -62,4 +62,4 @@ Et näha, kuidas panustada, külastage [Contribution guidelines](./CONTRIBUTING.
 
 ## Litsents
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

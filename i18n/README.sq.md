@@ -62,4 +62,4 @@ Për të parë se si të kontribuoni, vizitoni [Contribution guidelines](./CONTR
 
 ## Licenca
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

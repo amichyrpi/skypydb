@@ -62,4 +62,4 @@ Aby zobaczyć, jak wnieść swój wkład, odwiedź [Contribution guidelines](./C
 
 ## Licencja
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

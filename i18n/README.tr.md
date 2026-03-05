@@ -62,4 +62,4 @@ Nasıl Katkıda bulunacağınızı görmek için [Contribution guidelines](./CON
 
 ## Lisans
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

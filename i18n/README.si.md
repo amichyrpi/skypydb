@@ -62,4 +62,4 @@ Mesosphere සරල ලෙස සාදා ඇත, ./mesosphere ෆෝල්ඩ
 
 ## බලපත්රය
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

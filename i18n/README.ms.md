@@ -62,4 +62,4 @@ Untuk melihat cara Menyumbang, lawati [Contribution guidelines](./CONTRIBUTING.m
 
 ## Lesen
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

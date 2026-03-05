@@ -62,4 +62,4 @@ Za celotno dokumentacijo obiščite [mesosphere.ahen-studio.com/docs](https://me
 
 ## Licenca
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

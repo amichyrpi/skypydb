@@ -62,4 +62,4 @@ For å se hvordan du kan bidra, gå til [Contribution guidelines](./CONTRIBUTING
 
 ## Tillatelse
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

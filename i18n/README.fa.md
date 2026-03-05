@@ -62,4 +62,4 @@ Mesosphere ساده ساخته شده است، توابع سرور را برای
 
 ## مجوز
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

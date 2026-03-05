@@ -62,4 +62,4 @@ Um zu sehen, wie Sie einen Beitrag leisten können, besuchen Sie [Contribution g
 
 ## Lizenz
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

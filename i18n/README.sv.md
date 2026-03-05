@@ -62,4 +62,4 @@ Om du vill se hur du bidrar besöker du [Contribution guidelines](./CONTRIBUTING
 
 ## Licens
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

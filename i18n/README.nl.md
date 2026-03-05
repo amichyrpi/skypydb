@@ -62,4 +62,4 @@ Ga naar [Contribution guidelines](./CONTRIBUTING.md) om te zien hoe u kunt bijdr
 
 ## Licentie
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

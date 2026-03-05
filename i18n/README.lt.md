@@ -62,4 +62,4 @@ Norėdami sužinoti, kaip prisidėti, apsilankykite [Contribution guidelines](./
 
 ## Licencija
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

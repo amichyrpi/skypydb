@@ -62,4 +62,4 @@ Da vidite kako doprinijeti, posjetite [Contribution guidelines](./CONTRIBUTING.m
 
 ## Licenca
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

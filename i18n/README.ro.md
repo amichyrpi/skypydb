@@ -62,4 +62,4 @@ Pentru a vedea cum să contribui, accesează [Contribution guidelines](./CONTRIB
 
 ## Licenţă
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

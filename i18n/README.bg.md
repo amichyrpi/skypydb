@@ -62,4 +62,4 @@ Mesosphere е направена така, че да бъде проста, за
 
 ## Лиценз
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](../LICENSE)

@@ -16,7 +16,7 @@ export const readMessages = readFunction({
   args: {},
   handler: async (mesosphere) => {
     // Get the messages in the top of the list.
-    const messages = await mesosphere.database.read("messages");
+    const messages = await mesosphere.database.get("messages").accumulate();
     return messages;
   },
 });

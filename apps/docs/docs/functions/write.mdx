@@ -124,18 +124,18 @@ To call your write function form a [react](../client/react/react) client use the
 Here is an example:
 
 ```typescript src/App.tsx
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callwrite } from "mesosphere/reactlibrarie";
 import { api } from "../mesosphere/deploy";
 
 export default function App() {
-  const writeauser = useMutation(api.yourfunction.yourwritefunction);
+  const writeauser = callwrite(api.yourfunction.yourwritefunction);
   const handleClick = () => {
     writeauser({ name: Theo });
   };
   return (
     <div className="App">
       <button
-        onClick={() => addtack()}>Add task
+        onClick={() => handleClick()}>Add user
       </button>;
     </div>
   );

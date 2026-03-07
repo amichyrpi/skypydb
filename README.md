@@ -54,30 +54,6 @@ To see how to Contribute, visit [Contribution guidelines](./CONTRIBUTING.md)
 - [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Best for: bugs and errors you encounter using Supabase.
 - [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Best for: contributing to the codebase.
 
-## TODO
-
-## Doable without any problem
-
-- [ ] Remake the docs
-- [ ] Make the dashboard
-- [ ] Remake the backend and the client libraries
-
-## Doable with a lot of problems (need the saas website)
-
-- [ ] Remake the Rust server
-  - [ ] Make the server scalable on the cloud
-- [ ] Remake the workflows files
-  - [ ] Python
-  - [ ] Make the Typescript workflows
-  - [ ] Rust
-  - [ ] Docker
-- [ ] Fix the CLI
-  - [ ] dev
-  - [ ] auth
-  - [ ] deploy
-- [ ] Fix deployment files
-  - [ ] Google cloud
-
 ## All Thanks To Our Contributors:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">

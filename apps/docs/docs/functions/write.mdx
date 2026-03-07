@@ -117,6 +117,41 @@ export const yourwritefunction = writeFunction({
 });
 ```
 
+# Function Name
+
+When you create a new function in the `mesosphere/` folder, the deployment process will create an API endpoint allowing you to call your function from your client. The file name and function name will be used to call your function.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+// This is an example function to show you how to call your writing function
+export const yourwritefunction = writeFunction({
+  // ...
+});
+```
+
+This function can be called using the following code:
+
+```typescript src/App.tsx
+import { callwrite } from "mesosphere/reactlibrarie";
+// import the API endpoint from the deploy file
+import { api } from "../mesosphere/deploy";
+
+export default function App() {
+  const writeauser = callwrite(api.yourfunction.yourwritefunction, {
+    // The content to write in your database
+  });
+}
+```
+
+Let's break this down:
+
+1. `api`: is the endpoint created during deployment.
+
+2. `yourfunction`: is the name of the function file.
+
+3. `yourwritefunction`: is the name of the function you are interacting with.
+
 # Call your write function from your clients
 
 To call your write function form a [react](../client/react/react) client use the `callwrite` hook and the generated `api` object from `deploy`.

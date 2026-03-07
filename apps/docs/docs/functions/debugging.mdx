@@ -1,0 +1,67 @@
+---
+title: "Debugging"
+---
+
+Mesosphere offer you two type of debugging process.
+
+# Debugging in a development environment
+
+In development you can use the `console` system built into TypeScript to debug your functions.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { writeFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const yourwritefunction = writeFunction({
+  args: { a: type.number(), b: type.number() },
+  handler: (args) => {
+    console.log("Number to write", args);
+    // ...
+    // Do other things here
+  },
+});
+```
+
+Available logging type:
+
+- Values, with a specified severity level:
+
+`console.log`
+
+`console.info`
+
+`console.warn`
+
+`console.error`
+
+`console.debug`
+
+- Trace:
+
+`console.trace` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/trace_static)
+
+- Time:
+
+`console.time` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/time_static)
+
+`console.timeLog` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/timeLog_static)
+
+`console.timeEnd` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/timeEnd_static)
+
+When you log item in your function the output of the logs is automatically catch by the backend and are associate with a timestamp that will be available in your dashboard window.
+
+You can see these logs:
+
+1. In your terminal when you run `npx mesosphere dev` during development the logs will be thrown in the terminal windows.
+
+2. In the Mesosphere dashboard.
+
+# Debugging in a production environment
+
+You can use the standard logging system see in the first part of this page
+
+When you log information from your functions they will be available on your production Mesosphere dashboard.
+
+Every logging type work the same for production.

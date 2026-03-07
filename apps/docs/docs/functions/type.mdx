@@ -1,0 +1,30 @@
+---
+title: "Validate Argument and Return Type"
+---
+
+Argument and return type validation ensures that every database operation can be called with the correct arguments and returns the same types of values.
+
+Type validation is important; without argument type validation, a malicious user can call your public functions with unexpected arguments and can cause data leakage. We provide type validation because at runtime (on our server) TypeScript's type system is not present. For a secure app, we recommend adding type validation to your arguments in all of your public functions; for [close functions,](./closefunctions) you can use type validation if you want, but it's not needed.
+
+# Supported types
+
+Both public and close functions accept and return the following types, the following types can be accessed with the `type` object from `"mesosphere/type"`.
+
+Here is a table listing all the supported types:
+
+| Mesosphere Type | TS/JS Type          | Example Usage          | Types validator                            | Json format     | Tips and tricks                                                                                                            |
+| --------------- | ------------------- | ---------------------- | ------------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Id              | `string`            | `doc._id`              | `type.id("tableName")`                     | string          | Unique identifier referencing a row in a table.                                                                            |
+| Null            | `null`              | `null`                 | `type.null()`                              | null            | Represents the absence of a value. `undefined` is not a valid Mesosphere value.                                            |
+| Int64           | `bigint`            | `3n`                   | `type.int64()`                             | string (base10) | Supports signed 64-bit integers between −2^63 and 2^63−1. Stored as strings when serialized to JSON to preserve precision. |
+| Float64         | `number`            | `1.2`                  | `type.number()`                            | number / string | IEEE-754 double-precision floating point. Special values like `NaN` or `Infinity` may be serialized as strings.            |
+| Boolean         | `boolean`           | `true`                 | `type.boolean()`                           | bool            | Boolean values can be `true` or `false`.                                                                                   |
+| String          | `string`            | `"som"`                | `type.string()`                            | string          | UTF-8 encoded strings. Must be valid Unicode sequences.                                                                    |
+| Bytes           | `ArrayBuffer`       | `new ArrayBuffer(8)`   | `type.bytes()`                             | string (base64) | Binary data encoded as base64 when serialized to JSON.                                                                     |
+| Array           | `Array`             | `[1, 2.3, "som"]`      | `type.array(values)`                       | array           | Arrays can contain up to **8192 values**.                                                                                  |
+| Object          | `Object`            | `{a: "som"}`           | `type.object({property: value})`           | object          | Structured object with predefined properties.                                                                              |
+| Record          | `Record<string, T>` | `{"a": "1", "b": "2"}` | `type.record(keys, values)`                | object          | Dynamic object with typed keys and values.                                                                                 |
+| Any             | `unknown`           | `"som"` / `1` / `{}`   | `type.any()`                               | any JSON value  | Accepts any valid Mesosphere value. Use sparingly since it disables type validation.                                       |
+| Union           | `A \| B`            | `"som"` / `42`         | `type.union(type.string(), type.number())` | value           | Value must match **one of the provided validators**.                                                                       |
+| Literal         | `"som"`             | `"som"`                | `type.literal("som")`                      | value           | Accepts only the exact literal value specified.                                                                            |
+| Optional        | `T \| undefined`    | `undefined` / `"som"`  | `type.optional(type.string())`             | value / missing | Field may be omitted from objects or contain a valid value.                                                                |

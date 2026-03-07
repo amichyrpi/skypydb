@@ -1,0 +1,65 @@
+---
+title: "Close Functions"
+---
+
+Close functions can only be called by other [functions](./quickstart) and cannot be called directly from a client.
+
+Mesosphere functions are public by default, meaning they can be called from any client. Because of this, a malicious user could invoke your public functions and potentially access or manipulate sensitive data.
+
+Closed functions help reduce this risk. They should be used for logic that must not be exposed to clients, such as payment processing or handling sensitive data.
+
+If you choose not to use closed functions, you should still [validate](./type) your function arguments and implement [authentication](../authentication/quickstart) in your public functions.
+
+# Create a close function
+
+You can create a close function by using `closeread`, `closewrite` and `closeaction`.
+
+Here is an example:
+
+```typescript mesosphere/payment.ts
+import { closewrite } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const setPaymentasinternal = closewrite({
+  args: { paymentId: type.id("payment") },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.update("payment", args.paymentId, {
+      paymentType: "pro",
+    });
+  },
+});
+```
+
+**What it does:** It creates a close function that can update the payment profile of a user by passing it the payment Id.
+
+In this example, we validate the argument types. However, closed functions can be created without type validation since they are not publicly accessible.
+
+# Calling your close functions
+
+You can call your close functions from [side actions](./sideactions) and from [scheduled](../schedule/quickstart) functions.
+
+Here is an example that upgrades a user's payment plan from a public function.
+
+```typescript mesosphere/userplan.ts
+import { sideactions } from "mesosphere/reactlibrarie";
+import { closefunction } from "./mesosphere/deploy";
+import { type } from "mesosphere/type";
+
+export const upgradesplan = sideactions({
+  args: { paymentId: type.id("payment") },
+  handler: async (mesosphere, args) => {
+    // Call your payment provider to charge customer from your function, you can use Stripe, Polar, etc...
+    const request = await fetch("https://");
+    if (request.ok) {
+      // Set the user plan as "pro" in the database
+      await mesosphere.runwrite(closefunction.payment.setPaymentasinternal, {
+        paymentId: args.paymentId,
+      });
+    }
+  },
+});
+```
+
+If a user had access to `closefunction.payment.setPaymentAsInternal` without going through the `upgradePlan` action, they could upgrade their plan to the `pro` one for free. This is why we use closed functions.
+
+See the [side actions](./sideactions) guide for more information on how to use payment provider in your apps.

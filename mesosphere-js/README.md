@@ -38,6 +38,10 @@ npx mesosphere -h # show help
 npx mesosphere -v # show version
 npx mesosphere login # login to your mesosphere account
 npx mesosphere logout # logout from your mesosphere account
+npx mesosphere deploy # deploy your functions once
+npx mesosphere docs # open the docs in your browser
+npx mesosphere relink # relink an existing mesosphere project to your local project
+npx mesosphere dashboard # open your dashboard in your browser
 npx mesosphere dev # set up the project with a user interface and start deploying your functions to backend
 ```
 

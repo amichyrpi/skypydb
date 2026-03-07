@@ -1,0 +1,95 @@
+---
+title: "CLI"
+---
+
+The Mesosphere CLI provides a simple way to manage your Mesosphere project and its functions.
+
+The CLI is automatically installed when installing the Mesosphere npm package.
+
+```shell shell
+npm install mesosphere
+```
+
+To see all the available commands run:
+
+```shell shell
+npx mesosphere -h
+```
+
+# Create a new project
+
+When you run:
+
+```shell shell
+npx mesosphere dev
+```
+
+You will be prompted to log in to your Mesosphere account and create or link a Mesosphere project. The CLI will then create:
+
+- A folder named `mesosphere/`: this is where you write your functions.
+
+- A `.env` file containing your deployment URL and API key. These environment variables are used by Mesosphere to connect and deploy your functions to your project.
+
+Once everything is set up, the CLI will start deploying your functions to the server.
+
+**Log in**
+
+Run this command to log in to your Mesosphere account and link a Mesosphere project. It will create a `.env` file containing your deployment URL and API key.
+
+```shell shell
+npx mesosphere login
+```
+
+**Log out**
+
+Run this command in your project root to delete every environment variable linked to your account:
+
+```shell shell
+npx mesosphere logout
+```
+
+# CLI in development
+
+The `npx mesosphere dev` command is all you need to start developing your app.
+
+It automatically deploys your functions to the server. Simply keep the command running in the background and your functions will be deployed as you make changes.
+
+If an error occurs in one of your functions, the CLI will display where the error happened and what went wrong. Failed functions will not be deployed.
+
+To run Mesosphere locally, see the [Local Deployment](./local) guide.
+
+# Utilities
+
+## Dashboard
+
+You can open your dashboard by running:
+
+```shell shell
+npx mesosphere dashboard
+```
+
+## Docs
+
+You can open the documentation by running:
+
+```shell shell
+npx mesosphere docs
+```
+
+## Deploy
+
+You can redeploy your functions by running:
+
+```shell shell
+npx mesosphere deploy
+```
+
+This command deploys your functions once and does not start a watch loop.
+
+## Relink
+
+You can relink an existing Mesosphere project to your local project by running:
+
+```shell shell
+npx mesosphere relink
+```

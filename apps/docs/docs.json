@@ -3,9 +3,9 @@
   "theme": "linden",
   "name": "Mesosphere Documentation",
   "colors": {
-    "primary": "#5438DC",
-    "light": "#5438DC",
-    "dark": "#5438DC"
+    "primary": "#FF7B9C",
+    "light": "#FF7B9C",
+    "dark": "#FF7B9C"
   },
   "fonts": {
     "heading": {
@@ -25,7 +25,7 @@
   "background": {
     "color": {
       "light": "#F5F0F6",
-      "dark": "#050404"
+      "dark": "#161925"
     }
   },
   "search": {

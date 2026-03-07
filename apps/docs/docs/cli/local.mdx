@@ -1,0 +1,35 @@
+---
+title: "Local Deployment"
+---
+
+To deploy your functions locally you just have to add the `--local` tag to your CLI command
+
+Here is an example:
+
+```shell shell
+npx mesosphere dev --local
+```
+
+This will create:
+
+- A folder named `mesosphere/`: this is where you write your functions.
+
+- A `.env` file containing your deployment URL and API key. These environment variables are used by Mesosphere to connect and deploy your functions to your project.
+
+Once everything is set up, the CLI will start deploying your functions to you local server.
+
+You can see the [Self-hosting](../self-hosting) guide for more information on how to run Mesosphere locally.
+
+# Supported command
+
+- `npx mesosphere dev --local`
+
+- `npx mesosphere deploy --local`
+
+- `npx mesosphere relink --local`
+
+- `npx mesosphere dashboard --local`
+
+**The following command behave the same in both local and cloud deployments.**
+
+- `npx mesosphere docs`

@@ -36,16 +36,16 @@ In this example, we validate the argument types. However, closed functions can b
 
 # Calling your close functions
 
-You can call your close functions from [side actions](./sideactions) and from [scheduled](../schedule/quickstart) functions.
+You can call your close functions from [side actions](./sideaction) and from [scheduled](../schedule/quickstart) functions.
 
 Here is an example that upgrades a user's payment plan from a public function.
 
 ```typescript mesosphere/userplan.ts
-import { sideactions } from "mesosphere/reactlibrarie";
+import { sideaction } from "mesosphere/reactlibrarie";
 import { closefunction } from "./mesosphere/deploy";
 import { type } from "mesosphere/type";
 
-export const upgradesplan = sideactions({
+export const upgradesplan = sideaction({
   args: { paymentId: type.id("payment") },
   handler: async (mesosphere, args) => {
     // Call your payment provider to charge customer from your function, you can use Stripe, Polar, etc...

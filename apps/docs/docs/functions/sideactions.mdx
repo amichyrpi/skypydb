@@ -1,0 +1,199 @@
+---
+title: "Side Actions"
+---
+
+In Mesosphere a side action can call third party services such as [Stripe](https://stripe.com/), [Polar](https://polar.sh/) and other to processing a payment, communicate with API, etc...
+
+Side actions can interact with your data in your database by using [write](./write) and [read](./read) functions.
+
+# Function Name
+
+When you create a new function in the `mesosphere/` folder, the deployment process will create an API endpoint allowing you to call your function from your client. The file name and function name will be used to call your function.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+// This is an example function to show you how to call your side action function
+export const yoursideaction = sideaction({
+  // ...
+});
+```
+
+This function can be called using the following code:
+
+```typescript src/App.tsx
+import { callsideaction } from "mesosphere/reactlibrarie";
+// import the API endpoint from the deploy file
+import { api } from "../mesosphere/deploy";
+
+export default function App() {
+  const aSideAction = callsideaction(api.yourfunction.yoursideaction, {
+    // The action you want to do
+  });
+}
+```
+
+Let's break this down:
+
+1. `api`: is the endpoint created during deployment.
+
+2. `yourfunction`: is the name of the function file.
+
+3. `yoursideaction`: is the name of the function you are interacting with.
+
+# Side actions function
+
+To make a side action in Mesosphere you use the `callsideaction` function, you pass it an object with an `handler` that will performs the side action.
+
+Returning a value from a side action is optional.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { sideaction } from "mesosphere/reactlibrarie";
+
+export const yoursideaction = sideaction({
+  args: {},
+  handler: () => {
+    // Your side action will go here
+    // ...
+    // Return a value
+    return "Wow thats a really cool code";
+  },
+});
+```
+
+## Arguments
+
+Side action functions accept named arguments, the arguments are accessible as fields parameter in the `handler`.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { sideaction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const yoursideaction = sideaction({
+  args: { a: type.number(), b: type.number() },
+  handler: (args) => {
+    // Your side action will go here
+    // ...
+    // Return a value
+    return "Wow thats a really cool code";
+  },
+});
+```
+
+In the previous example, the function arguments are validated. To learn more about `type`, see the [type validation](./type) guide.
+
+## Side action context
+
+The `sideaction` function can interact with your database, it can be use in other part of Mesosphere by passing a `SideActionMesosphere` object to the handler function as the first parameter.
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { sideaction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const yoursideaction = sideaction({
+  args: { a: type.number(), b: type.number() },
+  handler: (mesosphere, args) => {
+    // Your side action will go here
+    // Use `mesosphere`
+  },
+});
+```
+
+To read and fetch data from the database, use the `runread` field. In this example, we call an internal function defined as a [closed function](./closefunctions).
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { sideaction, closeread } from "mesosphere/reactlibrarie";
+import { closefunction } from "./mesosphere/deploy";
+import { type } from "mesosphere/type";
+
+export const youractionwithdata = sideaction({
+  args: { a: type.string() },
+  handler: async (mesosphere, args) => {
+    const data = await mesosphere.runread(
+      closefunction.yourfunction.readyourdatabase,
+      {
+        a: args.a,
+      },
+    );
+    // Use `data`
+  },
+});
+
+export const readyourdatabase = closeread({
+  args: { a: type.string() },
+  handler: async (mesosphere, args) => {
+    // Read your data from `mesosphere.database` here
+  },
+});
+```
+
+To write data to the database, use the `runwrite` field. In this example, we call an internal function defined as a [closed function](./closefunctions).
+
+Here is an example:
+
+```typescript mesosphere/yourfunction.ts
+import { sideaction, closewrite } from "mesosphere/reactlibrarie";
+import { closefunction } from "./mesosphere/deploy";
+import { type } from "mesosphere/type";
+
+export const youractionwithdata = sideaction({
+  args: { a: type.string() },
+  handler: async (mesosphere, args) => {
+    const data = await mesosphere.runwrite(
+      closefunction.yourfunction.writetoyourdatabase,
+      {
+        a: args.a,
+      },
+    );
+    // Use `data`
+  },
+});
+
+export const writetoyourdatabase = closewrite({
+  args: { a: type.string() },
+  handler: async (mesosphere, args) => {
+    // write data to `mesosphere.database` here
+  },
+});
+```
+
+# Call your side action function from your clients
+
+To call your side action function form a [react](../client/react/react) client use the `callsideaction` hook and the generated `api` object from `deploy`.
+
+Here is an example:
+
+```typescript src/App.tsx
+import { callsideaction } from "mesosphere/reactlibrarie";
+import { api } from "../mesosphere/deploy";
+
+export default function App() {
+  const runyouraction = callsideaction(api.yourfunction.youractionwithdata);
+  const handleClick = () => {
+    runyouraction({ a: Theo });
+  };
+  return (
+    <div className="App">
+      <button
+        onClick={() => handleClick()}>Run your action
+      </button>;
+    </div>
+  );
+}
+```
+
+Try this example and see what happens.
+
+See the full [React](../client/react/react) client documentation for more information.
+
+**Schedules.**
+
+Instead of calling an action directly from the client, you should [schedule](../schedule/quickstart) it.

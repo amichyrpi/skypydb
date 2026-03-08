@@ -104,7 +104,8 @@
                 "expanded": false,
                 "pages": [
                   "/docs/filestorage/upload",
-                  "/docs/filestorage/delete"
+                  "/docs/filestorage/delete",
+                  "/docs/filestorage/metadata"
                 ]
               },
               {

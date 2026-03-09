@@ -3,7 +3,6 @@
 ## Small things to add or change
 
 - [ ] Finish the documentation
-- [ ] Add Deno support
 - [ ] Finish all the workflows files
   - [ ] Python
   - [ ] Typescript

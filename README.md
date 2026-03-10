@@ -54,6 +54,10 @@ To see how to Contribute, visit [Contribution guidelines](./CONTRIBUTING.md)
 - [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Best for: bugs and errors you encounter using Supabase.
 - [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Best for: contributing to the codebase.
 
+## Testing Zone
+
+To experiment with Mesosphere features and learn how they work, visit the Mesosphere [Testing Zone](./mesosphere-tests/).
+
 ## All Thanks To Our Contributors:
 
 <a href="https://github.com/Ahen-Studio/mesosphere-backend/graphs/contributors">

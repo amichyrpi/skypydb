@@ -1,0 +1,25 @@
+---
+title: "Deleting Files"
+---
+
+Stored files in Mesosphere can be deleted using an `uploadFunction` or a [side action](./sideactions). To do so, call `mesosphere.storage.delete()` with the file's storage ID.
+
+`_storage` is a [system table](../database/systemtable) in Mesosphere that stores metadata about uploaded files.
+
+You can validate storage IDs using `type.id("_storage")`. A storage ID corresponds to the document ID of a record in the `_storage` table.
+
+Here is an example:
+
+```typescript mesosphere/upload.ts
+import { uploadFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const deleteafile = mutatuploadFunctionion({
+  args: {
+    storageId: type.id("_storage"),
+  },
+  handler: async (mesosphere, args) => {
+    return await mesosphere.storage.delete(args.storageId);
+  },
+});
+```

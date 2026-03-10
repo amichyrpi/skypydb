@@ -224,7 +224,10 @@
               "/docs/apiendpoint",
               "/docs/benchmark",
               "/docs/cligeneration",
-              "/docs/ratelimit"
+              "/docs/ratelimit",
+              "/docs/testing",
+              "/docs/runtime",
+              "/docs/production"
             ]
           },
           {

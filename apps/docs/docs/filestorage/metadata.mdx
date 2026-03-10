@@ -1,0 +1,77 @@
+---
+title: "Access Your File Metadata"
+---
+
+When a file is uploaded to Mesosphere, it is stored as a document in the `_storage` system table.
+
+You can access the file's metadata using a [read function](../functions/read) by calling `mesosphere.database.st.get()`.
+
+The `st` namespace stands for [system table](../database/systemtable).
+
+# Accessing file metadata
+
+Here is an example:
+
+```typescript mesosphere/upload.ts
+import { readFunction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const readfilemetadata = readFunction({
+  args: {
+    storageId: type.id("_storage"),
+  },
+  handler: async (mesosphere, args) => {
+    return await mesosphere.database.st.get("_storage", args.storageId);
+  },
+});
+
+export const readallfilemetadata = readFunction({
+  args: {},
+  handler: async (mesosphere) => {
+    // You can use `.order()` and `.nresult()`
+    return await mesosphere.database.st.get("_storage").accumulate();
+  },
+});
+```
+
+## Returned document
+
+```json
+{
+  "_id": "e8ba08ab-fd20-4f4f-820a-5d6105ab55fb",
+  "_creationTime": 1773178195,
+  "contentType": "image/png",
+  "size": 52807,
+  "encoded": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
+```
+
+Let's break this down:
+
+This output contains:
+
+- `_id`: a randomly generated UUID.
+
+- `_creationTime`: the time when the file was uploaded.
+
+- `contentType`: the MIME type of the file (for example, `plain/txt`).
+
+- `size`: the size of the file in bytes.
+
+- `encoded`: a SHA-256 checksum of the file content encoded in base16.
+
+# Accessing file metadata in side action
+
+You can access your file metadata by using [side actions](../functions/sideactions).
+
+```typescript mesosphere/upload.ts
+import { sideaction } from "mesosphere/reactlibrarie";
+import { type } from "mesosphere/type";
+
+export const getMetadata = sideaction({
+  args: { storageId: type.id("_storage") },
+  handler: async (mesosphere, args) => {
+    return await mesosphere.storage.runread(args.storageId);
+  },
+});
+```

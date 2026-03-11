@@ -23,6 +23,9 @@ build
 dist
 target/
 
+# Environment Variables
+.env
+.env.local
 
 # Debug
 *.log
@@ -33,6 +36,9 @@ target/
 .mypy_cache/
 .ruff_cache/
 
+# Misc
+.DS_Store
+*.pem
 # Misc
 .DS_Store
 *.pem

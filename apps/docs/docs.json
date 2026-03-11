@@ -119,6 +119,8 @@
                   "/docs/authentication/workosauthkit",
                   "/docs/authentication/auth0",
                   "/docs/authentication/betterauth",
+                  "/docs/authentication/customjwtprovider",
+                  "/docs/authentication/customoidcprovider",
                   "/docs/authentication/functions",
                   "/docs/authentication/database",
                   "/docs/authentication/debugging"
@@ -221,13 +223,23 @@
           {
             "group": "Mesosphere Utilities",
             "pages": [
+              {
+                "group": "Production",
+                "icon": "message",
+                "root": "/docs/production/quickstart",
+                "expanded": false,
+                "pages": [
+                  "/docs/production/deployingtoprod",
+                  "/docs/production/developmentprocess",
+                  "/docs/production/getintouch"
+                ]
+              },
               "/docs/apiendpoint",
               "/docs/benchmark",
               "/docs/cligeneration",
               "/docs/ratelimit",
               "/docs/testing",
-              "/docs/runtime",
-              "/docs/production"
+              "/docs/runtime"
             ]
           },
           {

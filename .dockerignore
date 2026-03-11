@@ -30,7 +30,6 @@ build
 dist
 target/
 
-
 # Debug
 *.log
 *.pyc

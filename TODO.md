@@ -3,12 +3,14 @@
 ## Small things to add or change
 
 - [ ] Finish the documentation
+- [ ] Finish demo files
+  - [ ] `demo/` The index.css file
+  - [ ] `mesosphere-tests/` Almost every things
 - [ ] Finish all the workflows files
   - [ ] Python
   - [ ] Typescript
   - [ ] Rust
   - [ ] Docker
-  - [ ] Prettier
 
 ## Big things to add or change
 

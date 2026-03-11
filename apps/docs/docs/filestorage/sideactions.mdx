@@ -1,0 +1,63 @@
+---
+title: "Upload With Side Actions"
+---
+
+Uploading files in a Mesosphere side action is as simple as [writing](../functions/write) or [reading](../functions/read) data.
+
+See the [side action documentation](../functions/sideactions) to learn more.
+
+# Upload in a side action
+
+To upload a file in Mesosphere side action you use the `sideaction` function, you pass it an object with an `handler` that will upload your file to the database.
+
+Here is an example showing how to use `sideaction` to upload a file:
+
+```typescript mesosphere/message.ts
+import { sideaction, closewrite } from "mesosphere/reactlibrarie";
+import { closefunction } from "./deploy";
+import { type } from "mesosphere/type";
+
+export const uploadafile = sideaction({
+  args: { user: type.string() },
+  handler: async (mesosphere, args) => {
+    // Generate an image URL from a user
+    const imageUrl = "https://example.com/image.png";
+
+    // Download the file
+    const response = await fetch(imageUrl);
+    const file = await response.blob();
+
+    // Upload the image in Mesosphere
+    const storageId = await mesosphere.storage.upload(file);
+
+    // Write the storageId to the database
+    await mesosphere.runwrite(closefunction.message.uploadstorageid, {
+      storageId,
+      user: args.user,
+    });
+  },
+});
+
+export const uploadstorageid = closewrite({
+  args: {
+    storageId: type.id("_storage"),
+    user: type.string(),
+  },
+  handler: async (mesosphere, args) => {
+    await mesosphere.database.add("message", {
+      storageId: args.storageId,
+      user: args.user,
+    });
+  },
+});
+```
+
+Let's break this down:
+
+This function:
+
+- Uploads a file to the `messages` table in the database.
+
+- Uses `type.id("_storage")` to reference the file stored in Mesosphere Storage.
+
+- Associates the uploaded file with the user who uploaded it.

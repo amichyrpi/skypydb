@@ -82,7 +82,7 @@ function getOrSetFakeName() {
 
 export default function App() {
   // Read all the messages from the database.
-  const messages = callread(api.message.readMessages);
+  const readmessages = callread(api.message.readMessages);
   // Write a new message to the database.
   const sendMessage = callwrite(api.message.newMessage);
   // Upload a file to the database.
@@ -100,7 +100,7 @@ export default function App() {
           Connected as <strong>{NAME}</strong>
         </p>
       </header>
-      {messages?.map((message) => (
+      {readmessages?.map((message) => (
         <article
           key={message._id}
           className={message.user === NAME ? "message-mine" : ""}

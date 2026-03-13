@@ -7,5 +7,5 @@ This example shows how to use React-Native to build your application. It demonst
 ```shell
 npm install
 npx mesosphere dev
-npm run dev
+npm start
 ```

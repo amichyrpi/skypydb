@@ -1,0 +1,206 @@
+---
+title: "Cron"
+---
+
+Mesosphere offers the ability to schedule your functions to run on a recurring basis. Cron can be used to clean up expired data at regular intervals, send emails at the same time every month, or automatically generate periodic reports.
+
+# Create a Cron Function
+
+To define a cron function in Mesosphere, create a `crons.ts` file in the `mesosphere/` folder.
+
+Here is an example:
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.interval(
+  "clear-all-messages-in-the-chat", // identifier for your cron function
+  { minutes: 1 }, // run every minute
+  closefunction.messages.clearallmessages,
+);
+
+cron.monthly(
+  "payment-reminder", // identifier for your cron function
+  { day: 7, hourInUTC: 12, minuteInUTC: 0 }, // send an email every 7th of the month at 12:00 UTC
+  closefunction.payments.sendemail,
+  { email: "example@gmail.com" }, // arguments passed to the function
+);
+
+// Create a cron function using cron syntax
+cron.cron(
+  "payment-reminder-cron",
+  "0 12 7 * *", // minute hour day month weekday
+  closefunction.payments.sendemail,
+  { email: "example@gmail.com" },
+);
+
+export default cron;
+```
+
+Let's break this down:
+
+1. The first argument (`"clear-all-messages-in-the-chat"`) is a unique identifier for the cron function.
+
+2. The second argument (`{ minutes: 1 }`) defines the schedule at which the function will run.
+
+3. The third argument is the function that will be executed. It can be a [public function](../functions/write), a [closed function](../functions/closefunctions), or a [side action](../functions/sideactions).
+
+# Supported cron operations
+
+1. `cron.interval()` run a function every specified number of `seconds`, `minutes`, or `hours`.
+
+## Examples
+
+### Run every seconds
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.interval(
+  "clear-all-messages-in-the-chat", // identifier for your cron function
+  { seconds: 30 }, // run every 30 seconds
+  closefunction.messages.clearallmessages,
+);
+
+export default cron;
+```
+
+### Run every minutes
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.interval(
+  "clear-all-messages-in-the-chat",
+  { minutes: 1 }, // run every minute
+  closefunction.messages.clearallmessages,
+);
+
+export default cron;
+```
+
+### Run every hours
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.interval(
+  "clear-all-messages-in-the-chat",
+  { hours: 2 }, // run every 2 hours
+  closefunction.messages.clearallmessages,
+);
+
+export default cron;
+```
+
+2. `cron.hourly()`, `cron.daily()`, `cron.weekly()`, `cron.monthly()` are an alternative to the cron schedules syntax with explicitly named arguments.
+
+## Examples
+
+### Hourly
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.hourly(
+  "payment-reminder", // identifier for your cron function
+  { minuteInUTC: 30 }, // send an email every 30 minute
+  closefunction.payments.sendemail,
+  { email: "example@gmail.com" }, // arguments passed to the function
+);
+
+export default cron;
+```
+
+### Daily
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.daily(
+  "payment-reminder", // identifier for your cron function
+  { hourInUTC: 12, minuteInUTC: 30 }, // send an email every days at 12:30 UTC
+  closefunction.payments.sendemail,
+  { email: "example@gmail.com" }, // arguments passed to the function
+);
+
+export default cron;
+```
+
+### Weekly
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.weekly(
+  "payment-reminder", // identifier for your cron function
+  { day: "Sunday" hourInUTC: 12, minuteInUTC: 30 }, // send an email every Sunday at 12:30 UTC
+  closefunction.payments.sendemail,
+  { email: "example@gmail.com" }, // arguments passed to the function
+);
+
+export default cron;
+```
+
+### Monthly
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.monthly(
+  "payment-reminder", // identifier for your cron function
+  { day: 7, hourInUTC: 12, minuteInUTC: 0 }, // send an email every 7th of the month at 12:00 UTC
+  closefunction.payments.sendemail,
+  { email: "example@gmail.com" }, // arguments passed to the function
+);
+
+export default cron;
+```
+
+3. `cron.cron()` is the standard way to create a cron function using a string with five fields separated by spaces (e.g. "\* \* \* \* \*"). Times defined in cron syntax use the UTC timezone. [Crontab Guru](https://crontab.guru/) is a helpful resource for understanding and creating schedules in this format.
+
+## Examples
+
+```typescript mesosphere/crons.ts
+import { Crons } from "mesosphere/serverside";
+import { closefunction } from "../mesosphere/deploy";
+
+const cron = Crons();
+
+cron.cron(
+  "payment-reminder-cron",
+  "0 12 7 * *", // minute hour day month weekday
+  closefunction.payments.sendemail,
+  { email: "example@gmail.com" },
+);
+
+export default cron;
+```
+
+# Monitor your cron functions
+
+You can monitor your cron functions from the [Mesosphere dashboard](https://mesosphere.ahen-studio.com/dashboard). You can view existing cron tasks, add, update, or delete cron tasks, see the results of your cron executions and you can monitor their logs

@@ -1,5 +1,5 @@
 {
-  "name": "simple-chat-app-with-file-upload",
+  "name": "simple-chat-app-with-cron",
   "version": "0.0.0",
   "scripts": {
     "dev": "npm-run-all --parallel dev:mesosphere dev:vite",
@@ -8,7 +8,6 @@
     "build": "tsc --noEmit && vite build"
   },
   "dependencies": {
-    "@faker-js/faker": "^10.0.0",
     "mesosphere": "^2.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"

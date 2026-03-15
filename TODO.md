@@ -5,7 +5,7 @@
 - [ ] Finish the documentation
 - [ ] Finish demo files
   - [ ] `demo/` The index.css file
-  - [ ] `mesosphere-tests/` Almost every things
+  - [ ] `mesosphere-tests/`
 - [ ] Finish all the workflows files
   - [ ] Python
   - [ ] Typescript

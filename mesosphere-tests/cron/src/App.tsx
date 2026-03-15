@@ -1,47 +1,28 @@
 import { FormEvent, useState } from "react";
-import {
-  callread,
-  callwrite,
-  IsAuthenticated,
-  IsNotAuthenticated,
-} from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrarie";
 import { api } from "../mesosphere/deploy";
-import { SignOutButton } from "@clerk/clerk-react";
-import Users from "./Users";
-import LoginPage from "./LoginPage";
 
 export default function App() {
-  return (
-    <main>
-      <IsNotAuthenticated>
-        <LoginPage />
-      </IsNotAuthenticated>
-      <IsAuthenticated>
-        <Content />
-      </IsAuthenticated>
-    </main>
-  );
-}
-
-function Content() {
   const readmessages = callread(api.message.readMessages);
 
+  const [newMessageText, setNewMessageText] = useState("");
   const sendMessage = callwrite(api.message.newMessage);
 
-  const [newMessageText, setNewMessageText] = useState("");
-
-  async function handleSendNewMessage(event: FormEvent) {
+  const [name] = useState(() => "User " + Math.floor(Math.random() * 10000));
+  async function handleSendMessage(event: FormEvent) {
     event.preventDefault();
-    await sendMessage({ body: newMessageText });
+    await sendMessage({ body: newMessageText, user: name });
     setNewMessageText("");
   }
   return (
-    <>
+    <main>
       <h1>Mesosphere Chat</h1>
-      <Users />
-      <h2>
-        <SignOutButton />
-      </h2>
+      <p className="badge">
+        <span>{name}</span>
+      </p>
+      <div className="instructions">
+        Your messages will be deleted every minute.
+      </div>
       <ul>
         {readmessages.map((message) => (
           <li key={message._id}>
@@ -51,14 +32,14 @@ function Content() {
           </li>
         ))}
       </ul>
-      <form onSubmit={handleSendNewMessage}>
+      <form onSubmit={handleSendMessage}>
         <input
           value={newMessageText}
           onChange={(event) => setNewMessageText(event.target.value)}
           placeholder="Write a message…"
         />
-        <input type="submit" value="Send" disabled={newMessageText === ""} />
+        <input type="submit" value="Send" disabled={!newMessageText} />
       </form>
-    </>
+    </main>
   );
 }

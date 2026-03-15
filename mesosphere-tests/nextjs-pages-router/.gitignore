@@ -27,24 +27,6 @@ target/
 .env
 .env.local
 
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
-
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
 # Debug
 *.log
 *.pyc
@@ -53,17 +35,10 @@ expo-env.d.ts
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-npm-debug.*
-yarn-debug.*
-yarn-error.*
 
 # Misc
 .DS_Store
 *.pem
-
-# generated native folders
-/ios
-/android
-
-# typescript
-*.tsbuildinfo
+# Misc
+.DS_Store
+*.pem

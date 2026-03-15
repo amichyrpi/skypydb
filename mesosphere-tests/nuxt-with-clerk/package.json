@@ -1,0 +1,23 @@
+{
+  "name": "nuxt-with-clerk",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:mesosphere dev:nuxt",
+    "dev:mesosphere": "mesosphere dev",
+    "dev:nuxt": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "start": "nuxt start"
+  },
+  "dependencies": {
+    "@clerk/clerk-js": "^5.91.2",
+    "mesosphere": "^2.0.0",
+    "nuxt": "^3.12.0"
+  },
+  "devDependencies": {
+    "npm-run-all2": "^8.0.0",
+    "typescript": "5.9.2"
+  }
+}

@@ -1,0 +1,14 @@
+User-agent: *
+
+# Disallow sensitive and internal routes
+Disallow: /api/
+Disallow: /auth/
+Disallow: /callback
+Disallow: /callbacks
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /clerk/
+Disallow: /_internal
+
+# Allow public pages and assets
+Allow: /

@@ -1,0 +1,23 @@
+{
+  "name": "bun",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/index.tsx",
+    "build": "bun build ./src/index.html --outdir=dist --minify --splitting",
+    "start": "NODE_ENV=production bun src/index.tsx",
+    "dev:mesosphere": "bunx mesosphere dev"
+  },
+  "dependencies": {
+    "mesosphere": "^2.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "typescript": "5.9.2"
+  }
+}

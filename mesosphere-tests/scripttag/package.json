@@ -1,0 +1,11 @@
+{
+  "name": "scripttag",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "mesosphere dev"
+  },
+  "dependencies": {
+    "mesosphere": "^2.0.0"
+  }
+}

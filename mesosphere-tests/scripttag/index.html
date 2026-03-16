@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mesosphere Script Tag Chat</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>Mesosphere Script Tag Chat</h1>
+          <p>Call Mesosphere functions directly from a script tag.</p>
+        </div>
+        <span class="badge" id="user-name"></span>
+      </header>
+
+      <section class="panel">
+        <div id="status" class="state">Waiting for Mesosphere connection...</div>
+        <ul id="messages" class="messages"></ul>
+
+        <form id="message-form">
+          <div class="form-row">
+            <input
+              id="message-input"
+              type="text"
+              placeholder="Write a message..."
+            />
+            <button id="send-button" type="submit">Send</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/mesosphere@2.0.0/dist/http.package.js"></script>
+    <script>
+      const MESOSPHERE_URL =
+        window.MESOSPHERE_URL || "MESOSPHERE_URL_HERE";
+      const MESOSPHERE_API_KEY =
+        window.MESOSPHERE_API_KEY || "MESOSPHERE_API_KEY_HERE";
+
+      const api = {
+        message: {
+          newMessage: "message.newMessage",
+          readMessages: "message.readMessages",
+        },
+      };
+
+      const status = document.getElementById("status");
+      const messagesList = document.getElementById("messages");
+      const form = document.getElementById("message-form");
+      const input = document.getElementById("message-input");
+      const sendButton = document.getElementById("send-button");
+      const userName = document.getElementById("user-name");
+
+      const user = `User ${Math.floor(Math.random() * 10000)}`;
+      userName.textContent = user;
+
+      if (
+        MESOSPHERE_URL === "MESOSPHERE_URL_HERE" ||
+        MESOSPHERE_API_KEY === "MESOSPHERE_API_KEY_HERE"
+      ) {
+        status.classList.add("error");
+        status.textContent =
+          "Set MESOSPHERE_URL and MESOSPHERE_API_KEY to connect.";
+        throw new Error("Missing configuration");
+      }
+
+      const client = new mesosphere.MesosphereHttpClient(
+        MESOSPHERE_URL,
+        MESOSPHERE_API_KEY,
+      );
+
+      function renderMessages(messages) {
+        messagesList.innerHTML = "";
+        if (!messages || messages.length === 0) {
+          status.textContent = "No messages yet. Start the conversation!";
+          return;
+        }
+        status.textContent = "";
+        messages.forEach((message) => {
+          const item = document.createElement("li");
+          item.className = "message";
+          const header = document.createElement("div");
+          header.className = "message-header";
+          const name = document.createElement("strong");
+          name.textContent = message.user;
+          const time = document.createElement("span");
+          if (message._creationTime) {
+            time.textContent = new Date(
+              message._creationTime,
+            ).toLocaleTimeString();
+          }
+          header.appendChild(name);
+          header.appendChild(time);
+          const body = document.createElement("p");
+          body.className = "message-body";
+          body.textContent = message.body;
+          item.appendChild(header);
+          item.appendChild(body);
+          messagesList.appendChild(item);
+        });
+      }
+
+      client.hug(api.message.readMessages, {}, (messages) => {
+        renderMessages(messages);
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        sendButton.disabled = true;
+        try {
+          await client.write(api.message.newMessage, {}, { user, body: text });
+          input.value = "";
+        } catch (error) {
+          status.classList.add("error");
+          status.textContent =
+            error instanceof Error ? error.message : "Failed to send message.";
+        } finally {
+          sendButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -34,7 +34,7 @@ export const newTemporaryMessage = writeFunction({
     user: type.string(),
     body: type.string(),
   },
-  handler: async (mesosphere, { body, author }) => {
+  handler: async (mesosphere, { body, user }) => {
     const id = await mesosphere.database.add("messages", {
       user,
       body,
@@ -71,13 +71,13 @@ export const newTemporaryMessage = writeFunction({
     user: type.string(),
     body: type.string(),
   },
-  handler: async (mesosphere, { body, author }) => {
+  handler: async (mesosphere, { body, user }) => {
     const id = await mesosphere.database.add("messages", {
       user,
       body,
     });
     await mesosphere.scheduler.runprecise(
-      new Date("2090-17-03T00:00:00Z"),
+      new Date("2090-03-17T00:00:00Z"),
       // The end of the world will happen at this time… just kidding.
       closefunction.messages.updateTemporaryMessage,
       {
@@ -107,7 +107,7 @@ Be careful when using scheduled functions. If used incorrectly, they can break y
 
 # Access Your Scheduled Metadata
 
-When a scheduled a function in Mesosphere, it is stored as a document in the `_scheduler` system table.
+When you schedule a function in Mesosphere, it is stored as a document in the `_scheduler` system table.
 
 You can access the scheduled function metadata using a [read function](../functions/read) by calling `mesosphere.database.st.get()`.
 
@@ -119,7 +119,7 @@ Here is an example:
 import { readFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
-export const readscheduledmetadata = readFunction({
+export const readScheduledMetadata = readFunction({
   args: {},
   handler: async (mesosphere, args) => {
     return await mesosphere.database.st.get("_scheduler").accumulate();
@@ -133,7 +133,7 @@ export const readscheduledmetadata = readFunction({
 {
   "_id": "1044c087-ed64-4592-8d48-3b3513186e80",
   "_creationTime": 1773178195,
-  "name": "mesosphere:messages.ts:newTemporaryMessage",
+  "name": "mesosphere:message.ts:newTemporaryMessage",
   "scheduledTime": 1699931054657,
   "state": "success",
   "completedTime": 1699931054690.366

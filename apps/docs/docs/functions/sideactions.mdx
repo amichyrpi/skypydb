@@ -22,7 +22,7 @@ export const yoursideaction = sideaction({
 This function can be called using the following code:
 
 ```typescript src/App.tsx
-import { callsideaction } from "mesosphere/reactlibrarie";
+import { callsideaction } from "mesosphere/reactlibrary";
 // import the API endpoint from the deploy file
 import { api } from "../mesosphere/deploy";
 
@@ -50,7 +50,7 @@ Returning a value from a side action is optional.
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { sideaction } from "mesosphere/reactlibrarie";
+import { sideaction } from "mesosphere/reactlibrary";
 
 export const yoursideaction = sideaction({
   args: {},
@@ -70,7 +70,7 @@ Side action functions accept named arguments, the arguments are accessible as fi
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { sideaction } from "mesosphere/reactlibrarie";
+import { sideaction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yoursideaction = sideaction({
@@ -93,7 +93,7 @@ The `sideaction` function can interact with your database, it can be use in othe
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { sideaction } from "mesosphere/reactlibrarie";
+import { sideaction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yoursideaction = sideaction({
@@ -110,7 +110,7 @@ To read and fetch data from the database, use the `runread` field. In this examp
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { sideaction, closeread } from "mesosphere/reactlibrarie";
+import { sideaction, closeread } from "mesosphere/reactlibrary";
 import { closefunction } from "./mesosphere/deploy";
 import { type } from "mesosphere/type";
 
@@ -140,7 +140,7 @@ To write data to the database, use the `runwrite` field. In this example, we cal
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { sideaction, closewrite } from "mesosphere/reactlibrarie";
+import { sideaction, closewrite } from "mesosphere/reactlibrary";
 import { closefunction } from "./mesosphere/deploy";
 import { type } from "mesosphere/type";
 
@@ -172,7 +172,7 @@ To call your side action function form a [react](../client/react/react) client u
 Here is an example:
 
 ```typescript src/App.tsx
-import { callsideaction } from "mesosphere/reactlibrarie";
+import { callsideaction } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 export default function App() {

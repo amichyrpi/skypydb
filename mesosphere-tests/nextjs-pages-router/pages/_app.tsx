@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import "../styles/globals.css";
 
 const mesosphere = new ReactClient(

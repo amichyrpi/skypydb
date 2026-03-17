@@ -7,7 +7,7 @@ Write functions can add, update and remove data from the database, It can perfor
 Here is an example write function that take two arguments the name of the user and is email, write the data to the database and return the result:
 
 ```typescript mesosphere/users.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a new user to the database with the user name and email
@@ -35,7 +35,7 @@ To make a write function in Mesosphere you use the `writeFunction` function, you
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 
 export const yourwritefunction = writeFunction({
   args: {},
@@ -52,7 +52,7 @@ Write functions accept named arguments, the arguments are accessible as fields p
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 
 export const yourwritefunction = writeFunction({
   args: { a: number, b: number },
@@ -68,7 +68,7 @@ In the previous example your arguments are not validated, to validate them you u
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourwritefunction = writeFunction({
@@ -89,7 +89,7 @@ The `writeFunction` can write data to the database, it can be use in other part 
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourwritefunction = writeFunction({
@@ -106,7 +106,7 @@ To write to the database use the `database` field, we change the handler to an a
 Here is an example:
 
 ```typescript mesosphere/yourfunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourwritefunction = writeFunction({
@@ -133,7 +133,7 @@ export const yourwritefunction = writeFunction({
 This function can be called using the following code:
 
 ```typescript src/App.tsx
-import { callwrite } from "mesosphere/reactlibrarie";
+import { callwrite } from "mesosphere/reactlibrary";
 // import the API endpoint from the deploy file
 import { api } from "../mesosphere/deploy";
 
@@ -159,7 +159,7 @@ To call your write function form a [react](../client/react/react) client use the
 Here is an example:
 
 ```typescript src/App.tsx
-import { callwrite } from "mesosphere/reactlibrarie";
+import { callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 export default function App() {

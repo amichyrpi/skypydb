@@ -2,7 +2,7 @@ import {
   readFunction,
   writeFunction,
   closewrite,
-} from "mesosphere/reactlibrarie";
+} from "mesosphere/reactlibrary";
 import { closefunction } from "./mesosphere/deploy";
 import { type } from "mesosphere/type";
 

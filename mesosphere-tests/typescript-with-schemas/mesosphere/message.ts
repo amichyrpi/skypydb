@@ -1,4 +1,4 @@
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { dbDoc } from "./deploy";
 import { type } from "mesosphere/type";
 

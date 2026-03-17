@@ -1,7 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {

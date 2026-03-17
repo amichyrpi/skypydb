@@ -27,7 +27,7 @@ npx mesosphere dev
 4. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
 
 ```typescript mesosphere/tasks.ts
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a task to the database with a task name and a boolean to indicate if it succeed or not.
@@ -62,7 +62,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 
 // Initialize the Mesosphere client with the URL and API key.
 const mesosphere = new ReactClient(
@@ -86,7 +86,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import { useState } from "react";
 
 export async function loader() {
@@ -124,7 +124,7 @@ export default function App() {
 
 ```typescript app/routes/_index.tsx
 import type { MetaFunction } from "@remix-run/node";
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { api } from "../../mesosphere/deploy";
 
 export const meta: MetaFunction = () => {

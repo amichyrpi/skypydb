@@ -2,7 +2,7 @@ import {
   readFunction,
   writeFunction,
   uploadFunction,
-} from "mesosphere/reactlibrarie";
+} from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a message to the database.

@@ -1,5 +1,5 @@
 import { type FormEvent, useMemo, useState } from "react";
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 import APITester from "./APITester";
 

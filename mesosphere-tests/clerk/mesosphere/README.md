@@ -8,7 +8,7 @@ A read function that takes two arguments:
 
 ```ts
 // mesosphere/message.ts
-import { readFunction } from "mesosphere/reactlibrarie";
+import { readFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Get the messages in the top of the list in the database.
@@ -25,7 +25,7 @@ export const readMessages = readFunction({
 Using this read function in a React component:
 
 ```ts
-import { callread } from "mesosphere/reactlibrarie";
+import { callread } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 const data = callread(api.message.readMessages, {});
@@ -35,7 +35,7 @@ A write function:
 
 ```ts
 // mesosphere/message.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a message to the database.
@@ -56,7 +56,7 @@ export const newMessage = writeFunction({
 Using this write function in a React component:
 
 ```ts
-import { callwrite } from "mesosphere/reactlibrarie";
+import { callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 const newmessage = callwrite(api.message.newMessage);

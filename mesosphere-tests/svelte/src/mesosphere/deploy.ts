@@ -56,11 +56,7 @@ function createApi(path: string[] = []): unknown {
 }
 
 /**
- * This is the API object that you can use to write data to your database.
- */
-
-/**
- * This is the API object that you can use to read from your database.
+ * This is the API object that you can use to interact with your database.
  */
 export const api = createApi() as deploys<
   typeof Api,

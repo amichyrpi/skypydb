@@ -39,6 +39,3 @@ target/
 # Misc
 .DS_Store
 *.pem
-# Misc
-.DS_Store
-*.pem

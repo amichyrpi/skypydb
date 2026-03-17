@@ -1,6 +1,6 @@
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { type FormEvent, useState } from "react";
 import { api } from "../../mesosphere/deploy";
 

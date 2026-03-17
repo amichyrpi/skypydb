@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import App from "./App";
 
 declare global {

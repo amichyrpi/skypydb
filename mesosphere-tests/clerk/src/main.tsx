@@ -4,7 +4,7 @@ import App from "./App";
 import "./index.css";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { Mesosphereproviderwithclerkauth } from "mesosphere/reactwithclerk";
-import { ReactClient } from "mesosphere/reactlibrarie";
+import { ReactClient } from "mesosphere/reactlibrary";
 
 const mesosphere = new ReactClient(
   import.meta.env.VITE_MESOSPHERE_URL,

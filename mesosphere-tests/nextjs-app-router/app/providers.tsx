@@ -1,6 +1,6 @@
 "use client";
 
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import type { PropsWithChildren } from "react";
 
 const mesosphere = new ReactClient(

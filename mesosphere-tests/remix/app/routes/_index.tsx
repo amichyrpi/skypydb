@@ -5,7 +5,7 @@ import {
   ReactClient,
   callread,
   callwrite,
-} from "mesosphere/reactlibrarie";
+} from "mesosphere/reactlibrary";
 import { api } from "../../mesosphere/deploy";
 import type { loader as rootLoader } from "../root";
 

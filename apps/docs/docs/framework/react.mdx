@@ -35,7 +35,7 @@ npx mesosphere dev
 4. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
 
 ```typescript mesosphere/tasks.ts
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a task to the database with a task name and a boolean to indicate if it succeed or not.
@@ -70,7 +70,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 
 // Initialize the Mesosphere client with the URL and API key.
 const mesosphere = new ReactClient(
@@ -90,7 +90,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 6. **Use the functions in your React app.** in the `App.tsx` file, you can use the `newtask` and `readtask` functions to add and read tasks from the database:
 
 ```typescript App.tsx
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 export default function App() {

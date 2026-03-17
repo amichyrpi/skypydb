@@ -1,7 +1,7 @@
 import type { AppProps } from "next/app";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { Mesosphereproviderwithclerkauth } from "mesosphere/reactwithclerk";
-import { ReactClient } from "mesosphere/reactlibrarie";
+import { ReactClient } from "mesosphere/reactlibrary";
 import "../styles/globals.css";
 
 const mesosphere = new ReactClient(

@@ -1,4 +1,4 @@
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const newMessage = writeFunction({

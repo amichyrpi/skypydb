@@ -1,4 +1,4 @@
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a task to the database with a task name and a boolean to indicate if it succeed or not.

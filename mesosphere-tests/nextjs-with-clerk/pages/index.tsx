@@ -4,7 +4,7 @@ import {
   IsNotAuthenticated,
   callread,
   callwrite,
-} from "mesosphere/reactlibrarie";
+} from "mesosphere/reactlibrary";
 import { SignInButton, SignOutButton, useUser } from "@clerk/clerk-react";
 import { api } from "../mesosphere/deploy";
 

@@ -35,7 +35,7 @@ npm run reset-project
 5. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
 
 ```typescript mesosphere/tasks.ts
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a task to the database with a task name and a boolean to indicate if it succeed or not.
@@ -66,7 +66,7 @@ export const readtask = readFunction({
 5. **Connect your react app to your backend.** In the `app/_layout.tsx` file, create a `ReactClient` and pass it to the `MesosphereProvider` and wrap your app with it:
 
 ```typescript app/_layout.tsx
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import { Stack } from "expo-router";
 
 const mesosphere = new ReactClient(
@@ -90,7 +90,7 @@ export default function RootLayout() {
 
 ```typescript app/index.tsx
 import { Text, View } from "react-native";
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 export default function App() {

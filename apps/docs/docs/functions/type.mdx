@@ -37,7 +37,7 @@ To enable type validation for function arguments, provide an object with `args` 
 Here is a simple example that use type validation for both argument and return values:
 
 ```typescript mesosphere/users.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const newuser = writeFunction({
@@ -68,7 +68,7 @@ Any is a field that can take on any type of value, it can be use with `type.any(
 Here is an example:
 
 ```typescript mesosphere/examplefunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourfunction = writeFunction({
@@ -88,7 +88,7 @@ Optional is an optional field that can contain any other type; it can be used wi
 Here is an example:
 
 ```typescript mesosphere/examplefunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourfunction = writeFunction({
@@ -109,7 +109,7 @@ Unions is a field that can contain multiple other type; it can be used with `typ
 Here is an example:
 
 ```typescript mesosphere/examplefunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourfunction = writeFunction({
@@ -129,7 +129,7 @@ Literal is a field that is a constant; it can be used with `type.literal()`. Lit
 Here is an example:
 
 ```typescript mesosphere/examplefunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourfunction = writeFunction({
@@ -153,7 +153,7 @@ Record is a field that is can assign arbitrary keys to values; it can be used wi
 Here is an example:
 
 ```typescript mesosphere/examplefunction.ts
-import { writeFunction } from "mesosphere/reactlibrarie";
+import { writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const yourfunction = writeFunction({

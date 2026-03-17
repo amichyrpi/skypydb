@@ -1,7 +1,7 @@
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import React, { StrictMode, useState } from "react";
 import { FlatList, SafeAreaView, Text, TextInput, View } from "react-native";
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 import styles from "./styles";
 

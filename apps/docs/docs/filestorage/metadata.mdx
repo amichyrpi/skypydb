@@ -13,7 +13,7 @@ The `st` namespace stands for [system table](../database/systemtable).
 Here is an example:
 
 ```typescript mesosphere/upload.ts
-import { readFunction } from "mesosphere/reactlibrarie";
+import { readFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const readfilemetadata = readFunction({
@@ -65,7 +65,7 @@ This output contains:
 You can access your file metadata by using [side actions](../functions/sideactions).
 
 ```typescript mesosphere/upload.ts
-import { sideaction } from "mesosphere/reactlibrarie";
+import { sideaction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const getMetadata = sideaction({

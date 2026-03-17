@@ -34,7 +34,7 @@ npx mesosphere dev
 4. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
 
 ```typescript mesosphere/tasks.ts
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a task to the database with a task name and a boolean to indicate if it succeed or not.
@@ -119,7 +119,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 import { createRouter } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
@@ -167,7 +167,7 @@ export function getRouter() {
 7. **Use the functions in your TanStack Start app.** in the `app/routes/index.tsx` file, you can use the `newtask` and `readtask` functions to add and read tasks from the database:
 
 ```typescript app/routes/index.tsx
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";

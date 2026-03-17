@@ -17,7 +17,7 @@ You can create a close function by using `closeread`, `closewrite` and `closeact
 Here is an example:
 
 ```typescript mesosphere/payment.ts
-import { closewrite } from "mesosphere/reactlibrarie";
+import { closewrite } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 export const setPaymentasinternal = closewrite({
@@ -41,7 +41,7 @@ You can call your close functions from [side actions](./sideaction) and from [sc
 Here is an example that upgrades a user's payment plan from a public function.
 
 ```typescript mesosphere/userplan.ts
-import { sideaction } from "mesosphere/reactlibrarie";
+import { sideaction } from "mesosphere/reactlibrary";
 import { closefunction } from "./mesosphere/deploy";
 import { type } from "mesosphere/type";
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { callread, callwrite, callupload } from "mesosphere/reactlibrarie";
+import { callread, callwrite, callupload } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 import { faker } from "@faker-js/faker";
 

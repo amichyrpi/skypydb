@@ -43,7 +43,7 @@ npx mesosphere dev
 4. **Create a write and read functions** in the `mesosphere/` folder. For example, create a file called `tasks.ts` and add the following code, it will export `api.tasks.newtask` and `api.tasks.readtask`:
 
 ```typescript mesosphere/tasks.ts
-import { readFunction, writeFunction } from "mesosphere/reactlibrarie";
+import { readFunction, writeFunction } from "mesosphere/reactlibrary";
 import { type } from "mesosphere/type";
 
 // Add a task to the database with a task name and a boolean to indicate if it succeed or not.
@@ -76,7 +76,7 @@ export const readtask = readFunction({
 ```typescript app/MesosphereClientProvider.tsx
 "use client";
 
-import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrarie";
+import { MesosphereProvider, ReactClient } from "mesosphere/reactlibrary";
 import { ReactNode } from "react";
 
 // Initialize the Mesosphere client with the URL and API key.
@@ -134,7 +134,7 @@ export default function RootLayout({
 ```typescript app/page.tsx
 "use client";
 
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 export default function Home() {

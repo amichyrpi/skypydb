@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { callread, callwrite } from "mesosphere/reactlibrarie";
+import { callread, callwrite } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 
 export default function Home() {

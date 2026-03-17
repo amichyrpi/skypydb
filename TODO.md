@@ -3,11 +3,13 @@
 ## Small things to add or change
 
 - [ ] Finish the documentation
-- [ ] Add Deno and Hono support
-- [ ] Add Go lang support
+- [ ] Add features
+  - [ ] Add Deno and Hono support
+  - [ ] Add Go support
 - [ ] Finish demo files
-  - [ ] `demo/` The index.css file
-  - [ ] `mesosphere-tests/`
+  - [ ] `demo/` All CSS files
+  - [ ] `mesosphere-tests/` All CSS files
+  - [ ] Test all the tests and correct them if necessary
 - [ ] Finish all the workflows files
   - [ ] Python
   - [ ] Typescript

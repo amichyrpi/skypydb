@@ -1,0 +1,63 @@
+---
+title: "Rate Limiter"
+---
+
+Rate limits are calculated on the Mesosphere server whenever you access it.
+
+You are billed per function call and per write operation, as well as for file bandwidth, database bandwidth, file uploads, vector bandwidth, and vector storage.
+
+We currently offer two plans. A free plan is planned for a future public release.
+
+> Due to European taxes, hosting your app in Europe costs approximately **30% more** than US hosting.
+
+|                            | Mesosphere Starter                          | Mesosphere Professional                      |
+| -------------------------- | ------------------------------------------- | -------------------------------------------- |
+| Price                      | $5 + pay-as-you-go after limits exceeded    | $22 + pay-as-you-go after limits exceeded    |
+| **Infra**                  |                                             |                                              |
+| Developers                 | 10                                          | Unlimited                                    |
+| Max Projects               | 50                                          | 300                                          |
+| **Features**               |                                             |                                              |
+| Indexes                    | ✅                                          | ✅                                           |
+| File upload/storage        | ✅                                          | ✅                                           |
+| Text search                | ✅                                          | ✅                                           |
+| Vector search              | ✅                                          | ✅                                           |
+| Vector Embeddings          | ✅                                          | ✅                                           |
+| Cron Functions             | ✅                                          | ✅                                           |
+| Scheduled Functions        | ✅                                          | ✅                                           |
+| Side Actions               | ✅                                          | ✅                                           |
+| Auth                       | ✅                                          | ✅                                           |
+| Read function caching      | ✅                                          | ✅                                           |
+| Node.js Runtime            | ✅                                          | ✅                                           |
+| Mesosphere Dashboard       | ✅                                          | ✅                                           |
+| Sentry Integration         |                                             | ✅                                           |
+| Team Admin access          |                                             | ✅                                           |
+| **Database**               |                                             |                                              |
+| Backup / Restore           | ✅                                          | ✅                                           |
+| Automatic backups          |                                             | ✅                                           |
+| **Resources**              |                                             |                                              |
+| Function calls             | 2,000,000/month, then $1.5 per 1,000,000    | 50,000,000/month, then $1.5 per 1,000,000    |
+| Scheduled / Cron functions | 35 concurrent, then $0.005 per 5 executions | 500 concurrent, then $0.005 per 5 executions |
+| Side Actions compute       | 40 GB-hours/month, then $0.5 per GB-hour    | 300 GB-hours/month, then $0.5 per GB-hour    |
+| Database storage           | 5 GB, then $0.3/GB/month                    | 75 GB, then $0.3/GB/month                    |
+| Database bandwidth         | 8 GB/month, then $0.3/GB/month              | 75 GB/month, then $0.3/GB/month              |
+| File upload/storage        | 8 GB, then $0.05/GB/month                   | 150 GB, then $0.05/GB/month                  |
+| File bandwidth             | 5 GB/month, then $0.3/GB/month              | 75 GB/month, then $0.3/GB/month              |
+| Vector storage             | 2 GB, then $0.75/GB/month                   | 4 GB, then $0.75/GB/month                    |
+| Vector bandwidth           | 2 GB/month, then $0.15/GB/month             | 20 GB/month, then $0.15/GB/month             |
+| **Performance**            |                                             |                                              |
+| Transactions               | Blazingly fast                              | Blazingly fast                               |
+| Read/Write concurrency     | 48                                          | Unlimited                                    |
+| Side Action concurrency    | 96                                          | Unlimited                                    |
+| **Client Libraries**       |                                             |                                              |
+| JavaScript / TypeScript    | ✅                                          | ✅                                           |
+| React                      | ✅                                          | ✅                                           |
+| React Native               | ✅                                          | ✅                                           |
+| Next.js                    | ✅                                          | ✅                                           |
+| Svelte                     | ✅                                          | ✅                                           |
+| Node.js                    | ✅                                          | ✅                                           |
+| Deno                       | ✅                                          | ✅                                           |
+| Python                     | ✅                                          | ✅                                           |
+| Rust                       | ✅                                          | ✅                                           |
+| Go                         | ✅                                          | ✅                                           |
+
+For more details on billing and plans, visit: [mesosphere.ahen-studio.com/pricing](https://mesosphere.ahen-studio.com/pricing)

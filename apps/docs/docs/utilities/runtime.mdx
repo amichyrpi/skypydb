@@ -1,0 +1,53 @@
+---
+title: "Runtime"
+icon: "server-cog"
+---
+
+When you create Mesosphere functions, they can run on two different runtimes:
+
+- Default [Mesosphere runtime](./runtime#default-mesosphere-runtime)
+- [Node.js runtime](./runtime#node-js-runtime)
+
+# Default Mesosphere runtime
+
+By default, all Mesosphere functions run on the [Cloudflare Workers runtime](https://blog.cloudflare.com/cloud-computing-without-containers/), which provides access to most web standard APIs.
+
+This runtime has many benefits:
+
+- **No cold starts**: the runtime is always available, enabling sub-millisecond response times.
+
+- **Modern web standards**: the runtime is based on the V8 architecture (used by Chromium browsers like Chrome), allowing you to write less code compared to traditional runtimes.
+
+- **Strong data security**: the runtime has very limited direct access to your data. Data can only be modified through functions you define, such as `write` and `read`.
+
+The Cloudflare Workers runtime supports most libraries that work in browser-like environments (such as Deno and Workers). However, it does not support all Node.js libraries, which is why you can use side actions with the [Node.js runtime](./runtime#node-js-runtime).
+
+# Node.js runtime
+
+If you are using a library that is not supported by the [default runtime](./runtime#default-mesosphere-runtime), you can use side actions with a special directive: `use node runtime` at the top of the file containing your side action.
+
+When using the **Node.js runtime**, you are limited to side actions. To interact with the database, you must use `runwrite` and `runread`.
+
+## Best practices
+
+Files using the `use node runtime` directive should not contain standard Mesosphere functions, since the Node.js runtime cannot execute regular `write` and `read` functions.
+
+However, if a file in the `mesosphere/` root does not contain any Mesosphere logic, you should still include the `use node runtime` directive at the top of the file.
+
+## Configuring the Node.js version
+
+By default, all side actions using the Node.js runtime run on Node.js version 22. However, this can be configured in a `mesosphere.config.json` file. Currently, Node.js versions 20 and 22 are supported.
+
+Example:
+
+```json
+{
+  "node": {
+    "nodeVersion": "20"
+  }
+}
+```
+
+**For self-hosters**
+
+The Node.js version cannot be overridden via the `mesosphere.config.json` file. Instead, it is defined in the [.nvmrc](https://github.com/Ahen-Studio/mesosphere-backend/blob/main/.nvmrc) file.

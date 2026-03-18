@@ -3,9 +3,9 @@
   "theme": "linden",
   "name": "Mesosphere Documentation",
   "colors": {
-    "primary": "#FF7B9C",
-    "light": "#FF7B9C",
-    "dark": "#FF7B9C"
+    "primary": "#E85912",
+    "light": "#C653E0",
+    "dark": "#C653E0"
   },
   "fonts": {
     "heading": {
@@ -19,13 +19,16 @@
       "source": "/public/font/TTNormsPro-ExtraBold.woff2"
     }
   },
+  "icons": {
+    "library": "lucide"
+  },
   "styling": {
     "codeblocks": "system"
   },
   "background": {
     "color": {
-      "light": "#F5F0F6",
-      "dark": "#161925"
+      "light": "#F1F1F1",
+      "dark": "#111111"
     }
   },
   "search": {
@@ -46,14 +49,14 @@
             "pages": [
               {
                 "group": "Tutorial",
-                "icon": "books",
+                "icon": "book-marked",
                 "root": "/docs/tutorial/chatapp",
                 "expanded": false,
                 "pages": ["/docs/tutorial/chatapp"]
               },
               {
                 "group": "Frameworks",
-                "icon": "gear",
+                "icon": "tool-case",
                 "expanded": false,
                 "root": "/docs/framework/quickstart",
                 "pages": [
@@ -70,7 +73,6 @@
                   "/docs/framework/scripttag"
                 ]
               },
-              "/docs/self-hosting",
               {
                 "group": "CLI",
                 "icon": "keyboard",
@@ -134,9 +136,11 @@
                 "pages": [
                   "/docs/database/writing",
                   "/docs/database/reading",
-                  "/docs/database/documentid",
+                  "/docs/database/documentids",
                   "/docs/database/type",
-                  "/docs/database/systemtable"
+                  "/docs/database/systemtable",
+                  "/docs/database/schemas",
+                  "/docs/database/backuprestore"
                 ]
               },
               {
@@ -148,98 +152,52 @@
               },
               {
                 "group": "Vector Embeddings",
-                "icon": "magnifying-glass",
+                "icon": "vector-square",
                 "root": "/docs/vector/quickstart",
                 "expanded": false,
                 "pages": [
-                  {
-                    "group": "Python",
-                    "icon": "python",
-                    "expanded": false,
-                    "pages": [
-                      {
-                        "group": "Examples",
-                        "icon": "pencil",
-                        "root": "/docs/vector/python/examples/quickstart",
-                        "expanded": false,
-                        "pages": [
-                          "/docs/vector/python/examples/provider",
-                          "/docs/vector/python/examples/add",
-                          "/docs/vector/python/examples/delete",
-                          "/docs/vector/python/examples/query"
-                        ]
-                      },
-                      {
-                        "group": "Integration",
-                        "icon": "handshake",
-                        "root": "/docs/vector/python/integration/quickstart",
-                        "expanded": false,
-                        "pages": ["/docs/vector/python/integration/quickstart"]
-                      }
-                    ]
-                  },
-                  {
-                    "group": "TypeScript",
-                    "icon": "js",
-                    "expanded": false,
-                    "pages": [
-                      {
-                        "group": "Examples",
-                        "icon": "pencil",
-                        "root": "/docs/vector/ts/examples/quickstart",
-                        "expanded": false,
-                        "pages": [
-                          "/docs/vector/ts/examples/provider",
-                          "/docs/vector/ts/examples/add",
-                          "/docs/vector/ts/examples/delete",
-                          "/docs/vector/ts/examples/query"
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "group": "Rust",
-                    "icon": "rust",
-                    "expanded": false,
-                    "pages": [
-                      {
-                        "group": "Examples",
-                        "icon": "pencil",
-                        "root": "/docs/vector/rust/examples/quickstart",
-                        "expanded": false,
-                        "pages": [
-                          "/docs/vector/rust/examples/provider",
-                          "/docs/vector/rust/examples/add",
-                          "/docs/vector/rust/examples/delete",
-                          "/docs/vector/rust/examples/query"
-                        ]
-                      }
-                    ]
-                  }
+                  "/docs/vector/search",
+                  "/docs/vector/adding",
+                  "/docs/vector/provider",
+                  "/docs/vector/query",
+                  "/docs/vector/delete",
+                  "/docs/vector/integration"
                 ]
               }
             ]
           },
           {
-            "group": "Mesosphere Utilities",
+            "group": "Utilities",
             "pages": [
               {
-                "group": "Production",
-                "icon": "message",
-                "root": "/docs/production/quickstart",
+                "group": "AI Agents",
+                "icon": "bot",
+                "root": "/docs/utilities/aiagents/quickstart",
                 "expanded": false,
                 "pages": [
-                  "/docs/production/deployingtoprod",
-                  "/docs/production/developmentprocess",
-                  "/docs/production/getintouch"
+                  "/docs/utilities/aiagents/claudeai",
+                  "/docs/utilities/aiagents/codexai",
+                  "/docs/utilities/aiagents/cursorai"
                 ]
               },
-              "/docs/apiendpoint",
-              "/docs/benchmark",
-              "/docs/cligeneration",
-              "/docs/ratelimit",
-              "/docs/testing",
-              "/docs/runtime"
+              "/docs/utilities/benchmark",
+              "/docs/utilities/codegeneration",
+              {
+                "group": "Production",
+                "icon": "box",
+                "root": "/docs/utilities/production/quickstart",
+                "expanded": false,
+                "pages": [
+                  "/docs/utilities/production/deploying",
+                  "/docs/utilities/production/development",
+                  "/docs/utilities/production/ratelimit",
+                  "/docs/utilities/production/regions",
+                  "/docs/utilities/production/getintouch"
+                ]
+              },
+              "/docs/utilities/selfhosting",
+              "/docs/utilities/runtime",
+              "/docs/utilities/testing"
             ]
           },
           {
@@ -295,6 +253,20 @@
               "/docs/client/nuxt",
               "/docs/client/python",
               "/docs/client/rust"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              {
+                "group": "API Reference",
+                "icon": "send-horizontal",
+                "root": "/docs/reference/apireference/quickstart",
+                "expanded": false,
+                "pages": []
+              },
+              "/docs/reference/openai",
+              "/docs/reference/bestpractices"
             ]
           }
         ]

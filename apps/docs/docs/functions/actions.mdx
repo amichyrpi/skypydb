@@ -1,0 +1,387 @@
+---
+title: Actions
+sidebar_position: 30
+description: "Call third-party services and external APIs from mesosphere"
+---
+
+export const Constructor = "// example";
+export const ArgsWithValidation = "// example";
+export const Context = "// example";
+export const ContextRunQuery = "// example";
+export const ContextRunMutation = "// example";
+export const CircularError = "// example";
+export const CircularErrorFixedResults = "// example";
+export const CircularErrorFixedReturn = "// example";
+export const NPM = "// example";
+export const Node = "// example";
+export const Call = "// example";
+export const ScheduleFromMutation = "// example";
+
+import { LargeCardList } from "@site/src/FrameworkList.tsx";
+
+Actions can call third party services to do things such as processing a payment
+with [Stripe](https://stripe.com). They can be run in mesosphere's JavaScript
+environment or in Node.js. They can interact with the database indirectly by
+calling [queries](/functions/query-functions.mdx) and
+[mutations](/functions/mutation-functions.mdx).
+
+**Example:**
+[GIPHY Action](https://github.com/get-mesosphere/mesosphere-demos/tree/main/giphy-action)
+
+## Action names
+
+Actions follow the same naming rules as queries, see
+[Query names](/functions/query-functions.mdx#query-names).
+
+## The `action` constructor
+
+To declare an action in mesosphere you use the action constructor function. Pass it
+an object with a `handler` function, which performs the action:
+
+```ts title="mesosphere/myFunctions.ts"
+import { action } from "./_generated/server";
+
+export const myAction = action({
+  handler: async (ctx, args) => {
+    // Perform the action
+  },
+});
+```
+
+Unlike a query, an action can but does not have to return a value.
+
+### Action arguments and responses
+
+Action arguments and responses follow the same rules as
+[mutations](/functions/mutation-functions.mdx#mutation-arguments):
+
+```ts title="mesosphere/myFunctions.ts"
+import { action } from "./_generated/server";
+import { v } from "mesosphere/values";
+
+export const myAction = action({
+  args: { message: v.string() },
+  handler: async (ctx, args) => {
+    // Perform the action
+    return args.message;
+  },
+});
+```
+
+The first argument to the handler function is reserved for the action context.
+
+### Action context
+
+The `action` constructor enables interacting with the database, and other mesosphere
+features by passing an [ActionCtx](/api/interfaces/server.GenericActionCtx)
+object to the handler function as the first argument:
+
+```ts title="mesosphere/myFunctions.ts"
+import { action } from "./_generated/server";
+
+export const myAction = action({
+  handler: async (ctx, args) => {
+    // Use ctx.auth for authentication
+    // Use ctx.runQuery to call queries
+    // Use ctx.runMutation to call mutations
+    // Use ctx.scheduler to schedule functions
+    // Use ctx.vectorSearch for vector search
+  },
+});
+```
+
+Which part of that action context is used depends on what your action needs to
+do:
+
+- To read data from the database use the `runQuery` field, and call a query that
+  performs the read:
+
+```ts title="mesosphere/myFunctions.ts"
+import { action } from "./_generated/server";
+import { internal } from "./_generated/api";
+
+export const myAction = action({
+  handler: async (ctx, args) => {
+    const data = await ctx.runQuery(internal.myFunctions.readData);
+    return data;
+  },
+});
+```
+
+Here `readData` is an [internal query](/functions/internal-functions.mdx)
+because we don't want to expose it to the client directly. Actions, mutations
+and queries can be defined in the same file.
+
+- To write data to the database use the `runMutation` field, and call a mutation
+  that performs the write:
+
+```ts title="mesosphere/myFunctions.ts"
+import { action } from "./_generated/server";
+import { internal } from "./_generated/api";
+
+export const myAction = action({
+  handler: async (ctx, args) => {
+    await ctx.runMutation(internal.myFunctions.writeData, { value: "hello" });
+  },
+});
+```
+
+Use an [internal mutation](/functions/internal-functions.mdx) when you want to
+prevent users from calling the mutation directly.
+
+As with queries, it's often convenient to define actions and mutations in the
+same file.
+
+- To generate upload URLs for storing files use the `storage` field. Read on
+  about [File Storage](/file-upload.mdx).
+- To check user authentication use the `auth` field. Auth is propagated
+  automatically when calling queries and mutations from the action. Read on
+  about [Authentication](/authentication.mdx).
+- To schedule functions to run in the future, use the `scheduler` field. Read on
+  about [Scheduled Functions](/scheduling/scheduled-functions.mdx).
+- To search a vector index, use the `vectorSearch` field. Read on about
+  [Vector Search](/vector/vector-search.mdx).
+
+### Dealing with circular type inference
+
+<DetailsCard summary={<>
+Working around the TypeScript error: some action <code>implicitly has
+type 'any' because it does not have a type annotation and is
+referenced directly or indirectly in its own initializer.</code>
+
+</>}>
+
+When the return value of an action depends on the result of calling
+`ctx.runQuery` or `ctx.runMutation`, TypeScript will complain that it cannot
+infer the return type of the action. This is a minimal example of the issue:
+
+```ts
+// example
+```
+
+To work around this, there are two options:
+
+1. Type the return value of the handler function explicitly:
+   ```ts
+   // example
+   ```
+2. Type the the result of the `ctx.runQuery` or `ctx.runMutation` call
+   explicitly:
+   ```ts
+   // example
+   ```
+
+TypeScript will check that the type annotation matches what the called query or
+mutation returns, so you don't lose any type safety.
+
+In this trivial example the return type of the query was `null`. See the
+TypeScript
+page for other types which might be helpful when annotating the result.
+
+</DetailsCard>
+
+## Choosing the runtime ("use node")
+
+Actions can run in mesosphere's custom JavaScript environment or in Node.js.
+
+By default, actions run in mesosphere's environment. This environment supports
+`fetch`, so actions that simply want to call a third-party API using `fetch` can
+be run in this environment:
+
+```ts title="mesosphere/myFunctions.ts"
+import { action } from "./_generated/server";
+
+export const myAction = action({
+  handler: async (ctx, args) => {
+    const response = await fetch("https://api.example.com");
+    const data = await response.json();
+    return data;
+  },
+});
+```
+
+Actions running in mesosphere's environment are faster compared to Node.js, since
+they don't require extra time to start up before running your action (cold
+starts). They can also be defined in the same file as other mesosphere functions.
+Like queries and mutations they can import NPM packages, but not all are
+supported.
+
+Actions needing unsupported NPM packages or Node.js APIs can be configured to
+run in Node.js by adding the `"use node"` directive at the top of the file. Note
+that other mesosphere functions cannot be defined in files with the `"use node";`
+directive.
+
+```ts title="mesosphere/myAction.ts"
+"use node";
+
+import { action } from "./_generated/server";
+
+export const myAction = action({
+  handler: async (ctx, args) => {
+    // Use Node.js APIs here
+  },
+});
+```
+
+Learn more about the two [mesosphere Runtimes](/functions/runtimes.mdx).
+
+## Splitting up action code via helpers
+
+<>
+  {/* Fragment for Prettier */}
+  Just like with [queries](/functions/query-functions.mdx#splitting-up-query-code-via-helpers)
+  and [mutations](/functions/mutation-functions.mdx#splitting-up-mutation-code-via-helpers)
+  you can define and call helper
+  <LanguageSelector verbose /> functions to split up the code in your actions or
+  reuse logic across multiple mesosphere functions.
+
+But note that the [ActionCtx](/api/interfaces/server.GenericActionCtx) only has
+the `auth` field in common with QueryCtx
+and MutationCtx.
+
+</>
+
+## Calling actions from clients
+
+To call an action from [React](/client/react.mdx) use the
+[`useAction`](/api/modules/react#useaction) hook along with the generated
+[`api`](/generated-api/api) object.
+
+```tsx title="src/myApp.tsx"
+import { useAction } from "mesosphere/react";
+import { api } from "../mesosphere/_generated/api";
+
+function MyApp() {
+  const myAction = useAction(api.myFunctions.myAction);
+  return <button onClick={() => myAction()}>Run Action</button>;
+}
+```
+
+Unlike
+[mutations](/functions/mutation-functions.mdx#calling-mutations-from-clients),
+actions from a single client are parallelized. Each action will be executed as
+soon as it reaches the server (even if other actions and mutations from the same
+client are running). If your app relies on actions running after other actions
+or mutations, make sure to only trigger the action after the relevant previous
+function completes.
+
+**Note:** In most cases calling an action directly from a client **is an
+anti-pattern**. Instead, have the client call a
+[mutation](/functions/mutation-functions.mdx) which captures the user intent by
+writing into the database and then
+[schedules](/scheduling/scheduled-functions.mdx) an action:
+
+```ts title="mesosphere/myFunctions.ts"
+import { mutation } from "./_generated/server";
+import { internal } from "./_generated/api";
+
+export const myMutation = mutation({
+  handler: async (ctx, args) => {
+    await ctx.scheduler.runAfter(0, internal.myFunctions.myAction);
+  },
+});
+```
+
+This way the mutation can enforce invariants, such as preventing the user from
+executing the same action twice.
+
+## Limits
+
+Actions time out after 10 minutes.
+[Node.js](/functions/runtimes.mdx#nodejs-runtime) and
+[mesosphere runtime](/functions/runtimes.mdx#default-mesosphere-runtime) have 512MB and
+64MB memory limit respectively. Please [contact us](/production/contact.md) if
+you have a use case that requires configuring higher limits.
+
+Actions can do up to 1000 concurrent operations, such as executing queries,
+mutations or performing fetch requests.
+
+For information on other limits, see [here](/production/state/limits.mdx).
+
+If you need to allowlist mesosphere's outbound IP addresses in an external service's
+firewall, see [Networking](/production/networking.mdx).
+
+## Error handling
+
+Unlike queries and mutations, actions may have side-effects and therefore can't
+be automatically retried by mesosphere when errors occur. For example, say your
+action calls Stripe to send a customer invoice. If the HTTP request fails,
+mesosphere has no way of knowing if the invoice was already sent. Like in normal
+backend code, it is the responsibility of the caller to handle errors raised by
+actions and retry the action call if appropriate.
+
+## Dangling promises
+
+Make sure to await all promises created within an action. Async tasks still
+running when the function returns might or might not complete. In addition,
+since the Node.js execution environment might be reused between action calls,
+dangling promises might result in errors in subsequent action invocations.
+
+## Best practices
+
+### `await ctx.runAction` should only be used for crossing JS runtimes
+
+**Why?** `await ctx.runAction` incurs to overhead of another mesosphere server
+function. It counts as an extra function call, it allocates its own system
+resources, and while you're awaiting this call the parent action call is frozen
+holding all it's resources. If you pile enough of these calls on top of each
+other, your app may slow down significantly.
+
+**Fix:** The reason this api exists is to let you run code in the
+[Node.js environment](/functions/runtimes.mdx). If you want to call an action
+from another action that's in the same runtime, which is the normal case, the
+best way to do this is to pull the code you want to call into a TypeScript
+helper function
+and call the helper instead.
+
+### Avoid `await ctx.runMutation` / `await ctx.runQuery`
+
+```ts
+// ❌
+const foo = await ctx.runQuery(...)
+const bar = await ctx.runQuery(...)
+
+// ✅
+const fooAndBar = await ctx.runQuery(...)
+```
+
+**Why?** Multiple runQuery / runMutations execute in separate transactions and
+aren’t guaranteed to be consistent with each other (e.g. foo and bar could read
+the same document and return two different results), while a single runQuery /
+runMutation will always be consistent. Additionally, you’re paying for multiple
+function calls when you don’t have to.
+
+**Fix:** Make a new internal query / mutation that does both things. Refactoring
+the code for the two functions into helpers will make it easy to create a new
+internal function that does both things while still keeping around the original
+functions. Potentially try and refactor your action code to “batch” all the
+database access.
+
+Caveats: Separate runQuery / runMutation calls are valid when intentionally
+trying to process more data than fits in a single transaction (e.g. running a
+migration, doing a live aggregate).
+
+## Related Components
+
+<LargeCardList
+  items={[
+    {
+      title: "Action Cache",
+      description:
+        "Cache expensive or frequently run actions. Allows configurable cache duration and forcing updates.",
+      href: "https://www.mesosphere.dev/components/action-cache",
+    },
+    {
+      title: "Workpool",
+      description:
+        "Workpool give critical tasks priority by organizing async operations into separate, customizable queues. Supports retries and parallelism limits.",
+      href: "https://www.mesosphere.dev/components/workpool",
+    },
+    {
+      title: "Workflow",
+      description:
+        "Similar to Actions, Workflows can call queries, mutations, and actions. However, they are durable functions that can suspend, survive server crashes, specify retries for action calls, and more.",
+      href: "https://www.mesosphere.dev/components/workflow",
+    },
+  ]}
+/>

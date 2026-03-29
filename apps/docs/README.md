@@ -1,34 +1,38 @@
-# Mesosphere Documentation
+# Mesosphere Docs
 
-This directory contains the source code for the Mesosphere documentation.
+This Documentation is built using [Docusaurus 3](https://docusaurus.io/).
 
-## Development
+## Local Development
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+If you want to contribute to the documentation, you can run the following commands to start the local development server:
 
-```
-npm i -g mint
-```
-
-Run the following command at the root of your documentation, where your `docs.json` is located:
-
-```
-mint dev
+```bash
+npm install
+npm run start
 ```
 
-View your local preview at `http://localhost:3000`.
+This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
-## Publishing changes
+You can also run a spellcheck test using the following command:
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+```bash
+npm run test
+```
 
-## Need help?
+You can enable spell checking in VS Code by installing [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker).
 
-### Troubleshooting
+## Deployment
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+To deploy the documentation, you can run the following command:
 
-### Resources
+```bash
+npm run build
+```
 
-- [Mintlify documentation](https://mintlify.com/docs)
+This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+## llms.txt
+
+The `llms.txt` file is a file that allows LLMs like Codex or claude to understand the context of the documentation. It was manually generated using [Firecrawl](https://www.firecrawl.dev/blog/How-to-Create-an-llms-txt-File-for-Any-Website).
+
+You need to get an API key from Firecrawl and follow the instructions on the blog post above.

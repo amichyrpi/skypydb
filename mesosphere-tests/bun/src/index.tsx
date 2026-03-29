@@ -32,10 +32,7 @@ const server = Bun.serve({
       const base = resolve(publicDir);
       const resolvedPath = resolve(publicDir, normalizedPathname);
 
-      if (
-        resolvedPath !== base &&
-        !resolvedPath.startsWith(base + sep)
-      ) {
+      if (resolvedPath !== base && !resolvedPath.startsWith(base + sep)) {
         return new Response("Not Found", { status: 404 });
       }
 

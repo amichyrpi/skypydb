@@ -1,4 +1,4 @@
-﻿﻿import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { callread, callsideaction } from "mesosphere/reactlibrary";
 import { api } from "../mesosphere/deploy";
 

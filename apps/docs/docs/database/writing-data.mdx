@@ -1,0 +1,199 @@
+---
+title: "Writing Data"
+sidebar_position: 4
+description: "Insert, update, and delete data in mesosphere database tables"
+---
+
+export const insertExample = "// example";
+export const patchExample = "// example";
+export const replaceExample = "// example";
+export const deleteExample = "// example";
+
+import { LargeCardList } from "@site/src/FrameworkList.tsx";
+
+[Mutations](/functions/mutation-functions.mdx) can insert, update, and remove
+data from database tables.
+
+## Inserting new documents
+
+You can create new documents in the database with the
+[`db.insert`](/api/interfaces/server.GenericDatabaseWriter#insert) method:
+
+```ts title="mesosphere/tasks.ts"
+import { mutation } from "./_generated/server";
+import { v } from "mesosphere/values";
+
+export const addTask = mutation({
+  args: { text: v.string() },
+  handler: async (ctx, args) => {
+    const taskId = await ctx.db.insert("tasks", {
+      text: args.text,
+      isCompleted: false,
+    });
+    return taskId;
+  },
+});
+```
+
+The second argument to `db.insert` is a JavaScript object with data for the new
+document.
+
+The same types of values that can be passed into and returned from
+[queries](/functions/query-functions.mdx) and
+[mutations](/functions/mutation-functions.mdx) can be written into the database.
+See [Data Types](/database/types.md) for the full list of supported types.
+
+The `insert` method returns a globally unique ID for the newly inserted
+document.
+
+## Updating existing documents
+
+Given an existing document ID the document can be updated using the following
+methods:
+
+1. The [`db.patch`](/api/interfaces/server.GenericDatabaseWriter#patch) method
+   will patch an existing document, shallow merging it with the given partial
+   document. New fields are added. Existing fields are overwritten. Fields set
+   to `undefined` are removed.
+
+```ts title="mesosphere/tasks.ts"
+import { mutation } from "./_generated/server";
+import { v } from "mesosphere/values";
+
+export const updateTask = mutation({
+  args: { id: v.id("tasks"), isCompleted: v.boolean() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { isCompleted: args.isCompleted });
+  },
+});
+```
+
+2. The [`db.replace`](/api/interfaces/server.GenericDatabaseWriter#replace)
+   method will replace the existing document entirely, potentially removing
+   existing fields:
+
+```ts title="mesosphere/tasks.ts"
+import { mutation } from "./_generated/server";
+import { v } from "mesosphere/values";
+
+export const replaceTask = mutation({
+  args: { id: v.id("tasks"), text: v.string(), isCompleted: v.boolean() },
+  handler: async (ctx, args) => {
+    await ctx.db.replace(args.id, {
+      text: args.text,
+      isCompleted: args.isCompleted,
+    });
+  },
+});
+```
+
+## Deleting documents
+
+Given an existing document ID the document can be removed from the table with
+the [`db.delete`](/api/interfaces/server.GenericDatabaseWriter#delete) method.
+
+```ts title="mesosphere/tasks.ts"
+import { mutation } from "./_generated/server";
+import { v } from "mesosphere/values";
+
+export const deleteTask = mutation({
+  args: { id: v.id("tasks") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});
+```
+
+## Bulk inserts or updates
+
+If you are used to SQL you might be looking for some sort of bulk insert or bulk
+update statement. In mesosphere the entire `mutation` function is automatically a
+single transaction.
+
+You can just insert or update in a loop in the mutation function. mesosphere queues
+up all database changes in the function and executes them all in a single
+transaction when the function ends, leading to a single efficient change to the
+database.
+
+````typescript
+/**
+ * Bulk insert multiple products into the database.
+ *
+ * Equivalent to the SQL:
+ * ```sql
+ * INSERT INTO products (product_id, product_name, category, price, in_stock)
+ * VALUES
+ *     ('Laptop Pro', 'Electronics', 1299.99, true),
+ *     ('Wireless Mouse', 'Electronics', 24.95, true),
+ *     ('Ergonomic Keyboard', 'Electronics', 89.50, true),
+ *     ('Ultra HD Monitor', 'Electronics', 349.99, false),
+ *     ('Wireless Headphones', 'Audio', 179.99, true);
+ * ```
+ */
+export const bulkInsertProducts = mutation({
+  args: {
+    products: v.array(
+      v.object({
+        product_name: v.string(),
+        category: v.string(),
+        price: v.number(),
+        in_stock: v.boolean(),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { products } = args;
+
+    // Insert in a loop. This is efficient because mesosphere queues all the changes
+    // to be executed in a single transaction when the mutation ends.
+    for (const product of products) {
+      const id = await ctx.db.insert("products", {
+        product_name: product.product_name,
+        category: product.category,
+        price: product.price,
+        in_stock: product.in_stock,
+      });
+    }
+  },
+});
+````
+
+## Migrations
+
+Database migrations are done through the migration component. The component is
+designed to run online migrations to safely evolve your database schema over
+time. It allows you to resume from failures, and validate changes with dry runs.
+
+<LargeCardList
+  items={[
+    {
+      title: "Migrations",
+      description: "Framework for long running data migrations of live data.",
+      href: "https://www.mesosphere.dev/components/migrations",
+    },
+  ]}
+/>
+
+## Write performance and limits
+
+To prevent accidental writes of large amounts of records, queries and mutations
+enforce [transaction limits](/production/state/limits.mdx#transactions). In
+situations where you are at risk of reading or writing unknown amounts of data,
+use these tools to stay within the limits.
+
+### Measuring document sizes
+
+Use tools like `getmesosphereSize` to
+[calculate documents sizes](/database/types#measuring-document-sizes). By doing
+so, you can make batches of work dynamically and handle each batch in a separate
+transaction, using the scheduler or having an action call multiple mutations.
+Note: a mutation or query called by another mutation or query share the overall
+transaction limits.
+
+### Limiting paginated queries
+
+When using [paginated queries](/database/pagination), pass `maximumBytesRead` or
+`maximumRowsRead` in
+[`PaginationOptions`](/api/interfaces/server.PaginationOptions) to limit how
+much data a single page reads. This is especially useful when filtering for rare
+items where a low `numItems` won't bound execution time.

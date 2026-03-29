@@ -1,87 +1,49 @@
 ---
-title: "Home"
-icon: "house"
+title: "Welcome to Mesosphere Docs"
+slug: "home"
+hide_table_of_contents: true
 ---
 
-Mesosphere is an open source relational and vector embeddings database where you write functions in TypeScript, this codes
-are run in the database. Mesosphere act just like a react component, it automatically updates when the data changes.
+import {
+  QuickFrameworksList,
+  QuickLanguagesList,
+} from "@site/src/FrameworkList.tsx";
+import { LargeCardList } from "@site/src/FrameworkList.tsx";
+import Link from "@docusaurus/Link";
+import { PlayIcon, LockClosedIcon, CubeIcon } from "@radix-ui/react-icons";
 
-Mesosphere provides a large amount of client libraries. It makes it easy to build any app in any language that are live-updated.
+Mesosphere offers a suite of tools for building and deploying applications on Mesosphere. The following guides will help you get started with Mesosphere with multiple topics, from creating your first write functions, querying your database, to using an authentication service.
 
-## Get Started
+Mesosphere is the fastest open source reactive and vector embedding database, you write functions in TypeScript, that will run directly on your database, it's make it easy to build and scale dynamic live-updating apps.
 
-Chose your favorite framework:
+<LargeCardList
+  items={[
+    {
+      icon: <PlayIcon />,
+      title: "Tutorials",
+      description:
+        "Explore our end-to-end tutorials and get started with Mesosphere.",
+      href: "/tutorial",
+    },
+    {
+      icon: <LockClosedIcon />,
+      title: "Authentication",
+      description: "Learn how to use authentication services with Mesosphere.",
+      href: "/authentication",
+    },
+    {
+      icon: <CubeIcon />,
+      title: "API Reference",
+      description: "Dig into the complete API reference for Mesosphere.",
+      href: "/mesosphere-api",
+    },
+  ]}
+/>
 
-<Columns cols={4}>
-  <Card
-    icon="/public/icon/nodejs.svg"
-    title="Node.js"
-    href="./framework/nodejs"
-  ></Card>
-  <Card
-    icon="/public/icon/nextjs.svg"
-    title="Next.js"
-    href="./framework/nextjs"
-  ></Card>
-  <Card
-    icon="/public/icon/remix.svg"
-    title="Remix"
-    href="./framework/remix"
-  ></Card>
-  <Card
-    icon="/public/icon/svelte.svg"
-    title="Svelte"
-    href="./framework/svelte"
-  ></Card>
-  <Card
-    icon="/public/icon/tanstack.svg"
-    title="Tanstack"
-    href="./framework/tanstack"
-  ></Card>
-  <Card icon="/public/icon/vue.svg" title="Vue" href="./framework/vue"></Card>
-  <Card
-    icon="/public/icon/nuxt.svg"
-    href="./framework/nuxt"
-    title="Nuxt.js"
-  ></Card>
-  <Card
-    icon="/public/icon/react.svg"
-    title="React"
-    href="./framework/react"
-  ></Card>
-  <Card
-    icon="/public/icon/react-native-expo.svg"
-    href="./framework/react-native"
-    title="React Native"
-  ></Card>
-  <Card icon="/public/icon/bun.svg" href="./framework/bun" title="Bun"></Card>
-  <Card
-    icon="/public/icon/html.svg"
-    href="./framework/scripttag"
-    title="Script tag"
-  ></Card>
-</Columns>
+## Explore our docs by choosing a framework
 
-Chose your favorite languages:
+<QuickFrameworksList />
 
-<Columns cols={4}>
-  <Card
-    icon="/public/icon/js.svg"
-    title="JavaScript"
-    href="./client/javascript/quickstart"
-  ></Card>
-  <Card
-    icon="/public/icon/python.svg"
-    title="Python"
-    href="./client/python"
-  ></Card>
-  <Card icon="/public/icon/rust.svg" title="Rust" href="./client/rust"></Card>
-</Columns>
+## Explore our docs by choosing a languages
 
-## Why chosing use over other?
-
-Mesosphere is the first French open source database to support vector embeddings and relational data, all in real time, with out of the box support for authentication with third party apps such as Clerk, Workos, Auth0 and Better Auth. It makes it easy to build any app in any language that are live-updated with functions writed in pure TypeScript and with out of the box type safety.
-
-## Learn how to use Mesosphere
-
-Get up and running with Mesosphere in minutes by following our [tutorials](./tutorial/chatapp).
+<QuickLanguagesList />

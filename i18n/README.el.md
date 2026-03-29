@@ -14,7 +14,7 @@
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
 [![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
-[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
+[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.usemesosphere.com/)
 
 </div>
 
@@ -22,7 +22,7 @@
 
 ## Πώς λειτουργεί
 
-Η [Mesosphere](https://mesosphere.ahen-studio.com) είναι μια βάση δεδομένων σχεσιακών και διανυσματικών ενσωματώσεων ανοιχτού κώδικα με άδεια Apache 2.0, η οποία έχει σχεδιαστεί για να είναι απλή, γρήγορη και εύκολη στη χρήση για προγραμματιστές ιστού και προγραμματιστές υποστήριξης. Διαβάστε, γράψτε δεδομένα και εκτελέστε σκληρή λογική γράφοντας συναρτήσεις στο Typescript με πλήρη ασφάλεια τύπου.
+Η [Mesosphere](https://www.usemesosphere.com/) είναι μια βάση δεδομένων σχεσιακών και διανυσματικών ενσωματώσεων ανοιχτού κώδικα με άδεια Apache 2.0, η οποία έχει σχεδιαστεί για να είναι απλή, γρήγορη και εύκολη στη χρήση για προγραμματιστές ιστού και προγραμματιστές υποστήριξης. Διαβάστε, γράψτε δεδομένα και εκτελέστε σκληρή λογική γράφοντας συναρτήσεις στο Typescript με πλήρη ασφάλεια τύπου.
 
 Το Mesosphere παρέχει μια βάση δεδομένων, όπου γράφετε τις συναρτήσεις σας σε Typescript και αποθηκεύετε τα δεδομένα σας σε μια σχεσιακή βάση δεδομένων. Μπορείτε επίσης να αποθηκεύσετε τα αρχεία σας σε μια βάση δεδομένων. Μπορείτε επίσης να δημιουργήσετε, να αναζητήσετε και να διαγράψετε συλλογές διανυσμάτων σε πραγματικό χρόνο. παρέχουμε πολλαπλές βιβλιοθήκες πελατών για αλληλεπίδραση με τις συναρτήσεις που γράψατε.
 
@@ -32,27 +32,31 @@
 
 **Αρχιτεκτονική**
 
-Το Mesosphere είναι φτιαγμένο για να είναι απλό, γράψτε τις λειτουργίες διακομιστή στον φάκελο ./mesosphere και αναπτύξτε τις στο backend. Ξεκινήστε να πειραματίζεστε με τη Μεσόσφαιρα ακολουθώντας το [tutorials](./demo/examples/js/tutorials/chat_app/) μας. Το Mesosphere χρησιμοποιεί το tRPC για να δημιουργήσει ένα API ασφαλούς τύπου για τις λειτουργίες σας και μια βάση δεδομένων Postgres για την αποθήκευση των δεδομένων σας.
+Το Mesosphere είναι φτιαγμένο για να είναι απλό, γράψτε τις λειτουργίες διακομιστή στον φάκελο .../mesosphere και αναπτύξτε τις στο backend. Ξεκινήστε να πειραματίζεστε με τη Μεσόσφαιρα ακολουθώντας το [tutorials](.../demo/examples/js/tutorials/chat_app/) μας. Το Mesosphere χρησιμοποιεί το tRPC για να δημιουργήσει ένα API ασφαλούς τύπου για τις λειτουργίες σας και μια βάση δεδομένων Postgres για την αποθήκευση των δεδομένων σας.
 
 ## Ολοκλήρωση
 
-Παρέχουμε ένα επίπεδο ενοποίησης με [mem0](https://github.com/mem0ai/mem0) για να προσθέσετε μνήμη σε ένα LLM χρησιμοποιώντας το [integration](./demo/examples/python/integration/) μας
+Παρέχουμε ένα επίπεδο ενοποίησης με [mem0](https://github.com/mem0ai/mem0) για να προσθέσετε μνήμη σε ένα LLM χρησιμοποιώντας το [integration](.../demo/examples/python/integration/) μας
 
 ## Γλώσσες
 
-Ψάχνετε για τη γλώσσα σας; Θα το βρείτε στο [languages](./i18n/languages.md)
+Ψάχνετε για τη γλώσσα σας; Θα το βρείτε στο [languages](./languages.md)
 
 ## Απόδειξη με έγγραφα
 
-Για πλήρη τεκμηρίωση, επισκεφτείτε [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+Για πλήρη τεκμηρίωση, επισκεφτείτε [docs.usemesosphere.com](https://docs.usemesosphere.com/)
 
-Για να δείτε πώς μπορείτε να συνεισφέρετε, επισκεφτείτε [Contribution guidelines](./CONTRIBUTING.md)
+Για να δείτε πώς μπορείτε να συνεισφέρετε, επισκεφτείτε [Contribution guidelines](.../CONTRIBUTING.md)
 
 ## Κοινότητα & Υποστήριξη
 
 - [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Καλύτερο για: βοήθεια για τη δημιουργία, συζήτηση σχετικά με τις βέλτιστες πρακτικές βάσης δεδομένων.
-- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Το καλύτερο για: σφάλματα και σφάλματα που αντιμετωπίζετε χρησιμοποιώντας το Supabase.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Το καλύτερο για: σφάλματα και σφάλματα που αντιμετωπίζετε χρησιμοποιώντας το Mesosphere.
 - [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Καλύτερο για: συνεισφορά στη βάση κώδικα.
+
+## Ζώνη δοκιμών
+
+Για να πειραματιστείτε με τις δυνατότητες του Mesosphere και να μάθετε πώς λειτουργούν, επισκεφτείτε το [Ζώνη δοκιμών](.../mesosphere-tests/).
 
 ## Ευχαριστούμε όλους τους συντελεστές μας:
 

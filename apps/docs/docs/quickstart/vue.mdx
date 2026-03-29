@@ -1,0 +1,129 @@
+---
+title: Vue Quickstart
+sidebar_label: Vue
+description: "Add mesosphere to a Vue project"
+hide_table_of_contents: true
+sidebar_position: 325
+sidebar_class_name: mesosphere-sidebar-vue
+---
+
+export const sampleData = "// example";
+export const main = "// example";
+export const tasks = "// example";
+export const App = "// example";
+
+Learn how to query data from mesosphere in a Vue app.
+
+This quickstart guide uses a [community-maintained](/client/vue.mdx) Vue client
+for mesosphere.
+
+<StepsList>
+  <Step title="Create a Vue site">
+    Create a Vue site using the `npm create vue@latest my-vue-app` command.
+
+    mesosphere will work with any set of options but to follow this quickstart most closely choose:
+    * Yes to "Add TypeScript?"
+    * No to everything else
+
+    <br></br>
+
+    ```sh
+    npm create vue@latest my-vue-app
+    ```
+
+  </Step>
+
+  <Step title="Install the mesosphere library">
+    To get started, install the `mesosphere` package.
+
+    ```sh
+    cd my-vue-app && npm install mesosphere mesosphere-vue
+    ```
+
+  </Step>
+
+  <Step title="Set up a mesosphere dev deployment">
+    Next, run `npx mesosphere dev`. This
+    will prompt you to log in with GitHub,
+    create a project, and save your production and deployment URLs.
+
+    It will also create a `mesosphere/` folder for you
+    to write your backend API functions in. The `dev` command
+    will then continue running to sync your functions
+    with your dev deployment in the cloud.
+
+
+    ```sh
+    npx mesosphere dev
+    ```
+
+  </Step>
+
+  <Step title="Create sample data for your database">
+    In a new terminal window, create a `sampleData.jsonl`
+    file with some sample data.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Add the sample data to your database">
+    Now that your project is ready, add a `tasks` table
+    with the sample data into your mesosphere database with
+    the `import` command.
+
+    ```
+    npx mesosphere import --table tasks sampleData.jsonl
+    ```
+
+  </Step>
+
+  <Step title="Expose a database query">
+    Add a new file `tasks.ts` in the `mesosphere/` folder
+    with a query function that loads the data.
+
+    Exporting a query function from this file
+    declares an API function named after the file
+    and the export name, `api.tasks.get`.
+
+    ```ts
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Wire up the mesosphereProvider">
+    In `src/main.ts` set up the mesosphere client there to make it available on every page of your app.
+
+    ```ts
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Display the data in your app">
+    In `src/App.vue` use `useQuery` to subscribe your `api.tasks.get`
+    API function.
+
+    ```vue
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Start the app">
+    Start the app, open [http://localhost:5173](http://localhost:5173) in a browser,
+    and see the list of tasks.
+
+    ```sh
+    npm run dev
+    ```
+
+  </Step>
+
+</StepsList>
+
+See the complete
+[Vue npm package documentation](https://www.npmjs.com/package/mesosphere-vue).

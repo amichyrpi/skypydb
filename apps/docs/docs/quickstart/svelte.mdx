@@ -1,0 +1,139 @@
+---
+title: Svelte Quickstart
+sidebar_label: Svelte
+description: "Add mesosphere to a Svelte project"
+hide_table_of_contents: true
+sidebar_position: 350
+sidebar_class_name: mesosphere-sidebar-svelte
+---
+
+export const sampleData = "// example";
+export const layout = "// example";
+export const tasks = "// example";
+export const page = "// example";
+
+Learn how to query data from mesosphere in a Svelte app.
+
+<StepsList>
+  <Step title="Create a SvelteKit app">
+    Create a SvelteKit app using the `npx sv create` command.
+
+    Other sets of options will work with the library but for this quickstart guide:
+
+    - For "Which Svelte app template," choose **"SvelteKit minimal."**
+    - For a package manager, choose **"npm."**
+    - For "Add type checking with TypeScript," choose **"Yes, using TypeScript syntax."**
+    - For "Select additional options," you don't need to enable anything.
+
+    <br></br>
+
+    ```sh
+    npx sv@latest create my-app
+    ```
+
+  </Step>
+
+  <Step title="Install the mesosphere client and server library">
+    To get started, install the `mesosphere` and `mesosphere-svelte` packages.
+
+    ```sh
+    cd my-app && npm install mesosphere mesosphere-svelte
+    ```
+
+  </Step>
+
+  <Step title="Customize the mesosphere path">
+    SvelteKit doesn't like referencing code outside of source, so customize
+    the mesosphere functionsDir to be under `src/`.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Set up a mesosphere dev deployment">
+    Next, run `npx mesosphere dev`. This
+    will prompt you to log in with GitHub,
+    create a project, and save your production and deployment URLs.
+
+    It will also create a `src/mesosphere/` folder for you
+    to write your backend API functions in. The `dev` command
+    will then continue running to sync your functions
+    with your dev deployment in the cloud.
+
+
+    ```sh
+    npx mesosphere dev
+    ```
+
+  </Step>
+
+  <Step title="Create sample data for your database">
+    In a new terminal window, create a `sampleData.jsonl`
+    file with some sample data.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Add the sample data to your database">
+    Now that your project is ready, add a `tasks` table
+    with the sample data into your mesosphere database with
+    the `import` command.
+
+    ```
+    npx mesosphere import --table tasks sampleData.jsonl
+    ```
+
+  </Step>
+
+  <Step title="Expose a database query">
+    Add a new file <JSFileExtension name="tasks.ts" /> in the `mesosphere/` folder
+    with a query function that loads the data.
+
+    Exporting a query function from this file
+    declares an API function named after the file
+    and the export name, `api.tasks.get`.
+
+    ```ts
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Set up mesosphere">
+    Create a new file `src/routes/+layout.svelte` and set up the mesosphere client there to make it available on every page of your app.
+
+    ```svelte
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Display the data in your app">
+    In `src/routes/+page.svelte` use `useQuery` to subscribe your `api.tasks.get`
+    API function.
+
+    ```svelte
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Start the app">
+    Start the app, open [http://localhost:5173](http://localhost:5173) in a browser,
+    and see the list of tasks.
+
+    ```sh
+    npm run dev
+    ```
+
+  </Step>
+
+</StepsList>
+
+See the
+[Svelte npm package documentation](https://www.npmjs.com/package/mesosphere-svelte).

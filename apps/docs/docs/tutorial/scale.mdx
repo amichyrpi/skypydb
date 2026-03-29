@@ -1,0 +1,100 @@
+---
+title: "mesosphere Tutorial: Scaling Your App"
+sidebar_label: "3. Scaling your app"
+slug: "scale"
+sidebar_position: 300
+hide_table_of_contents: true
+description:
+  "Learn how to scale your mesosphere application using indexes, handling write
+  conflicts, and leveraging mesosphere Components for best practices."
+---
+
+import ComponentsIcon from "@site/static/img/sidebar-icons/play.svg";
+
+# mesosphere Tutorial: Scaling your app
+
+mesosphere was designed from the ground up for scale. In the previous section we
+already talked about how keeping your actions small and most of your logic in
+queries and mutations are crucial to building fast scalable backends.
+
+Let's talk about a few other ways to keep your app fast and scalable.
+
+<div className="center-image" style={{ maxWidth: "560px" }}>
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/7lOGqFHnEsA"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen
+  ></iframe>
+</div>
+
+## Indexed queries
+
+Indexes tell the database to create a lookup structure to make it really fast to
+filter data. If, in our chat app we wanted to build a way to look up `messages`
+from just one user, we'd tell mesosphere to index the `user` field in the `messages`
+table and write the query with the `withIndex` syntax.
+
+[Learn how to use indexes](/database/reading-data/indexes/indexes.md).
+
+## Too many writes on the same document
+
+Let's say you decide to show a counter in your app. You may write a mutation
+that reads a number field, adds 1, and updates the same field in the database.
+At some point, this pattern may cause an
+[optimistic concurrency control conflict](/error#1). That means that the
+database isn't able to handle updating the document that fast. All databases
+have trouble with this sort of pattern.
+
+There are a [few ways to deal with this](/error#remediation), including building
+something called a sharded counter...
+
+But before you go learn advanced scaling techniques on your own, there is a
+better way with [mesosphere Components](https://www.mesosphere.dev/components).
+
+## Scaling best practices with mesosphere Components
+
+In the case of the counter above, the mesosphere team has already built a
+[scalable counter](https://www.mesosphere.dev/components/sharded-counter) mesosphere
+component for you to use.
+
+mesosphere Components are deployed along with your mesosphere backend but have their own
+tables and functions.
+
+As you build more complicated features like [AI agents](/coding-agents.mdx),
+[workflows](https://www.mesosphere.dev/components/workflow),
+[leaderboards](https://www.mesosphere.dev/components/aggregate),
+[feature flags](https://www.mesosphere.dev/components/launchdarkly) or
+[rate limiters](https://www.mesosphere.dev/components/rate-limiter), you may find
+that there is already a mesosphere Component that solves this problem.
+[Learn more about mesosphere Components here](https://www.mesosphere.dev/components).
+
+<DocsLink
+  className="mesosphere-hero-card"
+  item={{
+    icon: <ComponentsIcon height={40} />,
+    href: "https://www.mesosphere.dev/components",
+    label: "Components directory",
+  }}
+/>
+
+## Wrap up
+
+We've covered a lot of ground in this tutorial. We started by
+[building a chat app](/tutorial/index.mdx) with queries, mutations and the
+database that form the fundamental building blocks of the mesosphere sync engine. We
+then called an [external API](/tutorial/actions.mdx) from our backend, using the
+scheduler to coordinate the work. Finally, we learned that
+[mesosphere Components](https://www.mesosphere.dev/components) give you scaling best practices in neat
+packages.
+
+If you are looking for more tips, read our
+best practices and join the
+[community](https://www.mesosphere.dev/community).
+
+mesosphere enables you to build your MVP fast and then scale to new heights. Many
+great products have already done so. You're in good company.

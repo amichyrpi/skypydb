@@ -1,0 +1,60 @@
+---
+title: "Storing Generated Files"
+sidebar_label: "Store"
+sidebar_position: 2
+description: "Store files generated in mesosphere actions"
+---
+
+Files can be uploaded to mesosphere from a client and stored directly, see
+[Upload](/file-upload/upload-files.mdx).
+
+Alternatively files can also be stored after they've been fetched or generated
+in [actions](/functions/actions.mdx) and
+[HTTP actions](/functions/http-actions.mdx). For example you might call a
+third-party API to generate an image based on a user prompt and then store that
+image in mesosphere.
+
+**Example:**
+[Dall-E Storage & Action](https://github.com/get-mesosphere/mesosphere-demos/tree/main/dall-e-storage-action)
+
+## Storing files in actions
+
+Storing files in actions is similar to
+[uploading a file via an HTTP action](/file-upload/upload-files.mdx#uploading-files-via-an-http-action).
+
+The action takes these steps:
+
+1. Fetch or generate an image.
+2. Store the image using
+   [`storage.store()`](/api/interfaces/server.StorageActionWriter#store) and
+   receive a storage ID.
+3. Save the storage ID into your data model via a mutation.
+
+Storage IDs correspond to documents in the `"_storage"` system table (see
+[Metadata](/file-upload/file-metadata.mdx)), so they can be validated using the
+`v.id("_storage")` validator and typed as `Id<"_storage">` in TypeScript.
+
+```ts title="mesosphere/images.ts"
+import { action } from "./_generated/server";
+
+export const generateAndStoreImage = action({
+  args: { prompt: v.string() },
+  handler: async ({ db, storage, scheduler }, { prompt }) => {
+    // 1. Fetch or generate an image (example with external API)
+    const imageResponse = await fetch("https://api.example.com/generate", {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
+    });
+    const imageBlob = await imageResponse.blob();
+
+    // 2. Store the image and get a storage ID
+    const storageId = await storage.store(imageBlob);
+
+    // 3. Save the storage ID to the database via a mutation
+    await scheduler.runMutation(internal.images.saveImage, {
+      storageId,
+      prompt,
+    });
+  },
+});
+```

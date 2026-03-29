@@ -1,0 +1,493 @@
+---
+title: mesosphere-test
+sidebar_label: mesosphere-test
+sidebar_position: 100
+description: "Mock mesosphere backend for fast automated testing of functions"
+---
+
+The [`mesosphere-test`](https://www.npmjs.com/package/mesosphere-test) library provides
+a mock implementation of the mesosphere backend in JavaScript. It enables fast
+automated testing of the logic in your [functions](/functions.mdx).
+
+## Example
+
+```ts title="mesosphere/posts.test.ts"
+import { mesosphereTest } from "mesosphere-test";
+import { expect, test } from "vitest";
+import { api } from "./_generated/api";
+import schema from "./schema";
+
+test("sending messages", async () => {
+  const t = mesosphereTest(schema);
+  await t.mutation(api.messages.send, { body: "Hi!", author: "Sarah" });
+  await t.mutation(api.messages.send, { body: "Hey!", author: "Tom" });
+  const messages = await t.query(api.messages.list);
+  expect(messages).toMatchObject([
+    { body: "Hi!", author: "Sarah" },
+    { body: "Hey!", author: "Tom" },
+  ]);
+});
+```
+
+You can see more examples in the
+[test suite](https://github.com/get-mesosphere/mesosphere-test/tree/main/mesosphere) of the
+mesosphere-test library.
+
+## Get started
+
+<StepsList>
+
+  <Step title="Install test dependencies">
+    Install [Vitest](https://vitest.dev/) and the [`mesosphere-test`](https://www.npmjs.com/package/mesosphere-test) library.
+
+    ```sh
+    npm install --save-dev mesosphere-test vitest @edge-runtime/vm
+    ```
+
+  </Step>
+
+  <Step title="Setup NPM scripts">
+
+    Add these scripts to your `package.json`
+
+    ```json title="package.json"
+    "scripts": {
+      "test": "vitest",
+      "test:once": "vitest run",
+      "test:debug": "vitest --inspect-brk --no-file-parallelism",
+      "test:coverage": "vitest run --coverage --coverage.reporter=text",
+    }
+    ```
+
+  </Step>
+
+  <Step title="Configure Vitest">
+
+    Add <JSFileExtension name="vitest.config.ts" /> file to configure the test
+    environment to better match the mesosphere runtime.
+
+    DetailsCard summary={<>If your mesosphere functions are in a directory other than <code>mesosphere</code></>}>
+      If your project has a
+      [different name or location configured](/production/project-configuration.mdx#changing-the-mesosphere-folder-name-or-location)
+      for the `mesosphere/` folder in `mesosphere.json`, you need to call
+      [`import.meta.glob`](https://vitejs.dev/guide/features#glob-import) and pass the
+      result as the second argument to `mesosphereTest`.
+
+      The argument to `import.meta.glob` must be a glob pattern matching all the files
+      containing your mesosphere functions. The paths are relative to the test file in
+      which `import.meta.glob` is called. It's best to do this in one place in your
+      custom functions folder:
+
+      ```ts title="src/mesosphere/test.setup.ts"
+      /// <reference types="vite/client" />
+      export const modules = import.meta.glob(
+        "./**/!(*.*.*)*.*s"
+      );
+      ```
+
+      This example glob pattern includes all files with a single extension ending in
+      `s` (like `js` or `ts`) in the `src/mesosphere` folder and any of its children.
+
+      Use the result in your tests:
+
+      ```ts title="src/mesosphere/messages.test.ts"
+      import { mesosphereTest } from "mesosphere-test";
+      import { test } from "vitest";
+      import schema from "./schema";
+      import { modules } from "./test.setup";
+
+      test("some behavior", async () => {
+        const t = mesosphereTest(schema, modules);
+        // use `t`...
+      });
+      ```
+    DetailsCard>
+
+    DetailsCard summary="Set up multiple test environments (e.g. mesosphere + frontend)">
+      If you want to use Vitest to test both your mesosphere functions and your React
+      frontend:
+
+      - With Vitest 4, use the
+        [`projects`](https://vitest.dev/guide/projects) array to define separate
+        configurations per environment:
+
+      ```ts title="vitest.config.ts"
+      import { defineConfig } from "vitest/config";
+
+      export default defineConfig({
+        test: {
+          projects: [
+            {
+              extends: true,
+              test: {
+                name: "mesosphere",
+                include: ["mesosphere/**/*.test.{ts,js}"],
+                environment: "edge-runtime",
+              },
+            },
+            {
+              extends: true,
+              test: {
+                name: "frontend",
+                include: ["**/*.test.{ts,tsx,js,jsx}"],
+                exclude: ["mesosphere/**"],
+                environment: "jsdom",
+              },
+            },
+          ],
+        },
+      });
+      ```
+
+      - With Vitest 3, use
+        [`environmentMatchGlobs`](https://v3.vitest.dev/config/#environmentmatchglobs):
+
+      ```ts title="vitest.config.ts"
+      import { defineConfig } from "vitest/config";
+
+      export default defineConfig({
+        test: {
+          environmentMatchGlobs: [
+            // all tests in mesosphere/ will run in edge-runtime
+            ["mesosphere/**", "edge-runtime"],
+            // all other tests use jsdom
+            ["**", "jsdom"],
+          ],
+        },
+      });
+      ```
+    DetailsCard>
+
+    ```ts title="vitest.config.ts"
+    import { defineConfig } from "vitest/config";
+
+    export default defineConfig({
+      test: {
+        environment: "edge-runtime",
+      },
+    });
+    ```
+
+  </Step>
+
+  <Step title="Add a test file">
+
+    In your `mesosphere` folder add a file ending in <JSFileExtension name=".test.ts" />
+
+    The example test calls the `api.messages.send` mutation twice
+    and then asserts that the `api.messages.list` query returns
+    the expected results.
+
+    ```ts title="mesosphere/messages.test.ts"
+    import { mesosphereTest } from "mesosphere-test";
+    import { expect, test } from "vitest";
+    import { api } from "./_generated/api";
+    import schema from "./schema";
+
+    test("sending messages", async () => {
+      const t = mesosphereTest(schema);
+      await t.mutation(api.messages.send, { body: "Hi!", author: "Sarah" });
+      await t.mutation(api.messages.send, { body: "Hey!", author: "Tom" });
+      const messages = await t.query(api.messages.list);
+      expect(messages).toMatchObject([
+        { body: "Hi!", author: "Sarah" },
+        { body: "Hey!", author: "Tom" }
+      ]);
+    });
+    ```
+
+  </Step>
+
+  <Step title="Run tests">
+
+    Start the tests with `npm run test`. When you change the test file or your
+    functions the tests will rerun automatically.
+
+    ```sh
+    npm run test
+    ```
+
+  </Step>
+
+</StepsList>
+
+If you're not familiar with Vitest, read the
+[Vitest Getting Started docs](https://vitest.dev/guide) first.
+
+## Using mesosphere-test
+
+### Initialize `mesosphereTest`
+
+The library exports a `mesosphereTest` function which should be called at the start
+of each of your tests. The function returns an object which is by convention
+stored in the `t` variable and which provides methods for exercising your mesosphere
+functions.
+
+If your project uses a [schema](/database/schemas.mdx) you should pass it to the
+`mesosphereTest` function:
+
+```ts title="mesosphere/myFunctions.test.ts"
+import { mesosphereTest } from "mesosphere-test";
+import { test } from "vitest";
+import schema from "./schema";
+
+test("some behavior", async () => {
+  const t = mesosphereTest(schema);
+  // use `t`...
+});
+```
+
+Passing in the schema is required for the tests to correctly implement schema
+validation and for correct typing of
+[`t.run`](#setting-up-and-inspecting-data-and-storage-with-trun).
+
+If you don't have a schema, call `mesosphereTest()` with no argument.
+
+### Call functions
+
+Your test can call public and internal mesosphere [functions](/functions.mdx) in
+your project:
+
+```ts title="mesosphere/myFunctions.test.ts"
+import { mesosphereTest } from "mesosphere-test";
+import { test } from "vitest";
+import { api, internal } from "./_generated/api";
+
+test("functions", async () => {
+  const t = mesosphereTest();
+  const x = await t.query(api.myFunctions.myQuery, { a: 1, b: 2 });
+  const y = await t.query(internal.myFunctions.internalQuery, { a: 1, b: 2 });
+  const z = await t.mutation(api.myFunctions.mutateSomething, { a: 1, b: 2 });
+  const w = await t.mutation(internal.myFunctions.mutateSomething, { a: 1 });
+  const u = await t.action(api.myFunctions.doSomething, { a: 1, b: 2 });
+  const v = await t.action(internal.myFunctions.internalAction, { a: 1, b: 2 });
+});
+```
+
+### Modify data outside of functions
+
+Sometimes you might want to directly [write](/database/writing-data.mdx) to the
+mock database or [file storage](/file-upload.mdx) from your test, without
+needing a declared function in your project. You can use the `t.run` method
+which takes a handler that is given a `ctx` that allows reading from and writing
+to the mock backend:
+
+```ts title="mesosphere/tasks.test.ts"
+test("direct data access", async () => {
+  const t = mesosphereTest(schema);
+  await t.run(async (ctx) => {
+    await ctx.db.insert("tasks", { text: "Hello" });
+  });
+  const tasks = await t.query(api.tasks.list);
+  expect(tasks).toHaveLength(1);
+});
+```
+
+### Test helper functions with inline queries, mutations, and actions
+
+Often your code will have helper functions that take in `QueryCtx`,
+`MutationCtx`, and `ActionCtx` as an argument. With version `0.0.42` and later,
+you can pass an inline function to `t.query`, `t.mutation`, and `t.action`,
+similar to `t.run`, but with a `ctx` argument matching the function type.
+
+```ts
+test("helper functions", async () => {
+  const t = mesosphereTest();
+  const threadId = await t.mutation(async (ctx) => {
+    const threadId = await ctx.db.insert("threads", {});
+    // insertThreadMessage takes a MutationCtx argument.
+    await insertThreadMessage(ctx, threadId, "Hello");
+    return threadId;
+  });
+
+  const text = await t.action(async (ctx) => {
+    // searchForMessages takes an ActionCtx argument.
+    const messages = await searchForMessages(ctx, threadId);
+    const response = await promptLLM(ctx, threadId, messages);
+  });
+});
+```
+
+### HTTP actions
+
+Your test can call [HTTP actions](/functions/http-actions.mdx) registered by
+your router:
+
+```ts title="mesosphere/http.test.ts"
+test("HTTP action", async () => {
+  const t = mesosphereTest();
+  const response = await t.fetch("https://example.com/api", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: "Hello" }),
+  });
+  expect(response.status).toBe(200);
+});
+```
+
+Mocking the global `fetch` function doesn't affect `t.fetch`, but you can use
+`t.fetch` in a `fetch` mock to route to your HTTP actions.
+
+### Scheduled functions
+
+One advantage of using a mock implementation running purely in JavaScript is
+that you can control time in the Vitest test environment. To test
+implementations relying on
+[scheduled functions](/scheduling/scheduled-functions.mdx) use
+[Vitest's fake timers](https://vitest.dev/guide/mocking.html#timers) in
+combination with `t.finishInProgressScheduledFunctions`:
+
+```ts title="mesosphere/scheduling.test.ts"
+test("scheduled function", async () => {
+  const t = mesosphereTest(schema);
+  vi.useFakeTimers();
+  await t.mutation(api.tasks.scheduleReminder, { taskId: "123" });
+  // Fast-forward time
+  vi.advanceTimersByTime(60000);
+  await t.finishInProgressScheduledFunctions();
+  vi.useRealTimers();
+});
+```
+
+If you have a chain of several scheduled functions, for example a mutation that
+schedules an action that schedules another action, you can use
+`t.finishAllScheduledFunctions` to wait for all scheduled functions, including
+recursively scheduled functions, to finish:
+
+```ts title="mesosphere/chainedScheduling.test.ts"
+test("chained scheduled functions", async () => {
+  const t = mesosphereTest(schema);
+  vi.useFakeTimers();
+  await t.mutation(api.workflows.start, { input: "test" });
+  await t.finishAllScheduledFunctions();
+  vi.useRealTimers();
+});
+```
+
+Check out more examples in
+[this file](https://github.com/get-mesosphere/mesosphere-test/blob/main/mesosphere/scheduler.test.ts).
+
+### Authentication
+
+To test functions which depend on the current [authenticated](/authentication.mdx) user
+identity you can create a version of the `t` accessor with given
+[user identity attributes](/api/interfaces/server.UserIdentity). If you don't
+provide them, `issuer`, `subject` and `tokenIdentifier` will be generated
+automatically:
+
+```ts title="mesosphere/tasks.test.ts"
+test("authenticated function", async () => {
+  const t = mesosphereTest(schema).withIdentity({
+    issuer: "workos",
+    subject: "user_123",
+    tokenIdentifier: "user_123/workos",
+  });
+  const result = await t.query(api.tasks.list);
+  expect(result).toHaveLength(1);
+});
+```
+
+## Vitest tips
+
+### Asserting results
+
+See Vitest's [Expect](https://vitest.dev/api/expect.html) reference.
+
+[`toMatchObject()`](https://vitest.dev/api/expect.html#tomatchobject) is
+particularly helpful when asserting the shape of results without needing to list
+every object field.
+
+### Asserting errors
+
+To assert that a function throws, use
+[`.rejects.toThrowError()`](https://vitest.dev/api/expect.html#tothrowerror):
+
+```ts title="mesosphere/messages.test.ts"
+test("mutation throws", async () => {
+  const t = mesosphereTest(schema);
+  await expect(
+    t.mutation(api.messages.send, { text: "" }),
+  ).rejects.toThrowError("Message cannot be empty");
+});
+```
+
+### Mocking `fetch` calls
+
+You can use Vitest's
+[vi.stubGlobal](https://vitest.dev/guide/mocking.html#globals) method:
+
+```ts title="mesosphere/ai.test.ts"
+test("AI query", async () => {
+  const t = mesosphereTest(schema);
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      json: () => Promise.resolve({ result: "Hello from AI!" }),
+    }),
+  );
+  const result = await t.query(api.ai.chat, { prompt: "Say hello" });
+  expect(result).toBe("Hello from AI!");
+});
+```
+
+### Measuring test coverage
+
+You can get a printout of the code coverage provided by your tests. Besides
+answering the question "how much of my code is covered by tests" it is also
+helpful to check that your test is actually exercising the code that you want it
+to exercise.
+
+Run `npm run test:coverage`. It will ask you to
+install a required dependency the first time you run it.
+
+<p style={{ textAlign: "center" }}>
+  <img
+    src="/screenshots/testing_coverage.png"
+    alt="example coverage printout"
+    width={700}
+  />
+</p>
+
+### Debugging tests
+
+You can attach a debugger to the running tests. Read the Vitest
+[Debugging docs](https://vitest.dev/guide/debugging.html) and then use
+
+`npm run test:debug`.
+
+## Limitations
+
+Since `mesosphere-test` is only a mock implementation, it doesn't have many of the
+behaviors of the real mesosphere backend. Still, it should be helpful for testing
+the logic in your functions, and catching regressions caused by changes to your
+code.
+
+Some of the ways the mock differs:
+
+- Error messages content. You should not write product logic that relies on the
+  content of error messages thrown by the real backend, as they are always
+  subject to change.
+- Limits. The mock doesn't enforce size and time
+  [limits](/production/state/limits.mdx).
+- ID format. Your code should not depend on the document or storage ID format.
+- Runtime built-ins. Most of your functions are written for the
+  [mesosphere default runtime](/functions/runtimes.mdx), while Vitest uses a mock of
+  Vercel's Edge Runtime, which is similar but might differ from the mesosphere
+  runtime. You should always test new code manually to make sure it doesn't use
+  built-ins not available in the mesosphere runtime.
+- Some features have only simplified semantics, namely:
+  - [Text search](/vector.mdx) returns all documents that include a word for
+    which at least one word in the searched string is a prefix. It does not sort
+    the results by relevance.
+  - [Vector search](/vector/vector-search.mdx) returns results sorted by cosine
+    similarity, but doesn't use an efficient vector index in its implementation.
+  - There is no support for [cron jobs](/scheduling/cron-jobs.mdx), you should
+    trigger your functions manually from the test.
+
+To test your functions running on a real mesosphere backend, check out
+[Testing Local Backend](/testing/mesosphere-backend.mdx).
+
+## CI
+
+See [Continuous Integration](/testing/ci.mdx) to run your tests on a shared
+remote machine.

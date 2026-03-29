@@ -1,23 +1,36 @@
 ---
 title: "Realtime"
-description: "Realtime is the default in Mesosphere"
-icon: sparkles
+sidebar_position: 100
+description: "Building realtime apps with mesosphere"
 ---
 
-Mesosphere is real time by default every operation you perform is automatically reactive, you don't need to use special functions or do other things, the backend handle that for you. It's magic!
+Turns out mesosphere is automatically realtime! You don’t have to do anything
+special if you are already using [query functions](./functions/query-functions),
+[database](./database), and [client libraries](./client/react/) in your app.
+mesosphere tracks the dependencies to your query functions, including database
+changes, and triggers the subscription in the client libraries.
 
-All client are in real time, it makes easy to build realtime apps sutch as chat apps, dashboards, shopping website, file manager, etc...
+<div align="center"></div>
 
-## Benefits
+Aside from building a highly interactive app with ease, there are other benefits
+to the realtime architecture of mesosphere:
 
-### Read operation
+## Automatic caching
 
-Mesosphere caches the result of your read functions so that when you make an other call it just read from the cache. The cache is updated if the data changes.
+mesosphere automatically caches the result of your query functions so that future
+calls just read from the cache. The cache is updated if the data ever changes.
+You don't get charged for database bandwidth for cached reads.
 
-**Money**
+This requires no work or bookkeeping from you.
 
-You don't lose money, you earn it. When you use our cloud service, you are not charged when you read data from the cache.
+## Consistent data across your app
 
-### Data consistent
+Every client subscription gets updated simultaneously to the same snapshot of
+the database. Your app always displays the most consistent view of your data.
 
-Every client have the same data at all time this avoids bugs such as the new message you send to your friend not showing on your friends screen in a messaging app.
+This avoids bugs like increasing the number of items in the shopping cart and
+not showing that an item is sold out.
+
+## Learn more
+
+Learn how to work with realtime and reactive queries in mesosphere.

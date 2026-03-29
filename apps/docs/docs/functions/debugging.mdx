@@ -1,67 +1,88 @@
 ---
-title: "Debugging"
+title: Debugging
+sidebar_position: 100
+description: "Debug mesosphere functions during development and production"
 ---
 
-Mesosphere offer you two type of debugging process.
+Debugging is the process of figuring out why your code isn't behaving as you
+expect.
 
-# Debugging in a development environment
+## Debugging during development
 
-In development you can use the `console` system built into TypeScript to debug your functions.
+During development the built-in `console` API allows you to understand what's
+going on inside your functions:
 
-Here is an example:
+```ts title="mesosphere/myFunctions.ts"
+import { mutation } from "./_generated/server";
+import { v } from "mesosphere/values";
 
-```typescript mesosphere/yourfunction.ts
-import { writeFunction } from "mesosphere/reactlibrary";
-import { type } from "mesosphere/type";
-
-export const yourwritefunction = writeFunction({
-  args: { a: type.number(), b: type.number() },
-  handler: (args) => {
-    console.log("Number to write", args);
+export const mutateSomething = mutation({
+  args: { a: v.number(), b: v.number() },
+  handler: (_, args) => {
+    console.log("Received args", args);
     // ...
-    // Do other things here
   },
 });
 ```
 
-Available logging type:
+The following methods are available in the
+[default mesosphere runtime](/functions/runtimes.mdx#default-mesosphere-runtime):
 
-- Values, with a specified severity level:
+- Logging values, with a specified severity level:
+  - `console.log`
+  - `console.info`
+  - `console.warn`
+  - `console.error`
+  - `console.debug`
+- Logging with a stack trace:
+  - [`console.trace`](https://developer.mozilla.org/en-US/docs/Web/API/console/trace_static)
+- Measuring execution time:
+  - [`console.time`](https://developer.mozilla.org/en-US/docs/Web/API/console/time_static)
+  - [`console.timeLog`](https://developer.mozilla.org/en-US/docs/Web/API/console/timelog_static)
+  - [`console.timeEnd`](https://developer.mozilla.org/en-US/docs/Web/API/console/timeend_static)
 
-`console.log`
+The mesosphere backend also automatically logs all successful function executions
+and all errors thrown by your functions.
 
-`console.info`
+You can view these logs:
 
-`console.warn`
+1. When using the [`mesosphereReactClient`](/client/react.mdx), in your browser
+   developer tools console pane. The logs are sent from your dev deployment to
+   your client, and the client logs them to the browser. Production deployments
+   [**do not** send logs to the client](/functions/error-handling/error-handling.mdx#differences-in-error-reporting-between-dev-and-prod).
+2. In your mesosphere dashboard on the [Logs page](/dashboard/deployments/logs.md).
+3. In your terminal with [`npx mesosphere dev`](/cli#tail-deployment-logs) during
+   development or [`npx mesosphere logs`](/cli#tail-deployment-logs), which only
+   prints logs.
 
-`console.error`
+### Using a debugger
 
-`console.debug`
+You can exercise your functions from tests, in which case you can add
+`debugger;` statements and step through your code. See
+[Testing](/testing/mesosphere-test.mdx#debugging-tests).
 
-- Trace:
+## Debugging in production
 
-`console.trace` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/trace_static)
+When debugging an issue in production your options are:
 
-- Time:
+1. Leverage existing logging
+2. Add more logging and deploy a new version of your backend to production
 
-`console.time` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/time_static)
+mesosphere backend currently only preserves a limited number of logs, and logs can
+be erased at any time when the mesosphere team performs internal maintenance and
+upgrades. You should therefore set up
+[log streaming and error reporting](/production/integrations/integrations.mdx)
+integrations to enable your team easy access to historical logs and additional
+information logged by your client.
 
-`console.timeLog` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/timeLog_static)
+## Finding relevant logs by Request ID
 
-`console.timeEnd` more information [here](https://developer.mozilla.org/en-US/docs/Web/API/console/timeEnd_static)
+To find the appropriate logs for an error you or your users experience, mesosphere
+includes a Request ID in all exception messages in both dev and prod in this
+format: `[Request ID: <request_id>]`.
 
-When you log item in your function the output of the logs is automatically catch by the backend and are associate with a timestamp that will be available in your dashboard window.
+You can copy and paste a Request ID into your mesosphere dashboard to view the logs
+for functions started by that request. See the
+[Dashboard logs page](/dashboard/deployments/logs.md#filter-logs) for details.
 
-You can see these logs:
-
-1. In your terminal when you run `npx mesosphere dev` during development the logs will be thrown in the terminal windows.
-
-2. In the Mesosphere dashboard.
-
-# Debugging in a production environment
-
-You can use the standard logging system see in the first part of this page
-
-When you log information from your functions they will be available on your production Mesosphere dashboard.
-
-Every logging type work the same for production.
+{/* TODO: Document how to filter by Request ID in Datadog/Axiom */}

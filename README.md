@@ -1,6 +1,6 @@
 <div align="center">
- <img alt="mesosphere-backend" width="auto" height="auto" src="./apps/docs/public/dark.svg#gh-light-mode-only">
- <img alt="mesosphere-backend" width="auto" height="auto" src="./apps/docs/public/dark.svg#gh-dark-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="./apps/docs/static/img/mesosphere-light.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="auto" height="auto" src="./apps/docs/static/img/mesosphere-dark.svg#gh-light-mode-only">
 </div>
 
 <p align="center">
@@ -14,7 +14,7 @@
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
 [![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
-[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
+[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.usemesosphere.com/)
 
 </div>
 
@@ -22,7 +22,7 @@ Made in France with ❤️
 
 ## How it works
 
-[Mesosphere](https://mesosphere.ahen-studio.com) is an open-source relational and vector embeddings database with an Apache 2.0 Licensed it is designed to be simple, fast, and easy to use for web developers and backend developers. Read, Write data and perform hard logic by writing functions in Typescript with full type safety.
+[Mesosphere](https://www.usemesosphere.com/) is an open-source relational and vector embeddings database with an Apache 2.0 Licensed it is designed to be simple, fast, and easy to use for web developers and backend developers. Read, Write data and perform hard logic by writing functions in Typescript with full type safety.
 
 Mesosphere provides a database, where you write your functions in Typescript and store your data in a relational database. You can also store your files in a database. You can also create, search and delete vectors collections all that in realtime. we provide multiple client libraries to interact with the functions you wrote.
 
@@ -44,14 +44,14 @@ Looking for your language? You'll find it at [languages](./i18n/languages.md)
 
 ## Documentation
 
-For full documentation, visit [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+For full documentation, visit [docs.usemesosphere.com](https://docs.usemesosphere.com/)
 
 To see how to Contribute, visit [Contribution guidelines](./CONTRIBUTING.md)
 
 ## Community & Support
 
 - [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Best for: help with building, discussion about database best practices.
-- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Best for: bugs and errors you encounter using Supabase.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Best for: bugs and errors you encounter using Mesosphere.
 - [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Best for: contributing to the codebase.
 
 ## Testing Zone

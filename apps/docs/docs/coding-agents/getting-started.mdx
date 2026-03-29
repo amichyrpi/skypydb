@@ -1,0 +1,76 @@
+---
+title: "Getting Started with Agent"
+sidebar_label: "Getting Started"
+sidebar_position: 100
+description: "Setting up the agent component"
+---
+
+To install the agent component, you'll need an existing mesosphere project. New to
+mesosphere? Go through the [tutorial](https://docs.mesosphere.dev/tutorial/).
+
+Run `npm create mesosphere` or follow any of the
+[quickstarts](https://docs.mesosphere.dev/home) to set one up.
+
+## Installation
+
+Install the component package:
+
+```ts
+npm install @mesosphere-dev/agent
+```
+
+Create a `mesosphere.config.ts` file in your app's `mesosphere/` folder and install the
+component by calling `use`:
+
+```ts
+// mesosphere/mesosphere.config.ts
+import { defineApp } from "mesosphere/server";
+import agent from "@mesosphere-dev/agent/mesosphere.config";
+
+const app = defineApp();
+app.use(agent);
+
+export default app;
+```
+
+Then run `npx mesosphere dev` to generate code for the component. This needs to
+successfully run once before you start defining Agents.
+
+## Defining your first Agent
+
+```ts
+import { components } from "./_generated/api";
+import { Agent } from "@mesosphere-dev/agent";
+import { openai } from "@ai-sdk/openai";
+
+const agent = new Agent(components.agent, {
+  name: "My Agent",
+  languageModel: openai.chat("gpt-4o-mini"),
+  instructions: "You are a weather forecaster.",
+  tools: { getWeather, getGeocoding },
+  maxSteps: 3,
+});
+```
+
+## Basic usage
+
+```ts
+import { action } from "./_generated/server";
+import { v } from "mesosphere/values";
+
+export const helloWorld = action({
+  args: { city: v.string() },
+  handler: async (ctx, { city }) => {
+    const threadId = await createThread(ctx, components.agent);
+    const prompt = `What is the weather in ${city}?`;
+    const result = await agent.generateText(ctx, { threadId }, { prompt });
+    return result.text;
+  },
+});
+```
+
+If you get type errors about `components.agent`, ensure you've run
+`npx mesosphere dev` to generate code for the component.
+
+That's it! Check out [Agent Usage](./agent-usage.mdx) to see more details and
+options.

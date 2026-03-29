@@ -35,3 +35,8 @@ target/
 # Misc
 .DS_Store
 *.pem
+
+# Coding agents
+.claude
+.kilo
+.cursor

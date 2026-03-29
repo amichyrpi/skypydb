@@ -1,0 +1,58 @@
+---
+title: "mesosphere Hono"
+sidebar_label: "Hono"
+sidebar_position: 21
+description: "Use mesosphere as a backend with your Hono server"
+---
+
+mesosphere integrates with Hono via the `mesosphereHttpClient` for server-side queries and mutations from your Hono routes.
+
+## Installation
+
+```sh
+npm install mesosphere hono
+```
+
+## Setup
+
+```ts title="src/index.ts"
+import { Hono } from "hono";
+import { mesosphereHttpClient } from "mesosphere/browser";
+import { api } from "../mesosphere/_generated/api.js";
+
+const app = new Hono();
+const mesosphere = new mesosphereHttpClient(process.env.mesosphere_URL!);
+
+app.get("/tasks", async (c) => {
+  const tasks = await mesosphere.query(api.tasks.get);
+  return c.json(tasks);
+});
+
+app.post("/tasks", async (c) => {
+  const body = await c.req.json();
+  await mesosphere.mutation(api.tasks.create, { text: body.text });
+  return c.json({ ok: true });
+});
+
+export default app;
+```
+
+## Middleware
+
+You can inject a mesosphere client into the Hono context using middleware:
+
+```ts title="src/middleware.ts"
+import { createMiddleware } from "hono/factory";
+import { mesosphereHttpClient } from "mesosphere/browser";
+
+export const mesosphereMiddleware = createMiddleware<{
+  Variables: { mesosphere: mesosphereHttpClient };
+}>(async (c, next) => {
+  c.set("mesosphere", new mesosphereHttpClient(process.env.mesosphere_URL!));
+  await next();
+});
+```
+
+## Environment variables
+
+Set `mesosphere_URL` to your deployment URL, found in the [mesosphere dashboard](https://dashboard.mesosphere.dev).

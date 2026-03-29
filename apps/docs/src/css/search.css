@@ -1,0 +1,57 @@
+body .DocSearch-Footer {
+  flex-direction: row;
+}
+
+body .DocSearch-Logo {
+  display: none;
+}
+
+body button.DocSearch-Button {
+  height: 32px;
+  border-radius: 6px;
+}
+
+body .DocSearch-Button-Placeholder {
+  font-size: 0.75rem;
+  color: #797979;
+}
+
+html[data-theme="dark"] body .DocSearch-Button-Placeholder {
+  color: #adadad;
+}
+
+@media (min-width: 769px) {
+  .DocSearch-Button .DocSearch-Search-Icon {
+    display: none;
+  }
+}
+
+.DocSearch-Button {
+  --docsearch-text-color: #797979;
+  --docsearch-searchbox-background: #f1f1f1;
+}
+
+html[data-theme="dark"] .DocSearch-Button {
+  --docsearch-text-color: var(--ifm-font-color-base);
+  --docsearch-searchbox-background: #292929;
+}
+
+.DocSearch-Button .DocSearch-Button-Key {
+  --docsearch-key-shadow: none;
+  padding: 0;
+  top: 0;
+}
+
+.DocSearch-Button .DocSearch-Button-Key {
+  --docsearch-key-gradient: #e2e2e2;
+  color: #797979;
+}
+
+html[data-theme="dark"] .DocSearch-Button .DocSearch-Button-Key {
+  --docsearch-key-gradient: #323232;
+  color: #adadad;
+}
+
+section.DocSearch-HitsFooter {
+  color: var(--docsearch-text-color);
+}

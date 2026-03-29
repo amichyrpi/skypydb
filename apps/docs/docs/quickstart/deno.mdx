@@ -1,0 +1,63 @@
+---
+title: Deno Quickstart
+sidebar_label: Deno
+description: "Add mesosphere to a Deno project"
+hide_table_of_contents: true
+sidebar_position: 460
+sidebar_class_name: mesosphere-sidebar-deno
+---
+
+Learn how to query data from mesosphere in a Deno project.
+
+# Using mesosphere with Deno
+
+<StepsList>
+  <ol>
+    <li>
+      **Create a new Deno project**
+
+      ```sh
+      mkdir my-deno-app && cd my-deno-app
+      ```
+    </li>
+    <li>
+      **Install the mesosphere client**
+
+      Add the mesosphere client to your `deno.json` imports:
+
+      ```json title="deno.json"
+      {
+        "imports": {
+          "mesosphere/": "npm:mesosphere/"
+        }
+      }
+      ```
+    </li>
+    <li>
+      **Initialize mesosphere**
+
+      ```sh
+      npx mesosphere dev
+      ```
+    </li>
+    <li>
+      **Query your data**
+
+      ```ts title="main.ts"
+      import { mesosphereHttpClient } from "mesosphere/browser";
+      import { api } from "./mesosphere/_generated/api.js";
+
+      const client = new mesosphereHttpClient(Deno.env.get("mesosphere_URL")!);
+      const tasks = await client.query(api.tasks.get);
+      console.log(tasks);
+      ```
+    </li>
+    <li>
+      **Run it**
+
+      ```sh
+      deno run --allow-env --allow-net main.ts
+      ```
+    </li>
+  </ol>
+</StepsList>

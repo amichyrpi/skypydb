@@ -2,7 +2,7 @@
 
 Write your Mesosphere functions in this directory.
 
-You can find more information about Mesosphere functions at `https://mesosphere.ahen-studio.com/docs/functions/quickstart`.
+You can find more information about Mesosphere functions at `https://docs.usemesosphere.com//functions/quickstart`.
 
 A read function that takes two arguments:
 

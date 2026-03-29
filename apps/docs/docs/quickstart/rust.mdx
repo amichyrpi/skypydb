@@ -1,0 +1,112 @@
+---
+title: Rust Quickstart
+sidebar_label: Rust
+description: "Add mesosphere to a Rust project"
+hide_table_of_contents: true
+sidebar_position: 700
+sidebar_class_name: mesosphere-sidebar-rust
+---
+
+export const sampleData = "// example";
+export const tasks = "// example";
+export const main = "// example";
+
+Learn how to query data from mesosphere in a Rust app with Tokio.
+
+<StepsList>
+  <Step title="Create a Cargo project">
+    Create a new Cargo project.
+
+    ```sh
+    cargo new my_app
+    cd my_app
+    ```
+
+  </Step>
+  <Step title="Install the mesosphere client and server libraries">
+    To get started, install the `mesosphere` npm
+    package which enables you to write your
+    backend.
+
+    And also install the `mesosphere` Rust client library,
+    the `tokio` runtime, and `dotenvy` for working with `.env` files.
+
+    ```sh
+    npm init -y && npm install mesosphere && cargo add mesosphere tokio dotenvy
+    ```
+
+  </Step>
+  <Step title="Set up a mesosphere dev deployment">
+    Next, run `npx mesosphere dev`. This
+    will prompt you to log in with GitHub,
+    create a project, and save your production and deployment URLs.
+
+    It will also create a `mesosphere/` folder for you
+    to write your backend API functions in. The `dev` command
+    will then continue running to sync your functions
+    with your dev deployment in the cloud.
+
+
+    ```sh
+    npx mesosphere dev
+    ```
+
+  </Step>
+
+  <Step title="Create sample data for your database">
+    In a new terminal window, create a `sampleData.jsonl`
+    file with some sample data.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Add the sample data to your database">
+    Now that your project is ready, add a `tasks` table
+    with the sample data into your mesosphere database with
+    the `import` command.
+
+    ```
+    npx mesosphere import --table tasks sampleData.jsonl
+    ```
+
+  </Step>
+
+  <Step title="Expose a database query">
+    Add a new file `tasks.js` in the `mesosphere/` folder
+    with a query function that loads the data.
+
+    Exporting a query function from this file
+    declares an API function named after the file
+    and the export name, `"tasks:get"`.
+
+    ```js
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Connect the app to your backend">
+    In the file `src/main.rs`, create a `mesosphereClient` and use it
+    to fetch from your `"tasks:get"` API.
+    
+    ```rust
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Run the app">
+      Run the app and see the serialized list of tasks.
+
+      ```sh
+      cargo run
+      ```
+
+  </Step>
+
+</StepsList>
+
+See the complete [Rust documentation](https://docs.rs/mesosphere/latest/mesosphere/).

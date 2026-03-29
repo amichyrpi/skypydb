@@ -14,7 +14,7 @@
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
 [![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
-[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
+[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.usemesosphere.com/)
 
 </div>
 
@@ -22,7 +22,7 @@ Valmistettu Ranskassa ❤️
 
 ## Miten se toimii
 
-[Mesosphere](https://mesosphere.ahen-studio.com) on avoimen lähdekoodin relaatio- ja vektori upotustietokanta, jossa on Apache 2.0 -lisensoitu tietokanta. Se on suunniteltu yksinkertaiseksi, nopeaksi ja helppokäyttöiseksi web-kehittäjille ja taustakehittäjille. Lue, kirjoita tietoja ja suorita kovaa logiikkaa kirjoittamalla toimintoja Typescriptissä täysin tyyppiturvalla.
+[Mesosphere](https://www.usemesosphere.com/) on avoimen lähdekoodin relaatio- ja vektori upotustietokanta, jossa on Apache 2.0 -lisensoitu tietokanta. Se on suunniteltu yksinkertaiseksi, nopeaksi ja helppokäyttöiseksi web-kehittäjille ja taustakehittäjille. Lue, kirjoita tietoja ja suorita kovaa logiikkaa kirjoittamalla toimintoja Typescriptissä täysin tyyppiturvalla.
 
 Mesosphere tarjoaa tietokannan, johon kirjoitat funktiot Typescriptissä ja tallennat tietosi relaatiotietokantaan. Voit myös tallentaa tiedostosi tietokantaan. Voit myös luoda, etsiä ja poistaa vektorikokoelmia reaaliajassa. Tarjoamme useita asiakaskirjastoja vuorovaikutukseen kirjoittamiesi toimintojen kanssa.
 
@@ -32,27 +32,31 @@ Mesosphere on saatavilla useilla kielillä. Voit käyttää sitä suosikkikielel
 
 **Arkkitehtuuri**
 
-Mesosphere on tehty yksinkertaiseksi, kirjoita palvelintoiminnot kansioon ./mesosphere ja ota ne käyttöön taustajärjestelmässä. Aloita Mesospheren kokeileminen seuraamalla [tutorials](./demo/examples/js/tutorials/chat_app/). Mesosphere käyttää tRPC:tä tyyppiturvallisen API:n luomiseen funktioillesi ja Postgres-tietokannan tietojen tallentamiseen.
+Mesosphere on tehty yksinkertaiseksi, kirjoita palvelintoiminnot kansioon .../mesosphere ja ota ne käyttöön taustajärjestelmässä. Aloita Mesospheren kokeileminen seuraamalla [tutorials](.../demo/examples/js/tutorials/chat_app/). Mesosphere käyttää tRPC:tä tyyppiturvallisen API:n luomiseen funktioillesi ja Postgres-tietokannan tietojen tallentamiseen.
 
 ## Integrointi
 
-Tarjoamme integrointikerroksen [mem0](https://github.com/mem0ai/mem0):n kanssa, jotta voit lisätä muistia LLM:ään käyttämällä [integration](./demo/examples/python/integration/)
+Tarjoamme integrointikerroksen [mem0](https://github.com/mem0ai/mem0):n kanssa, jotta voit lisätä muistia LLM:ään käyttämällä [integration](.../demo/examples/python/integration/)
 
 ## Kielet
 
-Etsitkö kieltäsi? Löydät sen osoitteesta [languages](./i18n/languages.md)
+Etsitkö kieltäsi? Löydät sen osoitteesta [languages](./languages.md)
 
 ## Dokumentaatio
 
-Täydelliset asiakirjat ovat osoitteessa [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+Täydelliset asiakirjat ovat osoitteessa [docs.usemesosphere.com](https://docs.usemesosphere.com/)
 
-Katso ohjeet osallistumiseen käymällä osoitteessa [Contribution guidelines](./CONTRIBUTING.md)
+Katso ohjeet osallistumiseen käymällä osoitteessa [Contribution guidelines](.../CONTRIBUTING.md)
 
 ## Yhteisö ja tuki
 
 - [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Paras: apua rakentamisessa, keskustelu tietokannan parhaista käytännöistä.
-- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Paras: bugit ja virheet, joita kohtaat Supabasea käytettäessä.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Paras: bugit ja virheet, joita kohtaat Mesospherea käytettäessä.
 - [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Paras: osallistua koodikanta.
+
+## Testausalue
+
+Voit kokeilla Mesosphere:n ominaisuuksia ja oppia niiden toiminnasta käymällä osoitteessa [Testausalue](.../mesosphere-tests/).
 
 ## Kiitos avustajillemme:
 

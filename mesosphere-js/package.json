@@ -2,7 +2,7 @@
   "name": "mesosphere",
   "version": "2.0.0",
   "description": "Open Source Relational and Vector Embeddings Database",
-  "license": "Apache",
+  "license": "FSL-1.1-ALv2",
   "author": "Ahen Studio",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

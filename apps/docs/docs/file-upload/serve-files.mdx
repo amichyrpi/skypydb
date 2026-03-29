@@ -1,0 +1,107 @@
+---
+title: "Serving Files"
+sidebar_label: "Serve"
+sidebar_position: 3
+description: "Serve files stored in mesosphere to users"
+---
+
+Files stored in mesosphere can be served to your users by generating a URL pointing
+to a given file.
+
+## Generating file URLs in queries
+
+The simplest way to serve files is to return URLs along with other data required
+by your app from [queries](/functions/query-functions.mdx) and
+[mutations](/functions/mutation-functions.mdx).
+
+A file URL can be generated from a storage ID by the
+[`storage.getUrl`](/api/interfaces/server.StorageReader#geturl) function of the
+[`QueryCtx`](/api/interfaces/server.GenericQueryCtx),
+[`MutationCtx`](/api/interfaces/server.GenericMutationCtx), or
+[`ActionCtx`](/api/interfaces/server.GenericActionCtx) object:
+
+```ts title="mesosphere/listMessages.ts"
+import { query } from "./_generated/server";
+
+export const listMessages = query({
+  handler: async ({ db, storage }) => {
+    const messages = await db.query("messages").collect();
+    return Promise.all(
+      messages.map(async (message) => ({
+        ...message,
+        imageUrl: await storage.getUrl(message.imageId),
+      })),
+    );
+  },
+});
+```
+
+File URLs can be used in `img` elements to render images:
+
+```tsx title="src/App.tsx"
+function MessageWithImage({ message }) {
+  return (
+    <div>
+      <img src={message.imageUrl} alt="Message attachment" />
+    </div>
+  );
+}
+```
+
+In your query you can control who gets access to a file when the URL is
+generated. If you need to control access when the file is _served_, you can
+define your own file serving HTTP actions instead.
+
+## Serving files from HTTP actions
+
+You can serve files directly from [HTTP actions](/functions/http-actions.mdx).
+An HTTP action will need to take some parameter(s) that can be mapped to a
+storage ID, or a storage ID itself.
+
+This enables access control at the time the file is served, such as when an
+image is displayed on a website. But note that the HTTP actions response size is
+[currently limited](/functions/http-actions.mdx#limits) to 20MB. For larger
+files you need to use file URLs as described
+[above](#generating-file-urls-in-queries).
+
+A file [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) object
+can be generated from a storage ID by the
+[`storage.get`](/api/interfaces/server.StorageActionWriter#get) function of the
+[`ActionCtx`](/api/interfaces/server.GenericActionCtx) object, which can be
+returned in a `Response`:
+
+```ts title="mesosphere/http.ts"
+import { httpRouter } from "mesosphere/server";
+import { httpAction } from "./_generated/server";
+
+const http = httpRouter();
+
+http.route({
+  path: "/getImage",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const storageId = request.headers.get("storageId");
+    const blob = await ctx.storage.get(storageId);
+    if (!blob) {
+      return new Response("File not found", { status: 404 });
+    }
+    return new Response(blob);
+  }),
+});
+
+export default http;
+```
+
+The URL of such an action can be used directly in `img` elements to render
+images:
+
+```tsx title="src/App.tsx"
+function App() {
+  return (
+    <img
+      src="https://your-deployment.mesosphere.site/getImage?storageId=..."
+      alt="Image"
+    />
+  );
+}
+```

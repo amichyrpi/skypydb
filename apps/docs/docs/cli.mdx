@@ -1,0 +1,338 @@
+---
+title: "CLI"
+sidebar_position: 110
+slug: "cli"
+description: "Command-line interface for managing mesosphere projects and functions"
+---
+
+The mesosphere command-line interface (CLI) is your interface for managing mesosphere
+projects and mesosphere functions.
+
+To install the CLI, run:
+
+```sh
+npm install mesosphere
+```
+
+You can view the full list of commands with:
+
+```sh
+npx mesosphere
+```
+
+## Configure
+
+### Create a new project
+
+The first time you run
+
+```sh
+npx mesosphere dev
+```
+
+it will ask you to log in your device and create a new mesosphere project. It will
+then create:
+
+1. The `mesosphere/` directory: This is the home for your query and mutation
+   functions.
+2. `.env.local` with `mesosphere_DEPLOYMENT` variable: This is the main
+   configuration for your mesosphere project. It is the name of your development
+   deployment.
+
+### Recreate project configuration
+
+Run
+
+```sh
+npx mesosphere dev
+```
+
+in a project directory without a set `mesosphere_DEPLOYMENT` to configure a new or
+existing project.
+
+### Log out
+
+```sh
+npx mesosphere logout
+```
+
+Remove the existing mesosphere credentials from your device, so subsequent commands
+like `npx mesosphere dev` can use a different mesosphere account.
+
+## Develop
+
+### Run the mesosphere dev server
+
+```sh
+npx mesosphere dev
+```
+
+Watches the local filesystem. When you change a [function](/functions.mdx) or
+the [schema](/database/schemas.mdx), the new versions are pushed to your dev
+deployment and the [generated types](/generated-api/) in `mesosphere/_generated` are
+updated. By default, logs from your dev deployment are displayed in the
+terminal.
+
+It's also possible to
+[run a mesosphere deployment locally](/cli/local-deployments-for-dev.mdx) for
+development.
+
+### Open the dashboard
+
+```sh
+npx mesosphere dashboard
+```
+
+Open the [mesosphere dashboard](./dashboard).
+
+### Open the docs
+
+```sh
+npx mesosphere docs
+```
+
+Get back to these docs!
+
+### Run mesosphere functions
+
+```sh
+npx mesosphere run <functionName> [args]
+```
+
+Run a public or internal mesosphere query, mutation, or action on your development
+deployment.
+
+Arguments are specified as a JSON object.
+
+```sh
+npx mesosphere run messages:send '{"body": "hello", "author": "me"}'
+```
+
+Add `--watch` to live update the results of a query. Add `--push` to push local
+code to the deployment before running the function.
+
+Use `--prod` to run functions in the production deployment for a project.
+
+### Tail deployment logs
+
+You can choose how to pipe logs from your dev deployment to your console:
+
+```sh
+# Show all logs continuously
+npx mesosphere dev --tail-logs always
+
+# Pause logs during deploys to see sync issues (default)
+npx mesosphere dev
+
+# Don't display logs while developing
+npx mesosphere dev --tail-logs disable
+
+# Tail logs without deploying
+npx mesosphere logs
+```
+
+Use `--prod` with `npx mesosphere logs` to tail the prod deployment logs instead.
+
+### Import data from a file
+
+```sh
+npx mesosphere import --table <tableName> <path>
+npx mesosphere import <path>.zip
+```
+
+See description and use-cases:
+[data import](/database/import-export/import.mdx).
+
+### Export data to a file
+
+```sh
+npx mesosphere export --path <directoryPath>
+npx mesosphere export --path <filePath>.zip
+npx mesosphere export --include-file-storage --path <path>
+```
+
+See description and use-cases:
+[data export](/database/import-export/export.mdx).
+
+### Display data from tables
+
+```sh
+npx mesosphere data  # lists tables
+npx mesosphere data <table>
+```
+
+Display a simple view of the
+[dashboard data page](/dashboard/deployments/data.md) in the command line.
+
+The command supports `--limit` and `--order` flags to change data displayed. For
+more complex filters, use the dashboard data page or write a
+[query](/database/reading-data/reading-data.mdx).
+
+The `npx mesosphere data <table>` command works with
+[system tables](/database/advanced/system-tables.mdx), such as `_storage`, in
+addition to your own tables.
+
+### Show deployment health insights
+
+```sh
+npx mesosphere insights
+npx mesosphere insights --details
+npx mesosphere insights --prod
+```
+
+Show health insights for a mesosphere deployment over the last 72 hours. Reports
+[OCC (Optimistic Concurrency Control)](/error#optimistic-concurrency-control)
+conflicts and resource limit issues that may indicate performance problems.
+
+Add `--details` to include recent events for each insight. Use `--prod` to check
+the production deployment, `--preview-name <name>` for a preview deployment, or
+`--deployment-name <name>` for a specific deployment.
+
+### Read and write environment variables
+
+```sh
+npx mesosphere env list
+npx mesosphere env get <name>
+npx mesosphere env set <name> <value>
+npx mesosphere env remove <name>
+```
+
+See and update the
+[deployment environment variables](/production/environment-variables). You can
+alternatively use the
+[settings page on the dashboard](/dashboard/deployments/settings.md#environment-variables).
+
+Tip: to avoid secrets from ending up in your terminal shell history, you can
+pass the value via stdin, from a file, or interactively.
+
+Useful commands:
+
+```sh
+# Set a value interactively
+npx mesosphere env set API_KEY
+
+# Set from MacOS clipboard
+pbpaste | npx mesosphere env set API_KEY
+# Windows PowerShell
+Get-Clipboard | npx mesosphere env set API_KEY
+
+# Read a value from a file
+npx mesosphere env set PUBLIC_KEY --from-file key.pub
+
+# Set multiple variables via a file
+npx mesosphere env set --from-file .env.defaults
+
+# Save environment variables to a file
+npx mesosphere env list >> .env.mesosphere  # append
+npx mesosphere env list >  .env.mesosphere  # overwrite
+
+# Update values after editing them locally:
+npx mesosphere env set --force < .env.mesosphere
+```
+
+Note: to set variables on your production deployment, pass `--prod`.
+
+## Deploy
+
+### Deploy mesosphere functions to production
+
+```sh
+npx mesosphere deploy
+```
+
+The target deployment to push to is determined like this:
+
+1. If the `mesosphere_DEPLOY_KEY` environment variable is set (typical in CI), then
+   it is the deployment associated with that key.
+2. If the `mesosphere_DEPLOYMENT` environment variable is set (typical during local
+   development), then the target deployment is the production deployment of the
+   project that the deployment specified by `mesosphere_DEPLOYMENT` belongs to. This
+   allows you to deploy to your prod deployment while developing against your
+   dev deployment.
+
+This command will:
+
+1. Run a command if specified with `--cmd`. The command will have mesosphere_URL (or
+   similar) environment variable available:
+   ```sh
+   npx mesosphere deploy --cmd "npm run build"
+   ```
+   You can customize the URL environment variable name with
+   `--cmd-url-env-var-name`:
+   ```sh
+   npx mesosphere deploy --cmd 'npm run build' --cmd-url-env-var-name CUSTOM_mesosphere_URL
+   ```
+1. Typecheck your mesosphere functions.
+1. Regenerate the [generated code](/generated-api/) in the `mesosphere/_generated`
+   directory.
+1. Bundle your mesosphere functions and their dependencies.
+1. Push your functions, [indexes](/database/reading-data/indexes/indexes.md),
+   and [schema](/database/schemas.mdx) to production.
+
+Once this command succeeds the new functions will be available immediately.
+
+### Deploy mesosphere functions to a [preview deployment](/production/hosting/preview-deployments.mdx)
+
+```sh
+npx mesosphere deploy
+```
+
+When run with the `mesosphere_DEPLOY_KEY` environment variable containing a
+[Preview Deploy Key](docs/cli/deploy-key-types.mdx#deploying-to-preview-deployments),
+this command will:
+
+1. Create a new mesosphere deployment. `npx mesosphere deploy` will infer the Git branch
+   name for Vercel, Netlify, GitHub, and GitLab environments, or the
+   `--preview-create` option can be used to customize the name associated with
+   the newly created deployment.
+   ```
+   npx mesosphere deploy --preview-create my-branch-name
+   ```
+1. Run a command if specified with `--cmd`. The command will have mesosphere_URL (or
+   similar) environment variable available:
+
+   ```sh
+   npx mesosphere deploy --cmd "npm run build"
+   ```
+
+   You can customize the URL environment variable name with
+   `--cmd-url-env-var-name`:
+
+   ```sh
+   npx mesosphere deploy --cmd 'npm run build' --cmd-url-env-var-name CUSTOM_mesosphere_URL
+   ```
+
+1. Typecheck your mesosphere functions.
+1. Regenerate the [generated code](/generated-api/) in the `mesosphere/_generated`
+   directory.
+1. Bundle your mesosphere functions and their dependencies.
+1. Push your functions, [indexes](/database/reading-data/indexes/indexes.md),
+   and [schema](/database/schemas.mdx) to the deployment.
+1. Run a function specified by `--preview-run` (similar to the `--run` option
+   for `npx mesosphere dev`).
+
+   ```sh
+   npx mesosphere deploy --preview-run myFunction
+   ```
+
+See the [Vercel](/production/hosting/vercel.mdx#preview-deployments) or
+[Netlify](/production/hosting/netlify.mdx#deploy-previews) hosting guide for
+setting up frontend and backend previews together.
+
+### Update generated code
+
+```sh
+npx mesosphere codegen
+```
+
+The [generated code](/generated-api/) in the `mesosphere/_generated` directory
+includes types required for a TypeScript typecheck. This code is generated
+whenever necessary while running `npx mesosphere dev` and this code should be
+committed to the repo (your code won't typecheck without it!).
+
+In the rare cases it's useful to regenerate code (e.g. in CI to ensure that the
+correct code was checked it) you can use this command.
+
+Generating code can require communicating with a mesosphere deployment in order to
+evaluate configuration files in the mesosphere JavaScript runtime. This doesn't
+modify the code running on the deployment.

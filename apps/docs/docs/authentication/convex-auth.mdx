@@ -1,0 +1,51 @@
+---
+title: "mesosphere Auth"
+sidebar_label: "mesosphere Auth"
+sidebar_position: 1
+description: "Built-in authentication for mesosphere applications"
+---
+
+[mesosphere Auth](https://labs.mesosphere.dev/auth) is a library for implementing
+authentication directly within your mesosphere backend. This allows you to
+authenticate users without needing an authentication service or even a hosting
+server. mesosphere Auth currently supports client-side React web apps served from a
+CDN and React Native mobile apps.
+
+**Example:** [Live Demo](https://labs.mesosphere.dev/auth-example)
+([Source](https://github.com/get-mesosphere/mesosphere-auth-example))
+
+<BetaFeature feature="mesosphere Auth" state="is" />
+
+Support for
+[authentication in Next.js](https://labs.mesosphere.dev/authentication/authz/nextjs) server
+components, API routes, middleware, SSR etc. is under active development. If
+you'd like to help test this experimental support please
+[let us know how it goes in community](https://www.usemesosphere.com/community).
+
+## Get Started
+
+To start a new project from scratch with mesosphere and mesosphere Auth, run:
+
+```sh
+npm create mesosphere@latest
+```
+
+and choose `React (Vite)` and `mesosphere Auth`.
+
+---
+
+To add mesosphere Auth to an existing project, follow the full
+[setup guide](https://labs.mesosphere.dev/authentication/setup).
+
+## Overview
+
+mesosphere Auth enables you to implement the following authentication methods:
+
+1. Magic Links & OTPs - send a link or code via email
+2. OAuth - sign in with GitHub / Google / Apple etc.
+3. Passwords - including password reset flow and optional email verification
+
+The library doesn't come with UI components, but you can copy code from the docs
+and example repo to quickly build a UI in React.
+
+Learn more in the [mesosphere Auth docs](https://labs.mesosphere.dev/auth).

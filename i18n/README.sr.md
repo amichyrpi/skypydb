@@ -14,7 +14,7 @@
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
 [![Crates.io](https://img.shields.io/crates/v/mesosphere)](https://crates.io/crates/mesosphere)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
-[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
+[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.usemesosphere.com/)
 
 </div>
 
@@ -22,7 +22,7 @@
 
 ## Како то ради
 
-[Mesosphere](https://mesosphere.ahen-studio.com) је релациона и векторска база података отвореног кода са лиценцом Апацхе 2.0 дизајнирана је да буде једноставна, брза и лака за коришћење за веб програмере и позадинске програмере. Читајте, пишите податке и изводите чврсту логику писањем функција у Типесцрипт-у уз пуну сигурност типова.
+[Mesosphere](https://www.usemesosphere.com/) је релациона и векторска база података отвореног кода са лиценцом Апацхе 2.0 дизајнирана је да буде једноставна, брза и лака за коришћење за веб програмере и позадинске програмере. Читајте, пишите податке и изводите чврсту логику писањем функција у Типесцрипт-у уз пуну сигурност типова.
 
 Месоспхере обезбеђује базу података у којој пишете своје функције у Типесцрипт-у и чувате своје податке у релационој бази података. Такође можете да складиштите своје датотеке у бази података. Такође можете креирати, претраживати и брисати векторске колекције све то у реалном времену. пружамо више клијентских библиотека за интеракцију са функцијама које сте написали.
 
@@ -32,27 +32,31 @@
 
 **Архитектура**
 
-Месосфера је направљена да буде једноставна, запишите своје функције сервера у фасциклу `./mesosphere` и примените их на позадину. Почните да експериментишете са мезосфером тако што ћете пратити наш [tutorials](./demo/examples/js/tutorials/chat_app/). Месоспхере користи тРПЦ да креира АПИ безбедан тип за ваше функције и Постгрес базу података за складиштење ваших података.
+Месосфера је направљена да буде једноставна, запишите своје функције сервера у фасциклу `../mesosphere` и примените их на позадину. Почните да експериментишете са мезосфером тако што ћете пратити наш [tutorials](../demo/examples/js/tutorials/chat_app/). Месоспхере користи тРПЦ да креира АПИ безбедан тип за ваше функције и Постгрес базу података за складиштење ваших података.
 
 ## Интеграција
 
-Пружамо интеграцијски слој са [mem0](https://github.com/mem0ai/mem0) да бисте додали меморију у ЛЛМ користећи наш [integration](./demo/examples/python/integration/)
+Пружамо интеграцијски слој са [mem0](https://github.com/mem0ai/mem0) да бисте додали меморију у ЛЛМ користећи наш [integration](../demo/examples/python/integration/)
 
 ## Језици
 
-Тражите свој језик? Наћи ћете га на [languages](./i18n/languages.md)
+Тражите свој језик? Наћи ћете га на [languages](./languages.md)
 
 ## Документација
 
-За комплетну документацију посетите [mesosphere.ahen-studio.com/docs](https://mesosphere.ahen-studio.com/docs)
+За комплетну документацију посетите [docs.usemesosphere.com](https://docs.usemesosphere.com/)
 
-Да бисте видели како да допринесете, посетите [Contribution guidelines](./CONTRIBUTING.md)
+Да бисте видели како да допринесете, посетите [Contribution guidelines](../CONTRIBUTING.md)
 
 ## Заједница и подршка
 
 - [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Најбоље за: помоћ у изградњи, дискусију о најбољим праксама базе података.
 - [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Најбоље за: грешке и грешке на које наилазите користећи Супабасе.
 - [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Најбоље за: допринос бази кодова.
+
+## Тестна зона
+
+Да бисте испробали функције Месосфере и научили како раде, посетите [Тестна зона](../mesosphere-tests/).
 
 ## Све хвала нашим сарадницима:
 

@@ -14,11 +14,11 @@
 ![NPM Version](https://img.shields.io/npm/v/mesosphere)
 [![Crates.io](https://img.shields.io/crates/v/skypydb)](https://crates.io/crates/skypydb)
 ![GitHub](https://img.shields.io/github/license/Ahen-Studio/mesosphere-backend)
-[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.ahen-studio.com/)
+[![Docs](https://img.shields.io/badge/Docs-blue.svg)](https://docs.usemesosphere.com/)
 
 </div>
 
-The official Typescript client for [Mesosphere](https://mesosphere.ahen-studio.com/).
+The official Typescript client for [Mesosphere](https://www.usemesosphere.com/).
 
 This is the TypeScript backend SDK, client and cli for Mesosphere. The type-safe with all backend functions you ever need.
 
@@ -47,14 +47,14 @@ npx mesosphere dev # set up the project with a user interface and start deployin
 
 ## Documentation
 
-For full documentation, visit [mesosphere.ahen-studio.com/docs/client/rust](https://mesosphere.ahen-studio.com/docs/client/rust)
+For full documentation, visit [docs.usemesosphere.com/client/rust](https://docs.usemesosphere.com//client/rust)
 
 To see how to Contribute, visit [Contribution guidelines](../CONTRIBUTING.md)
 
 ## Community & Support
 
 - [Community Forum](https://github.com/Ahen-Studio/mesosphere-backend/discussions). Best for: help with building, discussion about database best practices.
-- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Best for: bugs and errors you encounter using Supabase.
+- [GitHub Issues](https://github.com/Ahen-Studio/mesosphere-backend/issues). Best for: bugs and errors you encounter using Mesosphere.
 - [Github Pull Requests](https://github.com/Ahen-Studio/mesosphere-backend/pulls). Best for: contributing to the codebase.
 
 ## TO LLM

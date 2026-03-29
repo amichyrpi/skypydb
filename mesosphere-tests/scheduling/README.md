@@ -2,7 +2,7 @@
 
 This example demonstrates how to use scheduled functions in your application.
 
-It is a modified version of the [Chat App tutorial](https://mesosphere.ahen-studio.com/docs/tutorial/chatapp) that deletes all user messages every 10 seconds.
+It is a modified version of the [Chat App tutorial](https://docs.usemesosphere.com//tutorial/chatapp) that deletes all user messages every 10 seconds.
 
 # Running the app
 

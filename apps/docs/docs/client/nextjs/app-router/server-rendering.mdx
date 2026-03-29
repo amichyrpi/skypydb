@@ -1,0 +1,239 @@
+---
+title: "Next.js Server Rendering"
+sidebar_label: "Server Rendering"
+sidebar_position: 10
+description:
+  "Implement server-side rendering with mesosphere in Next.js App Router using
+  preloadQuery, fetchQuery, and server actions for improved performance."
+---
+
+export const PreloadQuery = "// example";
+export const AuthedPreloadQuery = "// example";
+export const UsePreloadedQueryTS = "// example";
+export const UsePreloadedQueryJS = "// example";
+export const FetchQuery = "// example";
+export const ServerActionTS = "// example";
+export const ServerActionJS = "// example";
+export const RouteHandlerTS = "// example";
+export const RouteHandlerJS = "// example";
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Next.js automatically renders both Client and Server Components on the server
+during the initial page load.
+
+By default Client Components will not wait for mesosphere data to be loaded, and
+your UI will render in a "loading" state. Read on to learn how to preload data
+during server rendering and how to interact with the mesosphere deployment from
+Next.js server-side.
+
+**Example:**
+[Next.js App Router](https://github.com/get-mesosphere/mesosphere-demos/tree/main/nextjs-app-router)
+
+This pages covers the App Router variant of Next.js.
+
+<BetaFeature feature="Next.js Server Rendering support" state="is" />
+
+## Preloading data for Client Components
+
+If you want to preload data from mesosphere and leverage Next.js
+[server rendering](https://nextjs.org/docs/app/building-your-application/rendering/server-components#server-rendering-strategies),
+but still retain reactivity after the initial page load, use
+[`preloadQuery`](/api/modules/nextjs#preloadquery) from
+[`mesosphere/nextjs`](/api/modules/nextjs).
+
+In a
+[Server Component](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
+call `preloadQuery`:
+
+```tsx title="app/TasksWrapper.tsx"
+import { preloadQuery } from "mesosphere/nextjs";
+import { api } from "../../mesosphere/_generated/api";
+import { Tasks } from "./Tasks";
+
+export default async function TasksWrapper() {
+  const preloadedTasks = await preloadQuery(api.tasks.list);
+  return <Tasks preloadedTasks={preloadedTasks} />;
+}
+```
+
+In a
+[Client Component](https://nextjs.org/docs/app/building-your-application/rendering/client-components)
+call [`usePreloadedQuery`](/api/modules/react#usepreloadedquery):
+
+```tsx title="app/TasksWrapper.tsx"
+"use client";
+
+import { Preloaded, usePreloadedQuery } from "mesosphere/react";
+import { api } from "../../mesosphere/_generated/api";
+
+export function Tasks({
+  preloadedTasks,
+}: {
+  preloadedTasks: Preloaded<typeof api.tasks.list>;
+}) {
+  const tasks = usePreloadedQuery(preloadedTasks);
+  return (
+    <ul>
+      {tasks.map((task) => (
+        <li key={task._id}>{task.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+[`preloadQuery`](/api/modules/nextjs#preloadquery) takes three arguments:
+
+1. The query reference
+2. Optionally the arguments object passed to the query
+3. Optionally a [NextjsOptions](/api/modules/nextjs#nextjsoptions) object
+
+`preloadQuery` uses the
+[`cache: 'no-store'` policy](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating#opting-out-of-data-caching)
+so any Server Components using it will not be eligible for
+[static rendering](https://nextjs.org/docs/app/building-your-application/rendering/server-components#server-rendering-strategies).
+
+### Using the query result
+
+[`preloadQuery`](/api/modules/nextjs#preloadquery) returns an opaque `Preloaded`
+payload that should be passed through to `usePreloadedQuery`. If you want to use
+the return value of the query, perhaps to decide whether to even render the
+Client Component, you can pass the `Preloaded` payload to the
+[`preloadedQueryResult`](/api/modules/nextjs#preloadedqueryresult) function.
+
+## Using mesosphere to render Server Components
+
+If you need mesosphere data on the server, you can load data from mesosphere in your
+[Server Components](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching),
+but it will be non-reactive. To do this, use the
+[`fetchQuery`](/api/modules/nextjs#fetchquery) function from `mesosphere/nextjs`:
+
+```tsx title="app/StaticTasks.tsx"
+import { fetchQuery } from "mesosphere/nextjs";
+import { api } from "../../mesosphere/_generated/api";
+
+export default async function StaticTasks() {
+  const tasks = await fetchQuery(api.tasks.list);
+  return (
+    <ul>
+      {tasks.map((task) => (
+        <li key={task._id}>{task.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Server Actions and Route Handlers
+
+Next.js supports building HTTP request handling routes, similar to mesosphere
+[HTTP Actions](/functions/http-actions.mdx). You can use mesosphere from a
+[Server Action](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
+or a
+[Route Handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
+as you would any other database service.
+
+To load and edit mesosphere data in your Server Action or Route Handler, you can use
+the `fetchQuery`, `fetchMutation` and `fetchAction` functions.
+
+Here's an example inline Server Action calling a mesosphere mutation:
+
+```tsx title="app/example/page.tsx"
+"use server";
+
+import { fetchMutation } from "mesosphere/nextjs";
+import { api } from "../../mesosphere/_generated/api";
+
+export async function addTask(formData: FormData) {
+  const text = formData.get("text") as string;
+  await fetchMutation(api.tasks.add, { text });
+}
+```
+
+Here's an example Route Handler calling a mesosphere mutation:
+
+```ts title="app/api/route.ts"
+import { fetchMutation } from "mesosphere/nextjs";
+import { api } from "../../mesosphere/_generated/api";
+import { NextResponse } from "next/server";
+
+export async function POST(request: Request) {
+  const { text } = await request.json();
+  await fetchMutation(api.tasks.add, { text });
+  return NextResponse.json({ success: true });
+}
+```
+
+## Server-side authentication
+
+To make authenticated requests to mesosphere during server rendering, pass a JWT
+token to [`preloadQuery`](/api/modules/nextjs#preloadquery) or
+[`fetchQuery`](/api/modules/nextjs#fetchquery) in the third options argument:
+
+```tsx title="app/TasksWrapper.tsx"
+import { preloadQuery } from "mesosphere/nextjs";
+import { api } from "../../mesosphere/_generated/api";
+import { Tasks } from "./Tasks";
+import { getAuthToken } from "./auth";
+
+export default async function TasksWrapper() {
+  const token = await getAuthToken();
+  const preloadedTasks = await preloadQuery(api.tasks.list, {}, { token });
+  return <Tasks preloadedTasks={preloadedTasks} />;
+}
+```
+
+The implementation of `getAuthToken` depends on your authentication provider.
+
+<Tabs>
+<TabItem value="clerk" label="Clerk">
+```ts title="app/auth.ts"
+import { auth } from "@clerk/nextjs/server";
+
+export async function getAuthToken() {
+  return (await (await auth()).getToken()) ?? undefined;
+}
+```
+</TabItem>
+<TabItem value="auth0" label="Auth0">
+```ts title="app/auth.ts"
+// You'll need v4.3 or later of @auth0/nextjs-auth0
+import { getSession } from '@auth0/nextjs-auth0';
+
+export async function getAuthToken() {
+  const session = await getSession();
+  const idToken = session.tokenSet.idToken;
+  return idToken;
+}
+```
+</TabItem>
+</Tabs>
+
+## Configuring mesosphere deployment URL
+
+mesosphere hooks used by Client Components are configured via the
+`mesosphereReactClient` constructor, as shown in the
+[Next.js Quickstart](/quickstart/nextjs.mdx).
+
+To use `preloadQuery`, `fetchQuery`, `fetchMutation` and `fetchAction` in Server
+Components, Server Actions and Route Handlers you must either:
+
+1. have `NEXT_PUBLIC_mesosphere_URL` environment variable set to the mesosphere
+   deployment URL
+2. or pass the [`url` option](/api/modules/nextjs#nextjsoptions) in the third
+   argument to `preloadQuery`, `fetchQuery`, `fetchMutation` or `fetchAction`
+
+## Consistency
+
+[`preloadQuery`](/api/modules/nextjs#preloadquery) and
+[`fetchQuery`](/api/modules/nextjs#fetchquery) use the `mesosphereHTTPClient` under
+the hood. This client is stateless. This means that two calls to `preloadQuery`
+are not guaranteed to return consistent data based on the same database state.
+This is similar to more traditional databases, but is different from the
+[guaranteed consistency](/client/react.mdx#consistency) provided by the
+`mesosphereReactClient`.
+
+To prevent rendering an inconsistent UI avoid using multiple `preloadQuery`
+calls on the same page.

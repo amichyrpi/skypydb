@@ -1,0 +1,110 @@
+---
+title: Script Tag Quickstart
+sidebar_label: Script Tag
+description: "Add mesosphere to any website"
+hide_table_of_contents: true
+sidebar_position: 450
+sidebar_class_name: mesosphere-sidebar-script-tag
+---
+
+export const sampleData = "// example";
+export const tasks = "// example";
+export const html = "// example";
+
+Learn how to query data from mesosphere from script tags in HTML.
+
+<StepsList>
+  <Step title="Create a new npm project">
+    Create a new directory for your mesosphere project.
+
+    ```sh
+    mkdir my-project && cd my-project && npm init -y
+    ```
+
+  </Step>
+  <Step title="Install the mesosphere client and server library">
+    Install the `mesosphere`
+    package which provides a convenient interface for working
+    with mesosphere from JavaScript.
+
+    ```sh
+    npm install mesosphere
+    ```
+
+  </Step>
+  <Step title="Set up a mesosphere dev deployment">
+    Next, run `npx mesosphere dev`. This
+    will prompt you to log in with GitHub,
+    create a project, and save your production and deployment URLs.
+
+    It will also create a `mesosphere/` folder for you
+    to write your backend API functions in. The `dev` command
+    will then continue running to sync your functions
+    with your dev deployment in the cloud.
+
+
+    ```sh
+    npx mesosphere dev
+    ```
+
+  </Step>
+
+  <Step title="Create sample data for your database">
+    In a new terminal window, create a `sampleData.jsonl`
+    file with some sample data.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Add the sample data to your database">
+    Now that your project is ready, add a `tasks` table
+    with the sample data into your mesosphere database with
+    the `import` command.
+
+    ```
+    npx mesosphere import --table tasks sampleData.jsonl
+    ```
+
+  </Step>
+
+  <Step title="Expose a database query">
+    Add a new file `tasks.js` in the `mesosphere/` folder
+    with a query function that loads the data.
+
+    Exporting a query function from this file
+    declares an API function named after the file
+    and the export name, `api.tasks.get`.
+
+    ```js
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Copy the deployment URL">
+    Open the `.env.local` file and copy the `mesosphere_URL` of your development
+    environment for use in the HTML file.
+
+    <></>
+
+  </Step>
+
+  <Step title="Add the script to your webpage">
+    In a new file `index.html`, create a `mesosphereClient` using
+    the URL of your development environment.
+
+    Open this file in a web browser and you'll see it run each time the `tasks`
+    table is modified.
+
+    ```html
+    // example
+    ```
+
+  </Step>
+
+</StepsList>
+
+See the complete [Script Tag documentation](/client/javascript/script-tag.mdx).

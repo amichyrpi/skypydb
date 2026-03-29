@@ -1,0 +1,111 @@
+---
+title: Bun Quickstart
+sidebar_label: Bun
+description: "Add mesosphere to a Bun project"
+hide_table_of_contents: true
+sidebar_position: 450
+sidebar_class_name: mesosphere-sidebar-javascript
+---
+
+export const sampleData = "// example";
+export const tasks = "// example";
+export const script = "// example";
+
+Learn how to query data from mesosphere in a Bun project.
+
+For instructions for subscriptions instead of point-in-time queries see
+[Bun notes](/client/javascript/bun.mdx).
+
+# Using mesosphere with Bun
+
+<StepsList>
+  <Step title="Create a new Bun project">
+    Create a new directory for your Bun project.
+
+    ```sh
+    mkdir my-project && cd my-project && bun init -y
+    ```
+
+  </Step>
+  <Step title="Install the mesosphere client and server library">
+    Install the `mesosphere` package.
+
+    ```sh
+    bun add mesosphere
+    ```
+
+  </Step>
+  <Step title="Set up a mesosphere dev deployment">
+    Next, run `bunx mesosphere dev`. This
+    will prompt you to log in with GitHub,
+    create a project, and save your production and deployment URLs.
+
+    It will also create a `mesosphere/` folder for you
+    to write your backend API functions in. The `dev` command
+    will then continue running to sync your functions
+    with your dev deployment in the cloud.
+
+
+    ```sh
+    bunx mesosphere dev
+    ```
+
+  </Step>
+
+  <Step title="Create sample data for your database">
+    In a new terminal window, create a `sampleData.jsonl`
+    file with some sample data.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Add the sample data to your database">
+    Now that your project is ready, add a `tasks` table
+    with the sample data into your mesosphere database with
+    the `import` command.
+
+    ```
+    bunx mesosphere import --table tasks sampleData.jsonl
+    ```
+
+  </Step>
+
+  <Step title="Expose a database query">
+    Add a new file `tasks.js` in the `mesosphere/` folder
+    with a query function that loads the data.
+
+    Exporting a query function from this file
+    declares an API function named after the file
+    and the export name, `api.tasks.get`.
+
+    ```js
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Connect the script to your backend">
+    In a new file `index.ts`, create a `mesosphereClient` using
+    the URL of your development environment.
+
+    ```ts
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Run the script">
+    Run the script from the same directory and see the list of tasks logged to the terminal.
+
+    ```sh
+    bun index.ts
+    ```
+
+  </Step>
+
+</StepsList>
+
+See the complete [Bun documentation](/client/javascript/bun.mdx).

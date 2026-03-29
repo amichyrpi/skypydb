@@ -1,0 +1,66 @@
+---
+title: Hono Quickstart
+sidebar_label: Hono
+description: "Add mesosphere to a Hono project"
+hide_table_of_contents: true
+sidebar_position: 470
+sidebar_class_name: mesosphere-sidebar-hono
+---
+
+Learn how to use mesosphere as a backend for your Hono application.
+
+# Using mesosphere with Hono
+
+<StepsList>
+  <ol>
+    <li>
+      **Create a new Hono project**
+
+      ```sh
+      npm create hono@latest my-hono-app
+      cd my-hono-app
+      npm install
+      ```
+    </li>
+    <li>
+      **Install the mesosphere client**
+
+      ```sh
+      npm install mesosphere
+      ```
+    </li>
+    <li>
+      **Initialize mesosphere**
+
+      ```sh
+      npx mesosphere dev
+      ```
+    </li>
+    <li>
+      **Query your data in a Hono route**
+
+      ```ts title="src/index.ts"
+      import { Hono } from "hono";
+      import { mesosphereHttpClient } from "mesosphere/browser";
+      import { api } from "../mesosphere/_generated/api.js";
+
+      const app = new Hono();
+      const mesosphere = new mesosphereHttpClient(process.env.mesosphere_URL!);
+
+      app.get("/tasks", async (c) => {
+        const tasks = await mesosphere.query(api.tasks.get);
+        return c.json(tasks);
+      });
+
+      export default app;
+      ```
+    </li>
+    <li>
+      **Run it**
+
+      ```sh
+      npm run dev
+      ```
+    </li>
+  </ol>
+</StepsList>

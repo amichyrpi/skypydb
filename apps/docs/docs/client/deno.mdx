@@ -1,0 +1,53 @@
+---
+title: "mesosphere Deno"
+sidebar_label: "Deno"
+sidebar_position: 20
+description: "Deno client library for interacting with your mesosphere backend"
+---
+
+mesosphere works with Deno via the standard npm-compatible mesosphere client. Use `mesosphereHttpClient` for one-shot queries or `mesosphereClient` for real-time subscriptions.
+
+## Installation
+
+Add the mesosphere package to your `deno.json`:
+
+```json title="deno.json"
+{
+  "imports": {
+    "mesosphere/": "npm:mesosphere/"
+  }
+}
+```
+
+## One-shot queries
+
+```ts
+import { mesosphereHttpClient } from "mesosphere/browser";
+import { api } from "./mesosphere/_generated/api.js";
+
+const client = new mesosphereHttpClient(Deno.env.get("mesosphere_URL")!);
+const tasks = await client.query(api.tasks.get);
+console.log(tasks);
+```
+
+## Real-time subscriptions
+
+```ts
+import { mesosphereClient } from "mesosphere/browser";
+import { api } from "./mesosphere/_generated/api.js";
+
+const client = new mesosphereClient(Deno.env.get("mesosphere_URL")!);
+
+client.onUpdate(api.tasks.get, {}, (tasks) => {
+  console.log("tasks updated:", tasks);
+});
+```
+
+## Environment variables
+
+Set `mesosphere_URL` to your deployment URL, found in the [mesosphere dashboard](https://dashboard.mesosphere.dev).
+
+```sh
+export mesosphere_URL=https://happy-animal-123.mesosphere.cloud
+deno run --allow-env --allow-net main.ts
+```

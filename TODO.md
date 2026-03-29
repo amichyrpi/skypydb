@@ -3,9 +3,6 @@
 ## Small things to add or change
 
 - [ ] Finish the documentation
-- [ ] Add features
-  - [ ] Add Deno and Hono support
-  - [ ] Add Go support
 - [ ] Finish demo files
   - [ ] `demo/` All CSS files
   - [ ] `mesosphere-tests/` All CSS files

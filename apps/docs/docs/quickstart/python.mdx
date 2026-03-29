@@ -1,0 +1,113 @@
+---
+title: Python Quickstart
+sidebar_label: Python
+description: "Add mesosphere to a Python project"
+hide_table_of_contents: true
+sidebar_position: 500
+sidebar_class_name: mesosphere-sidebar-python
+---
+
+export const sampleData = "// example";
+export const tasks = "// example";
+export const main = "// example";
+
+Learn how to query data from mesosphere in a Python app.
+
+<StepsList>
+  <Step title="Create a Python script folder">
+    Create a folder for your Python script
+    with a virtual environment.
+
+    ```sh
+    python3 -m venv my-app/venv
+    ```
+
+  </Step>
+  <Step title="Install the mesosphere client and server libraries">
+    To get started, install the `mesosphere` npm
+    package which enables you to write your
+    backend.
+
+    And also install the `mesosphere` Python client
+    library and `python-dotenv` for working with `.env` files.
+
+    ```sh
+    cd my-app && npm init -y && npm install mesosphere && venv/bin/pip install mesosphere python-dotenv
+    ```
+
+  </Step>
+  <Step title="Set up a mesosphere dev deployment">
+    Next, run `npx mesosphere dev`. This
+    will prompt you to log in with GitHub,
+    create a project, and save your production and deployment URLs.
+
+    It will also create a `mesosphere/` folder for you
+    to write your backend API functions in. The `dev` command
+    will then continue running to sync your functions
+    with your dev deployment in the cloud.
+
+
+    ```sh
+    npx mesosphere dev
+    ```
+
+  </Step>
+
+  <Step title="Create sample data for your database">
+    In a new terminal window, create a `sampleData.jsonl`
+    file with some sample data.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Add the sample data to your database">
+    Now that your project is ready, add a `tasks` table
+    with the sample data into your mesosphere database with
+    the `import` command.
+
+    ```
+    npx mesosphere import --table tasks sampleData.jsonl
+    ```
+
+  </Step>
+
+  <Step title="Expose a database query">
+    Add a new file `tasks.js` in the `mesosphere/` folder
+    with a query function that loads the data.
+
+    Exporting a query function from this file
+    declares an API function named after the file
+    and the export name, `"tasks:get"`.
+
+    ```js
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Create a script to load data from mesosphere">
+    In a new file `main.py`, create a `mesosphereClient` and use it
+    to fetch from your `"tasks:get"` API.
+    
+    ```py
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Run the script">
+      Run the script 
+      and see the serialized list of tasks.
+
+      ```sh
+      venv/bin/python -m main
+      ```
+
+  </Step>
+
+</StepsList>
+
+See the [docs on PyPI](https://pypi.org/project/mesosphere/) for more details.

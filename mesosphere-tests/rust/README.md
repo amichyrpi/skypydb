@@ -2,4 +2,4 @@
 
 This directory contains the code for the Simple note taker tutorial.
 
-You can find the tutorial here: `https://mesosphere.ahen-studio.com/docs/tutorial/rust/simplenotetaker`
+You can find the tutorial here: `https://docs.usemesosphere.com//tutorial/rust/simplenotetaker`

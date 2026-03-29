@@ -1,0 +1,148 @@
+.admonition {
+  position: relative;
+  margin-block: 1.75rem;
+  scroll-margin-top: 1.75rem;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem 0.875rem 1.625rem;
+  background-color: var(--color-neutral-white);
+  box-shadow: inset 0 0 0 1px var(--color-neutral-n10);
+}
+
+:global(html[data-theme="dark"]) .admonition {
+  background-color: var(--color-neutral-n15);
+}
+
+/* Left accent bar */
+.bar {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  width: 0.125rem;
+  border-radius: 9999px;
+  background-color: var(--callout-border);
+}
+
+/* Heading row */
+.heading {
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: var(--callout-icon);
+}
+
+.title {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--callout-title);
+}
+
+/* Content */
+.content {
+  font-size: 0.875rem;
+  line-height: 1.625;
+}
+
+.content > :first-child {
+  margin-top: 0 !important;
+}
+
+.content > :last-child {
+  margin-bottom: 0 !important;
+}
+
+/* ── Type variants ── */
+
+.note {
+  --callout-border: #6b7280;
+  --callout-icon: #6b7280;
+  --callout-title: #374151;
+  --callout-ring: #e5e7eb;
+}
+
+.tip {
+  --callout-border: #10b981;
+  --callout-icon: #10b981;
+  --callout-title: #047857;
+  --callout-ring: #e5e7eb;
+}
+
+.info {
+  --callout-border: #a855f7;
+  --callout-icon: #a855f7;
+  --callout-title: #7e22ce;
+  --callout-ring: #e5e7eb;
+}
+
+.warning {
+  --callout-border: #f59e0b;
+  --callout-icon: #f59e0b;
+  --callout-title: #b45309;
+  --callout-ring: #e5e7eb;
+}
+
+.danger {
+  --callout-border: #ef4444;
+  --callout-icon: #ef4444;
+  --callout-title: #b91c1c;
+  --callout-ring: #e5e7eb;
+}
+
+.caution {
+  --callout-border: #f59e0b;
+  --callout-icon: #f59e0b;
+  --callout-title: #b45309;
+  --callout-ring: #e5e7eb;
+}
+
+/* ── Dark mode ── */
+
+:global(html[data-theme="dark"]) .note {
+  --callout-border: #9ca3af;
+  --callout-icon: #9ca3af;
+  --callout-title: #9ca3af;
+  --callout-ring: #374151;
+}
+
+:global(html[data-theme="dark"]) .tip {
+  --callout-border: #34d399;
+  --callout-icon: #34d399;
+  --callout-title: #34d399;
+  --callout-ring: #374151;
+}
+
+:global(html[data-theme="dark"]) .info {
+  --callout-border: #c084fc;
+  --callout-icon: #c084fc;
+  --callout-title: #c084fc;
+  --callout-ring: #374151;
+}
+
+:global(html[data-theme="dark"]) .warning {
+  --callout-border: #fbbf24;
+  --callout-icon: #fbbf24;
+  --callout-title: #fbbf24;
+  --callout-ring: #374151;
+}
+
+:global(html[data-theme="dark"]) .danger {
+  --callout-border: #f87171;
+  --callout-icon: #f87171;
+  --callout-title: #f87171;
+  --callout-ring: #374151;
+}
+
+:global(html[data-theme="dark"]) .caution {
+  --callout-border: #fbbf24;
+  --callout-icon: #fbbf24;
+  --callout-title: #fbbf24;
+  --callout-ring: #374151;
+}

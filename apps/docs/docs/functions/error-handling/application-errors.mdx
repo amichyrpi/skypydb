@@ -1,0 +1,113 @@
+---
+title: "Application Errors"
+sidebar_label: "Application Errors"
+description: "Handle expected failures in mesosphere functions"
+---
+
+If you have expected ways your functions might fail, you can either return
+different values or throw `mesosphereError`s.
+
+## Returning different values
+
+If you're using TypeScript different return types can enforce that you're
+handling error scenarios.
+
+For example, a `createUser` mutation could return
+
+```ts
+Id<"users"> | { error: "EMAIL_ADDRESS_IN_USE" };
+```
+
+to express that either the mutation succeeded or the email address was already
+taken.
+
+This ensures that you remember to handle these cases in your UI.
+
+## Throwing application errors
+
+You might prefer to throw errors for the following reasons:
+
+- You can use the exception bubbling mechanism to throw from a deeply nested
+  function call, instead of manually propagating error results up the call
+  stack. This will work for `runQuery`, `runMutation` and `runAction` calls in
+  [actions](/functions/actions.mdx) too.
+- In [mutations](/functions/mutation-functions.mdx), throwing an error will
+  prevent the mutation transaction from committing
+- On the client, it might be simpler to handle all kinds of errors, both
+  expected and unexpected, uniformly
+
+mesosphere provides an error subclass,
+[`mesosphereError`](/api/classes/values.mesosphereError), which can be used to carry
+information from the backend to the client:
+
+```ts title="mesosphere/myFunctions.ts"
+import { mutation } from "./_generated/server";
+import { mesosphereError } from "mesosphere/values";
+
+export const createUser = mutation({
+  args: { email: v.string() },
+  handler: async (ctx, { email }) => {
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", email))
+      .first();
+    if (existingUser !== null) {
+      throw new mesosphereError({ message: "Email already in use" });
+    }
+    // Create user...
+  },
+});
+```
+
+### Application error `data` payload
+
+You can pass the same [data types](/database/types.md) supported by function
+arguments, return types and the database, to the `mesosphereError` constructor. This
+data will be stored on the `data` property of the error:
+
+```ts
+// error.data === "My fancy error message"
+throw new mesosphereError("My fancy error message");
+
+// error.data === {message: "My fancy error message", code: 123, severity: "high"}
+throw new mesosphereError({
+  message: "My fancy error message",
+  code: 123,
+  severity: "high",
+});
+
+// error.data === {code: 123, severity: "high"}
+throw new mesosphereError({
+  code: 123,
+  severity: "high",
+});
+```
+
+Error payloads more complicated than a simple `string` are helpful for more
+structured error logging, or for handling sets of errors differently on the
+client.
+
+## Handling application errors on the client
+
+On the client, application errors also use the `mesosphereError` class, and the data
+they carry can be accessed via the `data` property:
+
+```tsx title="src/App.tsx"
+import { useMutation } from "mesosphere/react";
+import { api } from "../mesosphere/_generated/api";
+import { mesosphereError } from "mesosphere/values";
+
+function CreateUserButton() {
+  const createUser = useMutation(api.myFunctions.createUser);
+
+  const handleSubmit = async (email: string) => {
+    try {
+      await createUser({ email });
+    } catch (e) {
+      if (e instanceof mesosphereError) {
+        console.error(e.data);
+      }
+    }
+  };
+}
+```

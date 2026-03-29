@@ -1,0 +1,156 @@
+---
+title: TanStack Start Quickstart
+sidebar_label: TanStack Start
+description: "Add mesosphere to a TanStack Start project"
+hide_table_of_contents: true
+sidebar_position: 200
+sidebar_class_name: mesosphere-sidebar-tanstack
+---
+
+export const sampleData = "// example";
+export const appRoutesRoot = "// example";
+export const router = "// example";
+export const index = "// example";
+export const tasks = "// example";
+
+<Admonition type="caution" title="TanStack Start is in Release Candidate">
+
+[TanStack Start](https://tanstack.com/start/latest) is a new React framework
+currently in the Release Candidate stage. You can try it today but there might
+still be bug or issues.
+
+</Admonition>
+
+To get setup quickly with mesosphere and TanStack Start run
+
+<p>
+  <b>`npm create mesosphere@latest -- -t tanstack-start`</b>
+</p>
+
+or follow the guide below.
+
+To use Clerk with mesosphere and TanStack Start, see the
+[TanStack Start + Clerk guide](/client/tanstack/tanstack-start/clerk.mdx)
+
+---
+
+Learn how to query data from mesosphere in a TanStack Start site.
+
+<StepsList>
+  <Step title="Create a TanStack Start site">
+
+Create a TanStack Start app using the `create-start-app` command:
+
+    ```sh
+    npx create-start-app@latest
+    ```
+
+</Step>
+  <Step title="Install the mesosphere client and server library">
+    To get started with mesosphere install the `mesosphere` package and a few React Query-related packages.
+
+    ```sh
+    npm install mesosphere @mesosphere-dev/react-query @tanstack/react-router-with-query @tanstack/react-query
+    ```
+
+  </Step>
+
+  <Step title="Update app/routes/__root.tsx">
+    Add a `QueryClient` to the router context to make React Query usable anywhere in the TanStack Start site.
+
+    ```tsx
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Update app/router.tsx">
+    Replace the file `app/router.tsx` with these contents.
+
+    This creates a `mesosphereClient` and a `mesosphereQueryClient` and wires in a `mesosphereProvider`.
+
+    ```tsx
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Set up a mesosphere dev deployment">
+    Next, run `npx mesosphere dev`. This
+    will prompt you to log in with GitHub,
+    create a project, and save your production and deployment URLs.
+
+    It will also create a `mesosphere/` folder for you
+    to write your backend API functions in. The `dev` command
+    will then continue running to sync your functions
+    with your dev deployment in the cloud.
+
+
+    ```sh
+    npx mesosphere dev
+    ```
+
+  </Step>
+
+  <Step title="Create sample data for your database">
+    In a new terminal window, create a `sampleData.jsonl`
+    file with some sample data.
+
+    ```json
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Add the sample data to your database">
+    Now that your project is ready, add a `tasks` table
+    with the sample data into your mesosphere database with
+    the `import` command.
+
+    ```
+    npx mesosphere import --table tasks sampleData.jsonl
+    ```
+
+  </Step>
+
+  <Step title="Expose a database query">
+    Add a new file <JSFileExtension name="tasks.ts" /> in the `mesosphere/` folder
+    with a query function that loads the data.
+
+    Exporting a query function from this file
+    declares an API function named after the file
+    and the export name, `api.tasks.get`.
+
+    ```ts
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Display the data in your app">
+    Replace the file `app/routes/index.tsx` with these contents.
+
+    The `useSuspenseQuery` hook renders the API function `api.tasks.get`
+    query result on the server initially, then it updates live in the browser.
+
+    ```tsx
+    // example
+    ```
+
+  </Step>
+
+  <Step title="Start the app">
+    Start the app, open [http://localhost:3000](http://localhost:3000) in a browser,
+    and see the list of tasks.
+
+    ```sh
+    npm run dev
+    ```
+
+  </Step>
+
+</StepsList>
+
+For more see the
+[TanStack Start with mesosphere](/client/tanstack/tanstack-start/index.mdx) client
+documentation page.

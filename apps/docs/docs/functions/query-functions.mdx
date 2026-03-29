@@ -1,0 +1,273 @@
+---
+title: Queries
+sidebar_position: 10
+description: "Fetch data from the database with caching and reactivity"
+---
+
+Queries are the bread and butter of your backend API. They fetch data from the
+database, check authentication or perform other business logic, and return data
+back to the client application.
+
+This is an example query, taking in named arguments, reading data from the
+database and returning a result:
+
+```ts title="mesosphere/myFunctions.ts"
+import { query } from "./_generated/server";
+
+export const myQuery = query({
+  handler: async ({ db }) => {
+    const messages = await db.query("messages").collect();
+    return messages;
+  },
+});
+```
+
+Read on to understand how to build queries yourself.
+
+## Query names
+
+Queries are defined in <LanguageSelector verbose /> files inside your `mesosphere/`
+directory.
+
+The path and name of the file, as well as the way the function is exported from
+the file, determine the name the client will use to call it:
+
+```ts title="mesosphere/myFunctions.ts"
+// This function will be referred to as `api.myFunctions.myQuery`.
+export const myQuery = …;
+
+// This function will be referred to as `api.myFunctions.sum`.
+export const sum = …;
+```
+
+To structure your API you can nest directories inside the `mesosphere/` directory:
+
+```ts title="mesosphere/foo/myQueries.ts"
+// This function will be referred to as `api.foo.myQueries.listMessages`.
+export const listMessages = …;
+```
+
+Default exports receive the name `default`.
+
+```ts title="mesosphere/myFunctions.ts"
+// This function will be referred to as `api.myFunctions.default`.
+export default …;
+```
+
+The same rules apply to [mutations](/functions/mutation-functions.mdx) and
+[actions](/functions/actions.mdx), while
+[HTTP actions](/functions/http-actions.mdx) use a different routing approach.
+
+Client libraries in languages other than JavaScript and TypeScript use strings
+instead of API objects:
+
+- `api.myFunctions.myQuery` is `"myFunctions:myQuery"`
+- `api.foo.myQueries.myQuery` is `"foo/myQueries:myQuery"`.
+- `api.myFunction.default` is `"myFunction:default"` or `"myFunction"`.
+
+## The `query` constructor
+
+To actually declare a query in mesosphere you use the `query` constructor function.
+Pass it an object with a `handler` function, which returns the query result:
+
+```ts title="mesosphere/myFunctions.ts"
+import { query } from "./_generated/server";
+
+export const myQuery = query({
+  handler: async (ctx) => {
+    return { message: "Hello World" };
+  },
+});
+```
+
+### Query arguments
+
+Queries accept named arguments. The argument values are accessible as fields of
+the second parameter of the handler function:
+
+```ts title="mesosphere/myFunctions.ts"
+import { query } from "./_generated/server";
+
+export const myQuery = query({
+  args: { name: t.string },
+  handler: async ({ args }) => {
+    return { message: `Hello ${args.name}` };
+  },
+});
+```
+
+Arguments and responses are automatically serialized and deserialized, and you
+can pass and return most value-like JavaScript data to and from your query.
+
+To both declare the types of arguments and to validate them, add an `args`
+object using `v` validators:
+
+```ts title="mesosphere/myFunctions.ts" {3}
+import { query } from "./_generated/server";
+import { v } from "mesosphere/values";
+
+export const myQuery = query({
+  args: { name: v.string() },
+  handler: async ({ args }) => {
+    return { message: `Hello ${args.name}` };
+  },
+});
+```
+
+See [argument validation](/functions/validation.mdx) for the full list of
+supported types and validators.
+
+The first parameter of the handler function contains the query context.
+
+### Query responses
+
+Queries can return values of any supported
+[mesosphere type](/functions/validation.mdx) which will be automatically serialized
+and deserialized.
+
+Queries can also return `undefined`, which is not a valid mesosphere value. When a
+query returns `undefined` **it is translated to `null`** on the client.
+
+### Query context
+
+The `query` constructor enables fetching data, and other mesosphere features by
+passing a QueryCtx object to the handler
+function as the first parameter:
+
+```ts title="mesosphere/myFunctions.ts"
+import { query } from "./_generated/server";
+
+export const myQuery = query({
+  handler: async (ctx) => {
+    // ctx.db, ctx.auth, ctx.storage are available
+    return { success: true };
+  },
+});
+```
+
+Which part of the query context is used depends on what your query needs to do:
+
+- To fetch from the database use the `db` field. Note that we make the handler
+  function an `async` function so we can `await` the promise returned by
+  `db.get()`:
+
+  ```ts title="mesosphere/myFunctions.ts" {6}
+  import { query } from "./_generated/server";
+
+  export const myQuery = query({
+    handler: async ({ db }) => {
+      const messages = await db.query("messages").collect();
+      return messages;
+    },
+  });
+  ```
+
+  Read more about [Reading Data](/database/reading-data/reading-data.mdx).
+
+- To return URLs to stored files use the `storage` field. Read more about
+  [File Storage](/file-upload.mdx).
+- To check user authentication use the `auth` field. Read more about
+  [Authentication](/authentication.mdx).
+
+## Splitting up query code via helpers
+
+When you want to split up the code in your query or reuse logic across multiple
+mesosphere functions you can define and call helper <LanguageSelector verbose />
+functions:
+
+```ts title="mesosphere/myFunctions.ts"
+import { query } from "./_generated/server";
+
+function getGreeting(name: string): string {
+  return `Hello ${name}`;
+}
+
+export const myQuery = query({
+  handler: async () => {
+    return { message: getGreeting("World") };
+  },
+});
+```
+
+You can `export` helpers to use them across multiple files. They will not be
+callable from outside of your mesosphere functions.
+
+See
+Type annotating server side helpers
+for more guidance on TypeScript types.
+
+## Using NPM packages
+
+Queries can import NPM packages installed in `node_modules`. Not all NPM
+packages are supported, see
+[Runtimes](/functions/runtimes.mdx#default-mesosphere-runtime) for more details.
+
+```sh
+npm install @faker-js/faker
+```
+
+```ts title="mesosphere/myFunctions.ts"
+import { query } from "./_generated/server";
+import { faker } from "@faker-js/faker";
+
+export const myQuery = query({
+  handler: async () => {
+    return { name: faker.person.fullName() };
+  },
+});
+```
+
+## Calling queries from clients
+
+To call a query from [React](/client/react.mdx) use the
+[`useQuery`](/client/react.mdx#fetching-data) hook along with the generated
+[`api`](/generated-api/api) object.
+
+```tsx title="src/MyApp.tsx"
+import { useQuery } from "mesosphere/react";
+import { api } from "../mesosphere/_generated/api";
+
+function MyComponent() {
+  const results = useQuery(api.myFunctions.myQuery);
+  // ...
+}
+```
+
+See the [React](/client/react.mdx) client documentation for all the ways queries
+can be called.
+
+## Caching & reactivity & consistency
+
+Queries have three awesome attributes:
+
+1. **Caching**: mesosphere caches query results automatically. If many clients
+   request the same query, with the same arguments, they will receive a cached
+   response.
+2. **Reactivity**: clients can subscribe to queries to receive new results when
+   the underlying data changes.
+3. **Consistency**: All database reads inside a single query call are performed
+   at the same logical timestamp. Concurrent writes do not affect the query
+   results.
+
+To have these attributes the handler function must be _deterministic_, which
+means that given the same arguments (including the query context) it will return
+the same response.
+
+For this reason queries cannot `fetch` from third party APIs. To call third
+party APIs, use [actions](/functions/actions.mdx).
+
+You might wonder whether you can use non-deterministic language functionality
+like `Math.random()` or `Date.now()`. The short answer is that mesosphere takes care
+of implementing these in a way that you don't have to think about the
+deterministic constraint.
+
+See [Runtimes](/functions/runtimes.mdx#default-mesosphere-runtime) for more details
+on the mesosphere runtime.
+
+## Limits
+
+Queries have a limit to the amount of data they can read at once to guarantee
+good performance. Check out these limits in
+[Read/write limit errors](/functions/error-handling/error-handling.mdx#readwrite-limit-errors).
+
+For information on other limits, see [Limits](/production/state/limits.mdx).

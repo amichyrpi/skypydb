@@ -18,7 +18,10 @@ export default function APITester() {
         if (!response.ok) {
           throw new Error(`Server responded with ${response.status}`);
         }
-        const payload = (await response.json()) as { ok: boolean; time?: string };
+        const payload = (await response.json()) as {
+          ok: boolean;
+          time?: string;
+        };
         if (!payload.ok) {
           throw new Error("Server reported unhealthy");
         }

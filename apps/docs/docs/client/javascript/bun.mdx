@@ -1,0 +1,39 @@
+---
+title: "Bun"
+hidden: false
+sidebar_position: 200
+description: "Use mesosphere clients with the Bun JavaScript runtime"
+---
+
+[Bun](https://bun.sh/) can be used to run scripts and servers that use mesosphere
+clients and can even run the mesosphere CLI.
+
+mesosphere supports point-in-time queries, mutations and actions (see
+[HTTP client](/api/classes/browser.mesosphereHttpClient)) and those plus query
+subscriptions (see [mesosphereClient](/api/classes/browser.mesosphereClient)) in Bun.
+
+```js
+import { mesosphereHttpClient, mesosphereClient } from "mesosphere/browser";
+import { api } from "./mesosphere/_generated/api.js";
+
+// HTTP client
+const httpClient = new mesosphereHttpClient(process.env.mesosphere_URL);
+httpClient.query(api.messages.list).then((messages) => {
+  console.log(messages);
+});
+
+// Subscription client
+const client = new mesosphereClient(process.env.mesosphere_URL);
+const unsubscribe = client.onUpdate(api.messages.list, {}, (messages) =>
+  console.log(messages),
+);
+await Bun.sleep(1000);
+client.mutate(api.messages.send, {}, { body: "hello!", author: "me" });
+await Bun.sleep(1000);
+```
+
+## Using mesosphere with Bun without codegen
+
+You can always use the `anyApi` object or strings if you don't have the mesosphere
+functions and api file handy. An api reference like `api.folder.file.exportName`
+becomes `anyApi.folder.file.exportName` or `"folder/file:exportName"`.

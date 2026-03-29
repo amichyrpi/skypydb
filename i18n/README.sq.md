@@ -66,4 +66,4 @@ Për të eksperimentuar me veçoritë e Mesosphere dhe për të mësuar se si fu
 
 ## Licenca
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

@@ -66,4 +66,4 @@ To experiment with Mesosphere features and learn how they work, visit the Mesosp
 
 ## License
 
-[Apache 2.0](./LICENSE)
+[FSL-1.1-ALv2](./LICENSE)

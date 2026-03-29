@@ -66,4 +66,4 @@ Mesosphere 的設計很簡單，只需在 ../mesosphere 資料夾中編寫伺服
 
 ## 執照
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

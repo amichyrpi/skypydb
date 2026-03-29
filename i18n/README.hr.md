@@ -66,4 +66,4 @@ Da biste eksperimentirali sa značajkama Mesosphere i naučili kako rade, posjet
 
 ## Licenca
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

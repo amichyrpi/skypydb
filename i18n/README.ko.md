@@ -66,4 +66,4 @@ Mesosphere의 기능을 실험하고 작동 방식을 알아보려면 [테스트
 
 ## 특허
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

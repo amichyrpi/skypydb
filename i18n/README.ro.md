@@ -66,4 +66,4 @@ Pentru a experimenta cu funcțiile Mesosphere și pentru a afla cum funcționeaz
 
 ## Licenţă
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

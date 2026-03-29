@@ -66,4 +66,4 @@ Rakenduse Mesosphere funktsioonide katsetamiseks ja nende toimimise õppimiseks 
 
 ## Litsents
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

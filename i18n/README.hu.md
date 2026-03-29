@@ -66,4 +66,4 @@ A Mesosphere funkcióival való kísérletezéshez és azok működésének megi
 
 ## Engedély
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

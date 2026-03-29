@@ -66,4 +66,4 @@ Besøg [Testzone](.../mesosphere-tests/) for at eksperimentere med funktionerne 
 
 ## Licens
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

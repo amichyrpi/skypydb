@@ -66,4 +66,4 @@ Mesosphere এর বৈশিষ্ট্যগুলি নিয়ে পর
 
 ## লাইসেন্স
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

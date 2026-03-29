@@ -66,4 +66,4 @@ Pour expérimenter les fonctionnalités de Mesosphere et découvrir leur fonctio
 
 ## Licence
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

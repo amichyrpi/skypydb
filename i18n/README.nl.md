@@ -66,4 +66,4 @@ Bezoek de [Zone testen](.../mesosphere-tests/) om te experimenteren met de funct
 
 ## Licentie
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

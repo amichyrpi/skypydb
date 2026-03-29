@@ -66,4 +66,4 @@ For å eksperimentere med funksjonene til Mesosphere og lære hvordan de fungere
 
 ## Tillatelse
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

@@ -66,4 +66,4 @@ Untuk bereksperimen dengan ciri Mesosphere dan mengetahui cara ia berfungsi, law
 
 ## Lesen
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

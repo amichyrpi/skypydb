@@ -66,4 +66,4 @@ Za celotno dokumentacijo obiščite [docs.usemesosphere.com](https://docs.usemes
 
 ## Licenca
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

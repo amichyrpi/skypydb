@@ -66,4 +66,4 @@ Mesosphere 的设计很简单，只需在 ../mesosphere 文件夹中编写服务
 
 ## 执照
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

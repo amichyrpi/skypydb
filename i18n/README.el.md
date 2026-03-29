@@ -66,4 +66,4 @@
 
 ## Αδεια
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

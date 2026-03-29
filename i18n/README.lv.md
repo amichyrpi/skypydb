@@ -66,4 +66,4 @@ Lai eksperimentētu ar Mesosphere funkcijām un uzzinātu, kā tās darbojas, ap
 
 ## Licence
 
-[Apache 2.0](../LICENSE)
+[FSL-1.1-ALv2](../LICENSE)

@@ -71,7 +71,9 @@ import { mesosphereReactClient } from "mesosphere/react";
 import { mesosphereProviderWithAuth0 } from "mesosphere/react-auth0";
 import { Auth0Provider } from "@auth0/auth0-react";
 
-const mesosphere = new mesosphereReactClient(process.env.NEXT_PUBLIC_mesosphere_URL!);
+const mesosphere = new mesosphereReactClient(
+  process.env.NEXT_PUBLIC_mesosphere_URL!,
+);
 
 export default function mesosphereClientProvider({
   children,

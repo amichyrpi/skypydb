@@ -71,7 +71,9 @@ export const api = {
 import { api } from "./api";
 import { mesosphereHttpClient } from "mesosphere-external";
 
-const client = new mesosphereHttpClient("https://your-deployment.mesosphere.cloud");
+const client = new mesosphereHttpClient(
+  "https://your-deployment.mesosphere.cloud",
+);
 client.mutation(api.messages.send, { message: "Hello!" });
 ```
 

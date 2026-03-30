@@ -1131,19 +1131,84 @@ html:not([class*="docs-doc-id-quickstart/"]):not(
   box-shadow: var(--ifm-global-shadow-lw);
 }
 
-/* Code block header: title on the left */
-.codeblock-header {
-  display: flex;
-  align-items: center;
+/* ── Code block with language-selector tab bar ── */
+
+/*
+ * Outer wrapper: rounded dark shell that holds the tab bar + code block.
+ * Mirrors the Tabs-around-code-block look from the reference design.
+ */
+.codeblock-with-selector {
+  --cls-bg: var(--color-neutral-n14);
+  --cls-tab-color: var(--color-neutral-n7);
+  --cls-tab-hover: var(--color-neutral-n5);
+  --cls-tab-active: var(--color-blue-b1);
+  --cls-indicator: var(--color-blue-b1);
+  --cls-border: rgba(255, 255, 255, 0.1);
+  --cls-radius: 1rem;
+
+  background-color: var(--cls-bg);
+  border-radius: var(--cls-radius);
+  overflow: hidden;
+  margin: 1.5rem 0;
 }
 
-/* Language selector: pinned to top-right of the code block */
-.codeblock-header .language-selector {
+html:not([data-theme="dark"]) .codeblock-with-selector {
+  --cls-bg: var(--color-neutral-n2);
+  --cls-tab-color: var(--color-neutral-n9);
+  --cls-tab-hover: var(--color-neutral-n10);
+  --cls-tab-active: var(--color-blue-b1);
+  --cls-indicator: var(--color-blue-b1);
+  --cls-border: rgba(0, 0, 0, 0.08);
+}
+
+/* Tab row */
+.codeblock-language-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--cls-border);
+  padding: 0 0.75rem;
+  gap: 0;
+}
+
+/* Individual tab */
+.codeblock-language-tab {
+  position: relative;
+  padding: 0.75rem 0.5rem 0.5rem;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: var(--cls-tab-color);
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.codeblock-language-tab:hover {
+  color: var(--cls-tab-hover);
+}
+
+/* Active tab */
+.codeblock-language-tab--active {
+  color: var(--cls-tab-active);
+}
+
+.codeblock-language-tab--active::after {
+  content: "";
   position: absolute;
-  top: 0.625rem;
-  right: 0.75rem;
-  z-index: 10;
-  margin: 0;
+  bottom: -1px;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 1px;
+  background-color: var(--cls-indicator);
+}
+
+/* Nested code block: strip its own outer shell so it merges into the wrapper */
+.codeblock-with-selector .theme-code-block {
+  margin: 0 !important;
+  border-radius: 0 0 var(--cls-radius) var(--cls-radius) !important;
+  background-color: transparent !important;
 }
 
 /* FROM HERE ON: Dark mode styles */
@@ -1411,4 +1476,97 @@ a.video-card h2 {
   to {
     transform: translateY(0);
   }
+}
+
+/* ── Tabbed code blocks: integrated tab + code design ── */
+
+/*
+ * When <Tabs> wraps code blocks, merge the tabs visually
+ * into one rounded dark container matching the code block style.
+ */
+.tabs-container:has(.theme-code-block) {
+  --tcb-bg: var(--color-neutral-n14);
+  --tcb-tab-color: var(--color-neutral-n7);
+  --tcb-tab-hover: var(--color-neutral-n5);
+  --tcb-tab-active: var(--color-blue-b1);
+  --tcb-indicator: var(--color-blue-b1);
+  --tcb-border: rgba(255, 255, 255, 0.1);
+  --tcb-radius: 1rem;
+
+  background-color: var(--tcb-bg);
+  border-radius: var(--tcb-radius);
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+/* Light theme overrides for tabbed code blocks */
+html:not([data-theme="dark"]) .tabs-container:has(.theme-code-block) {
+  --tcb-bg: var(--color-neutral-n2);
+  --tcb-tab-color: var(--color-neutral-n9);
+  --tcb-tab-hover: var(--color-neutral-n10);
+  --tcb-tab-active: var(--color-blue-b1);
+  --tcb-indicator: var(--color-blue-b1);
+  --tcb-border: rgba(0, 0, 0, 0.08);
+}
+
+/* Tab list bar */
+.tabs-container:has(.theme-code-block) > .tabs {
+  background-color: transparent;
+  border-bottom: 1px solid var(--tcb-border);
+  padding: 0 0.75rem;
+  margin: 0;
+  gap: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* Individual tab items */
+.tabs-container:has(.theme-code-block) > .tabs > .tabs__item {
+  position: relative;
+  padding: 0.75rem 0.5rem 0.5rem;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: var(--tcb-tab-color);
+  font-weight: 400;
+  font-size: 0.875rem;
+  transition: color 0.15s;
+  cursor: pointer;
+}
+
+.tabs-container:has(.theme-code-block) > .tabs > .tabs__item:hover {
+  background: none;
+  color: var(--tcb-tab-hover);
+}
+
+/* Active tab: colored text + bottom indicator line */
+.tabs-container:has(.theme-code-block) > .tabs > .tabs__item--active {
+  color: var(--tcb-tab-active);
+  font-weight: 400;
+  background: none;
+}
+
+.tabs-container:has(.theme-code-block) > .tabs > .tabs__item--active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 1px;
+  background-color: var(--tcb-indicator);
+}
+
+/* Tab panels: remove extra spacing */
+.tabs-container:has(.theme-code-block) > div[role="tabpanel"],
+.tabs-container:has(.theme-code-block) > .margin-top--md {
+  margin-top: 0 !important;
+  padding: 0;
+}
+
+/* Code blocks inside tabs: remove their own outer margin/radius
+   since the parent tabs-container already provides them */
+.tabs-container:has(.theme-code-block) .theme-code-block {
+  margin: 0;
+  border-radius: 0 0 var(--tcb-radius) var(--tcb-radius) !important;
+  background-color: transparent !important;
 }

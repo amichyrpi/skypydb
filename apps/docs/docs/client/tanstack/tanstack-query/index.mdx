@@ -26,7 +26,9 @@ This makes subscribing to a mesosphere query function using the TanStack Query
 `useQuery` hook look like this:
 
 ```ts
-const { data, isPending, error } = useQuery(mesosphereQuery(api.messages.list, {}));
+const { data, isPending, error } = useQuery(
+  mesosphereQuery(api.messages.list, {}),
+);
 ```
 
 Instead of the typical polling pattern for API endpoints used with TanStack

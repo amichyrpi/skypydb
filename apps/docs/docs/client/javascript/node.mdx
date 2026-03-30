@@ -61,7 +61,10 @@ When the `mesosphere dev` command generates files in `mesosphere/_generated/` a 
 `api_cjs.cjs` file will be created which can be imported from CommonJS code.
 
 ```js
-const { mesosphereHttpClient, mesosphereClient } = require("mesosphere/browser");
+const {
+  mesosphereHttpClient,
+  mesosphereClient,
+} = require("mesosphere/browser");
 const { api } = require("./mesosphere/_generated/api_cjs.cjs");
 const httpClient = new mesosphereHttpClient(mesosphere_URL_GOES_HERE);
 ```

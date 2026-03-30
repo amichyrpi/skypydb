@@ -1,9 +1,11 @@
-import { convertFilePath, LanguageSelector } from "@site/src/LanguageSelector";
+import { convertFilePath } from "@site/src/LanguageSelector";
 import CodeBlock from "@theme-original/CodeBlock";
 import React, { ReactNode } from "react";
-import { useSelectedDialect } from "../Root";
+import { useSelectedDialect, useSetDialect } from "../Root";
 
-/** Code block with optional language selector header */
+const dialects = ["TS", "JS"] as const;
+
+/** Code block with optional language-selector tab bar */
 export default function CodeBlockWrapper({
   metastring,
   showLanguageSelector,
@@ -28,26 +30,44 @@ export default function CodeBlockWrapper({
       (language === "tsx" || language === "ts"));
 
   const selectedDialect = useSelectedDialect();
+  const setDialect = useSetDialect();
 
-  return (
+  // Resolve the displayed title (dialect-aware if selector is active)
+  const displayTitle =
+    shouldShowLanguageSelector && typeof title === "string"
+      ? convertFilePath(title, selectedDialect)
+      : title;
+
+  const codeBlock = (
     <CodeBlock
-      title={
-        (shouldShowLanguageSelector ? (
-          <div className="codeblock-header">
-            <div>
-              {typeof title === "string"
-                ? convertFilePath(title, selectedDialect)
-                : title}
-            </div>
-            <LanguageSelector />
-          </div>
-        ) : (
-          title
-        )) as unknown as string
-      }
+      title={displayTitle as unknown as string}
       showLineNumbers
       {...props}
     />
+  );
+
+  if (!shouldShowLanguageSelector) {
+    return codeBlock;
+  }
+
+  return (
+    <div className="codeblock-with-selector">
+      {/* Language tab bar */}
+      <div className="codeblock-language-tabs">
+        {dialects.map((d) => (
+          <button
+            key={d}
+            type="button"
+            className={`codeblock-language-tab${selectedDialect === d ? " codeblock-language-tab--active" : ""}`}
+            onClick={() => setDialect(d)}
+          >
+            {d}
+          </button>
+        ))}
+      </div>
+      {/* Code block (title + code) */}
+      {codeBlock}
+    </div>
   );
 }
 

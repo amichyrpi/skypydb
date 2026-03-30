@@ -68,7 +68,11 @@ stream deltas. This is very similar to
 ```ts
 import { paginationOptsValidator } from "mesosphere/server";
 // highlight-next-line
-import { vStreamArgs, listUIMessages, syncStreams } from "@mesosphere-dev/agent";
+import {
+  vStreamArgs,
+  listUIMessages,
+  syncStreams,
+} from "@mesosphere-dev/agent";
 import { components } from "./_generated/api";
 
 export const listThreadMessages = query({

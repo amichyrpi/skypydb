@@ -45,7 +45,9 @@ on how to pass in the right value:
 ```jsx
 import { mesosphereProvider, mesosphereReactClient } from "mesosphere/react";
 
-const mesosphere = new mesosphereReactClient("https://<your domain here>.mesosphere.cloud");
+const mesosphere = new mesosphereReactClient(
+  "https://<your domain here>.mesosphere.cloud",
+);
 ```
 
 And then you make the client available to your app by passing it in to a

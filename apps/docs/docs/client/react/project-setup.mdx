@@ -73,7 +73,9 @@ many other tools like Next.js use the Node.js-like
 ```jsx
 import { mesosphereProvider, mesosphereReactClient } from "mesosphere/react";
 
-const mesosphere = new mesosphereReactClient(process.env.NEXT_PUBLIC_mesosphere_URL);
+const mesosphere = new mesosphereReactClient(
+  process.env.NEXT_PUBLIC_mesosphere_URL,
+);
 ```
 
 [`.env` files](https://www.npmjs.com/package/dotenv) are a common way to wire up

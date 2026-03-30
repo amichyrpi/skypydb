@@ -36,7 +36,9 @@ to queries in Node.js and any JavaScript environment that supports WebSockets.
 import { mesosphereClient } from "mesosphere/browser";
 import { api } from "../mesosphere/_generated/api";
 
-const client = new mesosphereClient("https://<your domain here>.mesosphere.cloud");
+const client = new mesosphereClient(
+  "https://<your domain here>.mesosphere.cloud",
+);
 
 // Subscribe to a query
 const unsubscribe = client.onUpdate(api.messages.list, {}, (messages) => {
@@ -66,7 +68,9 @@ See the [Node.js Quickstart](/quickstart/nodejs.mdx).
 import { mesosphereHttpClient } from "mesosphere/browser";
 import { api } from "../mesosphere/_generated/api";
 
-const client = new mesosphereHttpClient("https://<your domain here>.mesosphere.cloud");
+const client = new mesosphereHttpClient(
+  "https://<your domain here>.mesosphere.cloud",
+);
 
 // Run a query at a single point in time
 const messages = await client.query(api.messages.list);
@@ -85,7 +89,9 @@ in the same monorepos you can use the untyped `api` object called `anyApi`.
 import { mesosphereHttpClient } from "mesosphere/browser";
 import { anyApi } from "mesosphere/browser";
 
-const client = new mesosphereHttpClient("https://<your domain here>.mesosphere.cloud");
+const client = new mesosphereHttpClient(
+  "https://<your domain here>.mesosphere.cloud",
+);
 
 // Use anyApi for untyped function references
 const messages = await client.query(anyApi.messages.list);

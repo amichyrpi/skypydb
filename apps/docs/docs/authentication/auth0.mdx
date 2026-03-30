@@ -91,7 +91,9 @@ import { mesosphereProviderWithAuth0 } from "mesosphere/react";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { mesosphereReactClient } from "mesosphere/react";
 
-const mesosphere = new mesosphereReactClient(import.meta.env.VITE_mesosphere_URL);
+const mesosphere = new mesosphereReactClient(
+  import.meta.env.VITE_mesosphere_URL,
+);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -283,7 +285,9 @@ import { mesosphereProviderWithAuth0 } from "mesosphere/react";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { mesosphereReactClient } from "mesosphere/react";
 
-const mesosphere = new mesosphereReactClient(import.meta.env.VITE_mesosphere_URL);
+const mesosphere = new mesosphereReactClient(
+  import.meta.env.VITE_mesosphere_URL,
+);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

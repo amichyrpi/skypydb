@@ -83,7 +83,10 @@ import { mesosphereProviderWithAuth } from "mesosphere/react";
 root.render(
   <StrictMode>
     <AuthProviderXReactProvider>
-      <mesosphereProviderWithAuth client={mesosphere} useAuth={useAuthFromProviderX}>
+      <mesosphereProviderWithAuth
+        client={mesosphere}
+        useAuth={useAuthFromProviderX}
+      >
         <App />
       </mesosphereProviderWithAuth>
     </AuthProviderXReactProvider>

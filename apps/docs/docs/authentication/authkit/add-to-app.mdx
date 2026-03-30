@@ -253,7 +253,9 @@ import { mesosphereProviderWithAuth } from "mesosphere/react";
 import { AuthKitProvider } from "@workos-inc/authkit-react";
 import { mesosphereReactClient } from "mesosphere/react";
 
-const mesosphere = new mesosphereReactClient(import.meta.env.VITE_mesosphere_URL);
+const mesosphere = new mesosphereReactClient(
+  import.meta.env.VITE_mesosphere_URL,
+);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

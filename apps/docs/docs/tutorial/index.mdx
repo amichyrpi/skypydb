@@ -1,32 +1,30 @@
-﻿---
-title: "mesosphere Tutorial: A Chat App"
-sidebar_label: "1. A chat app"
+---
+title: "Learn How To Build A Simple Chat App"
+sidebar_label: "Simple Chat App"
 sidebar_position: 100
 hide_table_of_contents: true
 pagination_next: tutorial/actions
-pagination_label: "mesosphere Tutorial: A chat app"
-description:
-  "Build a real-time chat application with mesosphere using queries, mutations, and
-  the sync engine for automatic updates across all connected clients."
+pagination_label: "Learn How To Build A Simple Chat App"
+description: "Learn how to build a real-time simple chat app with Mesosphere using our queries and morph functions."
 ---
 
-# mesosphere Tutorial: A chat app
+# Learn How To Build A Simple Chat App
 
-mesosphere provides you with a fully featured backend with cloud functions,
-database, scheduling, and a sync engine that keeps your frontend and backend up
-to date in real-time.
+import { ExampleRepo } from "@site/src/FrameworkList.tsx";
+import Link from "@docusaurus/Link";
 
-Today, in about **10 lines of code,** we'll build a backend that reads and
-writes to the database and automatically updates all users in a chat app.
+<ExampleRepo
+  description="Simple Chat App Example Repo"
+  href="https://github.com/ahen-studio/mesosphere-simple-chat-app"
+/>
 
-After that we'll see how to connect to external services and setup your product
-for success and scale.
+### Don't want to read the docs? Just want to see a video? Check out the video below.
 
 <div className="center-image" style={{ maxWidth: "560px" }}>
   <iframe
     width="560"
     height="315"
-    src="https://www.youtube.com/embed/608khv7qqOI?si=ce-M8pt6EWDZ8tfd"
+    src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
     title="YouTube video player"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -35,19 +33,32 @@ for success and scale.
   ></iframe>
 </div>
 
+<StepsList>
+  <Step title="Clone our example repo">
+    Before you begin: You'll need to have Node.js and Git installed on your computer.
+
+    You can install Node.js from [the Node.js website](https://nodejs.org/en),
+    or check your version of Node.js by running `node --version` in your terminal.
+
+    You can install Git from [the Git website](https://git-scm.com/),
+    or check your version of Git by running `git -v` in your terminal.
+
+    After you have Node.js and Git installed, run the following
+    command to clone the example repo and install the dependencies:
+
+    ```shell
+    git clone https://github.com/ahen-studio/mesosphere-simple-chat-app.git
+    cd mesosphere-simple-chat-app
+    npm install
+    ```
+
+    Now when you run `npm run dev` in the terminal, you will be
+    able to sets up Mesosphere and then run the web app.
+
+  </Step>
+</StepsList>
+
 ## Start developing with mesosphere
-
-DetailsCard summary="Before you begin: You'll need Node.js 18+ and Git">
-
-Ensure you have Node.js version 18 or greater installed on your computer. You
-can check your version of Node.js by running `node --version` in your terminal.
-If you don't have the appropriate version of Node.js installed,
-[install it from the Node.js website.](https://nodejs.org/en)
-
-In addition, this walkthrough requires Git, so verify you have it installed by
-running `git -v` in your terminal. If not, head over to the
-[Git website](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) for
-installation instructions.
 
 DetailsCard>
 

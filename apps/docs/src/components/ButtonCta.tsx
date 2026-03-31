@@ -15,20 +15,12 @@ type ButtonProps = AnchorButtonProps | ButtonElementProps;
 const baseClasses =
   "group relative isolate inline-flex items-center justify-center overflow-hidden text-left before:transition-opacity before:duration-300 before:ease-[cubic-bezier(0.4,0.36,0,1)] rounded-md shadow-[0_1px_theme(colors.white/0.07)_inset,0_1px_3px_theme(colors.gray.900/0.2)] before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-md before:bg-gradient-to-b before:from-white/20 before:opacity-50 hover:before:opacity-100 after:pointer-events-none after:absolute after:inset-0 after:-z-10 after:rounded-md after:bg-gradient-to-b after:from-white/10 after:from-[46%] after:to-[54%] after:mix-blend-overlay text-sm h-[1.875rem] px-3 border-0 bg-gradient-to-b from-blue-b1 to-blue-b1 text-white hover:text-white hover:-translate-y-px transition-none";
 
-const sparkleKeyframes = `
-@keyframes sparkle-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-`;
-
 const SparkleIcon = () => (
   <>
-    <style>{sparkleKeyframes}</style>
     <svg
       viewBox="0 0 1240 1240"
       aria-hidden="true"
-      className="ml-2 h-2.5 w-2.5 flex-none opacity-100 group-hover:opacity-100 group-hover:[animation:sparkle-spin_0.6s_ease-in-out_forwards]"
+      className="ml-2 h-2.5 w-2.5 flex-none transition-transform duration-[600ms] ease-[cubic-bezier(0.4,0.36,0,1)] group-hover:rotate-[360deg]"
     >
       <g transform="matrix(0.999538,0,0,0.999539,-1859.168884,-1133.128299)">
         <path

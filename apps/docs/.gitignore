@@ -14,3 +14,6 @@ docs/public-deployment-api/
 # Environment variables
 .env
 .env.local
+
+# Legacy files
+.docs/

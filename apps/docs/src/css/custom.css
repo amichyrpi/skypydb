@@ -1048,15 +1048,73 @@ main article > div {
 
 /* START: StepsList styling */
 .mesosphere-steps-list {
+  list-style: none;
+  padding-left: 0;
   margin-bottom: 2rem;
 }
 
 .mesosphere-step {
-  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: 0 0.75rem;
+  position: relative;
+}
+
+.mesosphere-step:last-child .mesosphere-step__line {
+  display: none;
+}
+
+.mesosphere-step__indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mesosphere-step__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--color-neutral-white);
+  color: #000000;
+  font-size: 0.6rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mesosphere-step__line {
+  width: 1px;
+  flex: 1;
+  background: var(--color-neutral-n12);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.mesosphere-step__content {
+  padding-bottom: 2rem;
+  min-width: 0;
+}
+
+.mesosphere-step:last-child .mesosphere-step__content {
+  padding-bottom: 0;
+}
+
+.mesosphere-step__title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+}
+.mesosphere-step__body p:first-child {
+  margin-top: 0;
+}
+
+.mesosphere-step__body code {
+  overflow-x: auto;
 }
 
 @media (min-width: 997px) {
-  .mesosphere-steps-list,
   .mesosphere-full-width {
     width: calc(
       min(var(--ifm-container-width-xl), 100vw - var(--doc-sidebar-width)) - 4 *
@@ -1069,17 +1127,11 @@ main article > div {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
   }
-
-  .mesosphere-step {
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 20px;
-    margin-bottom: 0;
-  }
 }
 
-.mesosphere-step code {
-  overflow-x: auto;
+html:not([data-theme="dark"]) .mesosphere-step__number {
+  background: #000;
+  color: #fff;
 }
 /* END: StepsList styling */
 
@@ -1254,6 +1306,23 @@ html[data-theme="dark"] a.card.mesosphere-invert-icon > svg {
     margin-right: auto;
   }
 }
+
+/* START: Example repo card (full-width) */
+.example-repo {
+  margin: 1.5rem 0 2.5rem;
+}
+
+.example-repo a.large-card {
+  width: 100%;
+  min-height: auto;
+}
+
+.example-repo h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* END: Example repo card (full-width) */
 
 /* START: Large cards implementation */
 .large-cards {

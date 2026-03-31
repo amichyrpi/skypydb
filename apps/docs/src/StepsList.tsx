@@ -1,31 +1,42 @@
-import { ReactNode } from "@mdx-js/react/lib";
-import React from "react";
+import React, { ReactNode } from "react";
 
 /** Ordered list wrapper for Step components */
 export function StepsList({ children }: { children: ReactNode }) {
-  return <ol className="mesosphere-steps-list">{children}</ol>;
+  return (
+    <ol className="mesosphere-steps-list">
+      {React.Children.map(children, (child, index) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child as React.ReactElement<any>, {
+            stepNumber: index + 1,
+          });
+        }
+        return child;
+      })}
+    </ol>
+  );
 }
 
-/** A single step with a title, description, and code block as the last child */
+/** A single step with a numbered badge, title, and content */
 export function Step({
   children,
   title,
+  stepNumber,
 }: {
   children: ReactNode;
   title: ReactNode;
+  stepNumber?: number;
 }) {
-  const childArray = React.Children.toArray(children);
-  const description = childArray.slice(0, -1);
-  const code = childArray.slice(-1)[0];
-
   return (
-    <li>
-      <div className="mesosphere-step">
-        <div>
-          <div style={{ fontWeight: "bold" }}>{title}</div>
-          {description}
+    <li className="mesosphere-step">
+      {stepNumber != null && (
+        <div className="mesosphere-step__indicator">
+          <div className="mesosphere-step__number">{stepNumber}</div>
+          <div className="mesosphere-step__line" />
         </div>
-        <div>{code}</div>
+      )}
+      <div className="mesosphere-step__content">
+        <h3 className="mesosphere-step__title">{title}</h3>
+        <div className="mesosphere-step__body">{children}</div>
       </div>
     </li>
   );

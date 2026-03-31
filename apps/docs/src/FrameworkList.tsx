@@ -21,6 +21,7 @@ import RustLogo from "@site/static/img/framework-logo/rust.svg";
 import SvelteLogo from "@site/static/img/framework-logo/svelte.svg";
 import TanStackLogo from "@site/static/img/framework-logo/tanstack.svg";
 import VueLogo from "@site/static/img/framework-logo/vue.svg";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import Heading from "@theme/Heading";
 import React from "react";
 
@@ -123,8 +124,27 @@ export function LargeCardList(props: { items: LargeCardItem[] }) {
   );
 }
 
+/** Full-width card for linking to an example repository */
+export function ExampleRepo(props: { href: string; description: string }) {
+  return (
+    <div className="example-repo">
+      <Link href={props.href} className="large-card">
+        <div className="card-hover-border" />
+        <Heading as="h2">
+          <span className="large-card-icon">
+            <GitHubLogoIcon />
+          </span>
+          Example repository
+          <CardArrow />
+        </Heading>
+        <p>{props.description}</p>
+      </Link>
+    </div>
+  );
+}
+
 /** Pre-configured card grid listing all supported frontend frameworks */
-export function QuickFrameworksList() {
+export function FrameworksList() {
   return (
     <DocslinksList
       items={[
@@ -216,7 +236,7 @@ export function QuickFrameworksList() {
 }
 
 /** Pre-configured card grid listing all supported programming languages */
-export function QuickLanguagesList() {
+export function LanguagesList() {
   return (
     <DocslinksList
       items={[

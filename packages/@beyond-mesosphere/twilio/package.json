@@ -1,0 +1,13 @@
+{
+  "name": "@beyond-mesosphere/twilio",
+  "version": "0.0.1",
+  "description": "Sub module for using Twilio SMS in Mesosphere.",
+  "license": "FSL-1.1-ALv2",
+  "author": "Ahen-Studio",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@mesosphere/ui-system": "*"
+  },
+  "devDependencies": {}
+}

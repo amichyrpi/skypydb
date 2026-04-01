@@ -56,53 +56,27 @@ import Link from "@docusaurus/Link";
     able to sets up Mesosphere and then run the web app.
 
   </Step>
+  <Step title="What happens when you run `npm run dev`?">
+    When you run `npm run dev` in the terminal, you will see that the Mesosphere
+    CLI prompts you to connect to your Mesosphere account.
+    Sign into Mesosphere with GitHub and then follow the steps to setup your project.
+
+    After you have connected your Mesosphere account to the CLI, it will automatically
+    create a folder called `mesosphere/` in your project root directory, where you'll write your backend code.
+
+    The `npm run dev` command keeps deploying your new backend code to your Mesosphere project,
+    make sure you keep this command running in the background. **For this tutorial**, in particular,
+    this command runs both the dev web server for the frontend and the `npm run dev`
+    command from Mesosphere that updates your backend code when you make changes.
+
+    When you run the server, and try to send a message it will show an error message telling
+    that the morph function is not yet implemented, don't worry we'll implement it
+    in another section but first we need to understand how Mesosphere works.
+
+  </Step>
+  <Step title="How the Mesosphere backend works">
+  </Step>
 </StepsList>
-
-## Start developing with mesosphere
-
-DetailsCard>
-
-First, clone the example project repo from GitHub and install the dependencies:
-
-```shell
-git clone https://github.com/get-mesosphere/mesosphere-tutorial.git
-cd mesosphere-tutorial
-npm install
-```
-
-This app's `dev` npm command sets up mesosphere and then runs the web app:
-
-```shell
-npm run dev
-```
-
-During setup, you'll see that mesosphere uses your GitHub account for
-authentication. Sign into mesosphere with GitHub and then accept the default project
-setup prompts.
-
-This will **automatically create your backend** and a folder called `mesosphere/` in
-your project, where you'll write your backend code.
-
-**Make sure you keep this command (`npm run dev`) running in the background
-throughout this tutorial.** It's running both the dev web server for the
-frontend as well as the `mesosphere` command in the background to keep your backend
-in sync with your local codebase.
-
-Once your server is up and running, open [localhost:5173](http://localhost:5173)
-and check it out:
-
-<div className="center-image" style={{ maxWidth: "676px" }}></div>
-
-If you try sending a message now, you'll see an alert telling you the mutation
-is not yet implemented. We'll do that in a bit, but first here's a quick summary
-of how mesosphere works.
-
-## How mesosphere works
-
-<div className="center-image" style={{ maxWidth: "700px" }}>
-  ![Overview of the sync
-  engine](pathname:///img/tutorial/mesosphereSyncEngine.png)
-</div>
 
 **Database.** The mesosphere database is a document-relational database, which means
 you have tables with JSON like documents in them. All documents have an

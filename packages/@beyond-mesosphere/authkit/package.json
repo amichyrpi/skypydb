@@ -1,0 +1,13 @@
+{
+  "name": "@beyond-mesosphere/authkit",
+  "version": "0.0.1",
+  "description": "Mesosphere AuthKit is our own authentication library directly integrated with Mesosphere.",
+  "license": "FSL-1.1-ALv2",
+  "author": "Ahen-Studio",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@mesosphere/ui-system": "*"
+  },
+  "devDependencies": {}
+}

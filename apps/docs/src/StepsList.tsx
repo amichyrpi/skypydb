@@ -16,6 +16,18 @@ export function StepsList({ children }: { children: ReactNode }) {
   );
 }
 
+/** Parse backtick-delimited segments into <code> elements */
+function parseInlineCode(text: string): ReactNode[] {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) =>
+    part.startsWith("`") && part.endsWith("`") ? (
+      <code key={i}>{part.slice(1, -1)}</code>
+    ) : (
+      part
+    ),
+  );
+}
+
 /** A single step with a numbered badge, title, and content */
 export function Step({
   children,
@@ -26,6 +38,9 @@ export function Step({
   title: ReactNode;
   stepNumber?: number;
 }) {
+  const renderedTitle =
+    typeof title === "string" ? parseInlineCode(title) : title;
+
   return (
     <li className="mesosphere-step">
       {stepNumber != null && (
@@ -35,7 +50,7 @@ export function Step({
         </div>
       )}
       <div className="mesosphere-step__content">
-        <h3 className="mesosphere-step__title">{title}</h3>
+        <h3 className="mesosphere-step__title">{renderedTitle}</h3>
         <div className="mesosphere-step__body">{children}</div>
       </div>
     </li>

@@ -29,16 +29,28 @@ and redistribute the Software for any Permitted Purpose identified below.
 
 ### Permitted Purpose
 
-A Permitted Purpose is any purpose other than a Competing Use. A Competing Use
-means making the Software available to others in a commercial product or
-service that:
+A Permitted Purpose is any purpose other than a Competing Use. As used in these
+Terms and Conditions, "Mesosphere cloud platform" means the cloud-hosted
+database platform operated by the Licensor at its publicly operated domains,
+including all relational database, vector embeddings, file storage, object
+storage, CDN, and API gateway services provided directly by the Licensor
+through that platform.
 
-1. substitutes for the Software;
+A Competing Use means making the Software available to others in a commercial
+product or service that:
+
+1. substitutes for the Software or the Mesosphere cloud platform;
 
 2. substitutes for any other product or service we offer using the Software
-   that exists as of the date we make the Software available; or
+   that exists as of the date we make the Software available;
 
-3. offers the same or substantially similar functionality as the Software.
+3. offers the same or substantially similar functionality as the Software or
+   the Mesosphere cloud platform; or
+
+4. functions as an alternative to the Mesosphere cloud platform by offering a
+   hosted database service, database-as-a-service, vector database platform,
+   or backend-as-a-service that competes with or serves as a replacement for
+   the Mesosphere cloud platform.
 
 Permitted Purposes specifically include using the Software:
 
@@ -46,10 +58,16 @@ Permitted Purposes specifically include using the Software:
 
 2. for non-commercial education;
 
-3. for non-commercial research; and
+3. for non-commercial research;
 
 4. in connection with professional services that you provide to a licensee
-   using the Software in accordance with these Terms and Conditions.
+   using the Software in accordance with these Terms and Conditions; and
+
+5. to build end-user applications that use the Mesosphere cloud platform or a
+   self-hosted instance of the Software as a backend, provided that the
+   application itself is not a Competing Use and does not provide database,
+   storage, or backend capabilities to third parties (see Competing Use
+   criterion 4).
 
 ### Patents
 

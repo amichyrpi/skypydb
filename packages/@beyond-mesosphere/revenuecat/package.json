@@ -1,7 +1,7 @@
 {
-  "name": "@beyond-mesosphere/stay-online",
+  "name": "@beyond-mesosphere/revenuecat",
   "version": "0.0.1",
-  "description": "Stay Online sub module for Mesosphere.",
+  "description": "Sub module for using RevenueCat payments in Mesosphere.",
   "license": "FSL-1.1-ALv2",
   "author": "Ahen-Studio",
   "type": "module",

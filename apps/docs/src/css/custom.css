@@ -1110,6 +1110,14 @@ main article > div {
   margin-top: 0;
 }
 
+.mesosphere-step__body ol {
+  list-style-type: decimal;
+}
+
+.mesosphere-step__body ul {
+  list-style-type: disc;
+}
+
 .mesosphere-step__body code {
   overflow-x: auto;
 }

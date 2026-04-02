@@ -69,13 +69,143 @@ import Link from "@docusaurus/Link";
     this command runs both the dev web server for the frontend and the `npm run dev`
     command from Mesosphere that updates your backend code when you make changes.
 
-    When you run the server, and try to send a message it will show an error message telling
+    When you run the server, and try to send a message it will show an alert message telling
     that the morph function is not yet implemented, don't worry we'll implement it
     in another section but first we need to understand how Mesosphere works.
 
   </Step>
   <Step title="How the Mesosphere backend works">
   </Step>
+  <Step title="Start building your app">
+    Now that you've cloned the example repo and connected your Mesosphere account, you can start building your app by creating a new `morph` function.
+
+    First create a new file in the `mesosphere/` folder called `chat.ts`. This is where you'll write your Mesosphere backend functions for this tutorial.
+
+    Start by **adding the following code to your `chat.ts` file.**
+
+    ```typescript title="mesosphere/chat.ts"
+    import { morph, stator } from "mesosphere/reactlibrary";
+    import { t } from "mesosphere/types";
+
+    export const newMessage = morph({
+      args: {
+        user: t.string(),
+        body: t.string(),
+      },
+      stator: async (ctx, args) => {
+        console.log("You can console log from your morph function.");
+        await ctx.database.add("messages", {
+          user: args.user,
+          body: args.body,
+        });
+      },
+    });
+    ```
+
+    Let's dissect this code:
+
+    **What you add**
+
+    1. You've added a new backend `morph` function called `newMessage` and exposed it as a public api.
+    2. In this function you're using `args:` to ensure that the function arguments are two strings named `user` and `body`, they are both validated as types and runtime values by the `t.string()` function.
+    3. In this function you're using `ctx.database.add` to tell Mesosphere to add a new message document into the newly created `messages` table.
+    4. This function is running as a transaction in the database, what this means is that the function will roll back if an exception is thrown.
+    5. Well, this code is just a TypeScript file, so you can use `console.log` to do simple debugging your function on the server.
+
+  </Step>
+  <Step title="Connect this morph function to your web app">
+    Now that you've created a `morph` function, you can connect it to your web app.
+
+    **Update your `src/App.tsx` just like so:**
+
+    ```tsx
+    import { useEffect, useState } from "react";
+    import { faker } from "@faker-js/faker";
+    // highlight-next-line
+    // Import `useMorph` and `api` from the Mesosphere.
+    // highlight-next-line
+    import { useMorph } from "mesosphere/reactlibrary";
+    // highlight-next-line
+    import { api } from "../mesosphere/_codegen/ApiDataModel";
+
+    // Set a random name for the user.
+    const NAME = getOrSetFakeName();
+
+    // Generate a random name for the user with the faker library.
+    function getOrSetFakeName() {
+      const NAME_KEY = "name";
+      const name = sessionStorage.getItem(NAME_KEY);
+      if (!name) {
+        const newName = faker.person.firstName();
+        sessionStorage.setItem(NAME_KEY, newName);
+        return newName;
+      }
+      return name;
+    }
+
+    export default function App() {
+      const messages = [
+        { _id: "1", user: "Amory", body: "Hey there!" },
+        { _id: "2", user: NAME, body: "Hey How are you?" },
+      ];
+      // Replace the "TODO: Add morph hook there." with:
+      const newMessage = useMorph(api.chat.newMessage);
+
+      const [newMessageText, setNewMessageText] = useState("");
+
+      useEffect(() => {
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }, 0);
+      }, [messages]);
+
+      return (
+        <main className="chat">
+          <header>
+            <h1>Mesosphere Chat</h1>
+            <p>
+              Connected as <strong>{NAME}</strong>
+            </p>
+          </header>
+          {messages?.map((message) => (
+            <article
+              key={message._id}
+              className={message.user === NAME ? "message-mine" : ""}
+            >
+              <div>{message.user}</div>
+
+              <p>{message.body}</p>
+            </article>
+          ))}
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              // highlight-next-line
+              // Replace "alert("The morph function is not yet implemented");" with:
+              // highlight-next-line
+              await newMessage({ user: NAME, body: newMessageText });
+              setNewMessageText("");
+            }}
+          >
+            <input
+              value={newMessageText}
+              onChange={async (e) => {
+                const text = e.target.value;
+                setNewMessageText(text);
+              }}
+              placeholder="Write a message…"
+              autoFocus
+            />
+            <button type="submit" disabled={!newMessageText}>
+              Send
+            </button>
+          </form>
+        </main>
+      );
+    }
+    ```
+    </Step>
+
 </StepsList>
 
 **Database.** The mesosphere database is a document-relational database, which means

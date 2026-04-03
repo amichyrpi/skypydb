@@ -994,6 +994,7 @@ footer > .container {
 /* Remove underline from footer links */
 .footer__links a {
   text-decoration: none;
+  color: #6e6c68;
 }
 
 /* Push the status link to the left */
@@ -1013,7 +1014,7 @@ footer > .container {
   height: 1.5rem;
   margin: 0;
   display: block;
-  background-color: var(--ifm-navbar-link-color);
+  background-color: #6e6c68;
   font-size: 0;
 }
 

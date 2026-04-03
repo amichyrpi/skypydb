@@ -3,15 +3,16 @@ title: "Learn How To Build A Simple Chat App"
 sidebar_label: "Simple Chat App"
 sidebar_position: 100
 hide_table_of_contents: true
-pagination_next: tutorial/actions
+pagination_next: tutorial/side-actions
 pagination_label: "Learn How To Build A Simple Chat App"
 description: "Learn how to build a real-time simple chat app with Mesosphere using our queries and morph functions."
 ---
 
 # Learn How To Build A Simple Chat App
 
-import { ExampleRepo } from "@site/src/FrameworkList.tsx";
+import { ExampleRepo, LargeCardList } from "@site/src/FrameworkList.tsx";
 import Link from "@docusaurus/Link";
+import { PlayIcon, FileIcon } from "@radix-ui/react-icons";
 
 <ExampleRepo
   description="Simple Chat App Example Repo"
@@ -75,6 +76,27 @@ import Link from "@docusaurus/Link";
 
   </Step>
   <Step title="How the Mesosphere backend works">
+    **Database.** The Mesosphere database is a document-relational database and vector embedding database,
+    which means, you have tables that are JSON like documents in them. All documents stored in the database have an
+    `_id` field that is auto-generated and can be used to create relations between multiple documents
+    in the database. You can interact with the database by writing morph and query functions that are written entirely
+    in TypeScript.
+
+    **Morph functions.** The Morph function is a TypeScript function that can update the
+    database. All morph functions in Mesosphere run as a transaction in the database. So
+    either all the changes made in the function are committed, or none are, that creates a
+    security layer if your function throws an exception.
+
+    **Query functions.** The Query function is a TypeScript function that can only read from
+    the database. You subscribe to them from your frontend to keep your app automatically up to date from new data.
+    Your frontend listens to query updates through our client library. The client libraries
+    talk to the Mesosphere database via WebSockets for the fastest updates speed.
+
+    **Sync engine.** Our sync engine is the combination of queries, morph and the database. It automatically
+    reruns query functions when any results to the function changes, including any changes
+    to the documents in the database that the query reads. It updates your frontend app with
+    the latest data, all in real-time.
+
   </Step>
   <Step title="Start building your app">
     Now that you've cloned the example repo and connected your Mesosphere account, you can start building your app by creating a new `morph` function.
@@ -118,7 +140,7 @@ import Link from "@docusaurus/Link";
 
     **Update your `src/App.tsx` just like so:**
 
-    ```tsx
+    ```tsx title="src/App.tsx"
     import { useEffect, useState } from "react";
     import { faker } from "@faker-js/faker";
     // highlight-next-line
@@ -204,276 +226,200 @@ import Link from "@docusaurus/Link";
       );
     }
     ```
-    </Step>
 
+    In your frontend you can call your morph function like this:
+
+    1. `const newMessage = useMorph(api.chat.newMessage);` this will give your frontend the ability to call the function.
+    2. `await newMessage({ user: NAME, body: newMessageText });` this will call the function with the parameters set in your function.
+
+    <br />
+
+    But wait, when you try to send a message it doesn't appear, why is that?
+
+    Well, the reason is that the morph function works, but we haven't set up `query` functions to read from the database yet.
+
+    Let's do that now.
+
+  </Step>
+  <Step title="Create a `query` function">
+    **Update your `mesosphere/chat.ts` file just like this:**
+
+    ```tsx title="mesosphere/chat.ts"
+    // highlight-next-line
+    // Update your import like this:
+    // highlight-next-line
+    import { query, morph, stator } from "mesosphere/reactlibrary";
+    import { t } from "mesosphere/types";
+
+    export const newMessage = morph({
+      args: {
+        user: t.string(),
+        body: t.string(),
+      },
+      stator: async (ctx, args) => {
+        console.log("You can console log from your morph function.");
+        await ctx.database.add("messages", {
+          user: args.user,
+          body: args.body,
+        });
+      },
+    });
+
+    // highlight-next-line
+    // Add the query function to the file:
+    // highlight-next-line
+    export const readMessages = query({
+      // highlight-next-line
+      args: {},
+      // highlight-next-line
+      stator: async (ctx) => {
+        // highlight-next-line
+        // Here we query the most recent 50 messages from newest to oldest.
+        // highlight-next-line
+        const messages = await ctx.database.query("messages").order("desc").nresults(50);
+        // highlight-next-line
+        // Here we reverse the list of results so that it's in a chronological order.
+        // highlight-next-line
+        return messages.reverse();
+        // highlight-next-line
+      },
+      // highlight-next-line
+    });
+    ```
+
+    Let's dissect this code:
+
+    **What you add**
+
+    1. You've added a new backend `query` function called `readMessages` and exposed it as a public api.
+    2. `ctx.database` only lets you read data from the database.
+    3. `nresults` limits the number of results returned, in this case to 50.
+    4. `order` accepts the string `"desc"` to indicate descending order (newest first).
+    5. `reverse` reverses the list of results so that it's in chronological order — this is just a standard TypeScript array method.
+
+  </Step>
+  <Step title="Connect this query to your web app">
+    Now that you've created a `query` function, you can connect it to your web app.
+
+    **Update your `src/App.tsx` file like so:**
+
+    ```tsx title="src/App.tsx"
+    import { useEffect, useState } from "react";
+    import { faker } from "@faker-js/faker";
+    // highlight-next-line
+    // Update your import like this:
+    // highlight-next-line
+    import { useMorph, useQuery } from "mesosphere/reactlibrary";
+    import { api } from "../mesosphere/_codegen/ApiDataModel";
+
+    // Set a random name for the user.
+    const NAME = getOrSetFakeName();
+
+    // Generate a random name for the user with the faker library.
+    function getOrSetFakeName() {
+      const NAME_KEY = "name";
+      const name = sessionStorage.getItem(NAME_KEY);
+      if (!name) {
+        const newName = faker.person.firstName();
+        sessionStorage.setItem(NAME_KEY, newName);
+        return newName;
+      }
+      return name;
+    }
+
+    export default function App() {
+      // highlight-next-line
+      // Replace the `const messages = ...` code with the following:
+      // highlight-next-line
+      const messages = useQuery(api.chat.readMessages);
+      const newMessage = useMorph(api.chat.newMessage);
+
+      const [newMessageText, setNewMessageText] = useState("");
+
+      useEffect(() => {
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }, 0);
+      }, [messages]);
+
+      return (
+        <main className="chat">
+          <header>
+            <h1>Mesosphere Chat</h1>
+            <p>
+              Connected as <strong>{NAME}</strong>
+            </p>
+          </header>
+          {messages?.map((message) => (
+            <article
+              key={message._id}
+              className={message.user === NAME ? "message-mine" : ""}
+            >
+              <div>{message.user}</div>
+
+              <p>{message.body}</p>
+            </article>
+          ))}
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await newMessage({ user: NAME, body: newMessageText });
+              setNewMessageText("");
+            }}
+          >
+            <input
+              value={newMessageText}
+              onChange={async (e) => {
+                const text = e.target.value;
+                setNewMessageText(text);
+              }}
+              placeholder="Write a message…"
+              autoFocus
+            />
+            <button type="submit" disabled={!newMessageText}>
+              Send
+            </button>
+          </form>
+        </main>
+      );
+    }
+    ```
+
+    Our `useQuery` function is doing a lot of things for you. It automatically
+    subscribes to your query function and reruns it whenever there are new results.
+    It also puts the results in a `const messages` variable so that React automatically
+    rerenders your UI component to show the latest results, in that case the latest messages.
+
+    **You're done!** Now go back to your app and try sending messages.
+
+    Your app should be showing live updates as new messages arrive.
+
+    And thanks to our sync engine, your app is always up to date on every client,
+    try opening two chat windows side by side and send some messages, you'll see that the messages are always in sync.
+
+  </Step>
 </StepsList>
 
-**Database.** The mesosphere database is a document-relational database, which means
-you have tables with JSON like documents in them. All documents have an
-auto-generated `_id` that can be used to create relations between documents. You
-interact with the database through mutation and query functions that are written
-entirely in TypeScript.
+## Next steps
 
-**Mutation functions.** Mutations are TypeScript functions that update the
-database. All mutation functions in mesosphere run as a database transaction. So
-either all the changes are committed, or none are.
+Now that you've built a simple chat app, you can go on to build more complex apps.
+Learn how to call external services and use our upload functions to build complex applications.
 
-**Query functions.** Queries are TypeScript functions that can only read from
-the database. As we'll see in a bit, you subscribe to them from your frontend to
-keep your app automatically up to date.
-
-Your frontend registers to listen to query updates through the **client
-library**. The client libraries talk to mesosphere via WebSockets for fast realtime
-updates.
-
-The **sync engine** reruns query functions when any input to the function
-changes, including any changes to the documents in the database that the query
-reads. It then updates every app listening to the query. The sync engine is the
-combination of queries, mutations and the database.
-
-Now, let's dive into the code!
-
-## Your first `mutation`
-
-Create a new file in your `mesosphere/` folder called `chat.ts`. This is where
-you'll write your mesosphere backend functions for this application.
-
-**Add the following to your `mesosphere/chat.ts` file.**
-
-```typescript
-import { mutation } from "./_generated/server";
-import { v } from "mesosphere/values";
-
-export const sendMessage = mutation({
-  args: {
-    user: v.string(),
-    body: v.string(),
-  },
-  handler: async (ctx, args) => {
-    console.log("This TypeScript function is running on the server.");
-    await ctx.db.insert("messages", {
-      user: args.user,
-      body: args.body,
-    });
-  },
-});
-```
-
-Let's break this down:
-
-1. You've added a new backend `mutation` function called `sendMessage` and
-   exposed it as a public api.
-1. The whole function automatically runs as a transaction that will roll back if
-   an exception is thrown.
-1. Since this is just a TypeScript function you can drop `console.log` lines to
-   do simple debugging on the server.
-1. `args:` ensures the function arguments are two strings named `user` and
-   `body`, both as types and runtime values.
-1. `ctx.db.insert` tells mesosphere to insert a new message document into the table.
-
-Now, let's connect this mutation to your web app.
-
-**Update your `src/App.tsx` file like so:**
-
-```tsx
-// highlight-next-line
-// Import `useMutation` and `api` from mesosphere.
-// highlight-next-line
-import { useMutation } from "mesosphere/react";
-// highlight-next-line
-import { api } from "../mesosphere/_generated/api";
-
-//...
-
-export default function App() {
-  // highlight-next-line
-  // Replace the "TODO: Add mutation hook here." with:
-  // highlight-next-line
-  const sendMessage = useMutation(api.chat.sendMessage);
-
-  //...
-
-  return (
-    <main className="chat">
-      {/* ... */}
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          // highlight-next-line
-          // Replace "alert("Mutation not implemented yet");" with:
-          // highlight-next-line
-          await sendMessage({ user: NAME, body: newMessageText });
-
-          setNewMessageText("");
-        }}
-      >
-        {/* ... */}
-      </form>
-    </main>
-  );
-}
-```
-
-There are two steps to call a mutation in your frontend:
-
-1. `const sendMessage = useMutation(api.chat.sendMessage);` gives your frontend
-   app a handle to the mutation function
-2. `await sendMessage({ user: NAME, body: newMessageText });` calls the mutation
-   with the proper parameters.
-
-This is a good time to **open up the mesosphere dashboard**. Open a new browser
-window and go to [https://dashboard.mesosphere.dev](https://dashboard.mesosphere.dev)
-and find new `mesosphere-tutorial` project.
-
-**Go to the "Data" screen**. So far, there is no data in your database.
-
-**Keep your chat app and dashboard windows open side by side**. Now try to send
-some messages from your chat app.
-
-<video autoPlay playsInline muted loop width="100%">
-  <source src="/img/tutorial/tut_first_mutation.mp4" type="video/mp4" />
-  Mutations hooked up to the mesosphere backend and database.
-</video>
-
-You'll notice new chat messages showing up live in the `messages` table.
-
-mesosphere automatically created a `messages` table when you sent the first message.
-In mesosphere, [schemas](/database/schemas.mdx) are optional. Eventually, you'll
-want to enforce the structure of your tables, but for the purposes of the
-tutorial we'll skip this.
-
-In the dashboard you can also go to the
-[logs screen](https://dashboard.mesosphere.dev/deployment/logs) and see every call
-to the mutation as you ran with the log line we added earlier. The logs screen
-is a critical part of debugging your backend in development.
-
-You've successfully created a `mutation` function, which is also a database
-transaction, and connected it to your UI.
-
-Now, let's make sure your app can update live the same way the dashboard is
-updating live.
-
-## Your first `query`
-
-**Update your `mesosphere/chat.ts` file like this:**
-
-```tsx
-// highlight-next-line
-// Update your server import like this:
-// highlight-next-line
-import { query, mutation } from "./_generated/server";
-
-// ...
-
-// highlight-next-line
-// Add the following function to the file:
-// highlight-next-line
-export const getMessages = query({
-  // highlight-next-line
-  args: {},
-  // highlight-next-line
-  handler: async (ctx) => {
-    // highlight-next-line
-    // Get most recent messages first
-    // highlight-next-line
-    const messages = await ctx.db.query("messages").order("desc").take(50);
-    // highlight-next-line
-    // Reverse the list so that it's in a chronological order.
-    // highlight-next-line
-    return messages.reverse();
-    // highlight-next-line
-  },
-  // highlight-next-line
-});
-```
-
-Let's break this down:
-
-1. You've added a new backend `query` function called `getMessages` and exposed
-   it as a public api.
-1. Since this is a query function, the `ctx.db` in this function only lets you
-   read data.
-1. In the first line of the `handler` you are querying the most recent 50
-   messages from newest to oldest.
-1. In the second line you're reversing the list using plain old TypeScript.
-
-**Now update `src/App.tsx` to read from your query:**
-
-```tsx
-// highlight-next-line
-// Update your mesosphere/react import like this:
-// highlight-next-line
-import { useQuery, useMutation } from "mesosphere/react";
-
-//...
-
-export default function App() {
-  // highlight-next-line
-  // Replace the `const messages = ...` line with the following
-  // highlight-next-line
-  const messages = useQuery(api.chat.getMessages);
-
-  //...
-}
-```
-
-That one `useQuery` line is doing a lot of work automatically for you. It's
-telling the mesosphere client library to subscribe to your `getMessages` function.
-Anytime there are new messages to show the query function is automatically
-rerun. The result is put in `const messages` variable and React rerenders your
-UI component to show the latest messages.
-
-That's it. Now go back to your app and try sending messages.
-
-Your app should be showing live updates as new messages arrive:
-
-<video autoPlay playsInline muted loop width="100%">
-  <source src="/img/tutorial/tut_first_query.mp4" type="video/mp4" />
-  Queries hooked up and live updating to the app.
-</video>
-
-<br />
-<br />
-Don't believe it? Try opening two chat windows side by side and send some
-messages:
-
-<video autoPlay playsInline muted loop width="100%">
-  <source src="/img/tutorial/tut_side_by_side.mp4" type="video/mp4" />
-  Live syncing chat app.
-</video>
-
-## What you built
-
-With just a few lines of code you've built a live updating chat app.
-
-1. You created a `mutation` TypeScript function that, in a transaction, adds new
-   chat messages to your database.
-1. You created a `query` TypeScript function updates your app with the latest
-   data.
-1. You used the client library that keeps your frontend in live sync with the
-   backend.
-
-You've learned the fundamentals of mesosphere and the sync engine that powers
-everything.
-
-## Next up
-
-In this tutorial we just touched on the very basics. It's ok to just stop here
-and go explore the rest of the docs, including
-[efficient queries via indexes](/database/reading-data/indexes/indexes.md) and
-traversing
-[relationships through joins](/database/reading-data/reading-data.mdx#join). If
-you're deeply curious about how mesosphere works, you can read this
-excellent deep dive.
-
-But if you want to see how to call external services and build sophisticated
-backend workflows, jump into the [next section â†’](/tutorial/actions.mdx).
-
-<DocsLink
-  className="mesosphere-hero-card"
-  item={{
-    href: "/tutorial/actions",
-    docId: "tutorial/actions",
-    label: "Calling external services",
-  }}
+<LargeCardList
+  items={[
+    {
+      icon: <PlayIcon />,
+      title: "Calling external services",
+      description:
+        "Learn how to call external services to add more functionality to your app.",
+      href: "/tutorial/side-actions",
+    },
+    {
+      icon: <FileIcon />,
+      title: "Upload",
+      description:
+        "Learn how to use the upload functions to build complex applications.",
+      href: "/tutorial/upload",
+    },
+  ]}
 />

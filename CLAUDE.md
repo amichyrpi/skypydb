@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Mesosphere is an open-source relational and vector embeddings database. This is a monorepo containing:
+
 - **Rust backend** (`/rust`) — Axum HTTP server with MySQL (SQLx), providing relational functions, file storage, and vector embeddings APIs
 - **TypeScript/JS client** (`/mesosphere-js`) — SDK with ESM/CJS dual exports and a CLI
 - **Python client** (`/mesosphere`) — SDK using httpx + sentence-transformers
@@ -17,6 +18,7 @@ License: FSL-1.1-ALv2 (not Apache 2.0).
 ## Build & Dev Commands
 
 ### Monorepo (npm workspaces + Turborepo)
+
 ```bash
 npm install            # install all workspace deps (requires Node >=22, npm 11.6.2)
 npm run build          # turbo build all packages
@@ -27,6 +29,7 @@ npm run format         # prettier on ts/tsx/md/mdx files
 ```
 
 ### Rust backend
+
 ```bash
 cd rust
 cargo build            # compile
@@ -34,9 +37,11 @@ cargo run              # start server (needs DATABASE_URL and other env vars)
 cargo test             # run tests
 cargo check            # fast type-check
 ```
+
 Env vars for the backend are loaded via `dotenv`. See `AppConfig` in `rust/application/` for the full list (SERVER_PORT, API_KEY, MYSQL_URL, LOG_LEVEL, CORS_ORIGINS, etc.).
 
 ### TypeScript/JS SDK
+
 ```bash
 cd mesosphere-js
 npm run build          # tsup build (clean + codegen)
@@ -45,11 +50,13 @@ npm run check-types    # tsc --noEmit
 ```
 
 ### Python SDK
+
 ```bash
 pip install -e ".[mem0]"   # editable install with optional mem0 integration
 ```
 
 ### Formatting
+
 - **dprint** is configured at root for TS, JSON, Markdown, TOML, Dockerfile, CSS, HTML, YAML
 - **prettier** handles ts/tsx/md/mdx via `npm run format`
 
@@ -58,11 +65,13 @@ pip install -e ".[mem0]"   # editable install with optional mem0 integration
 ### Rust Backend (`/rust/main.rs`)
 
 Layered Axum application:
+
 1. **Middleware stack**: request ID → tracing → CORS → API key auth
 2. **Route groups**: public storage routes at `/v1`, protected routes (storage, functions, vectors) behind API key middleware
 3. **Bootstrap**: loads env config → inits metrics/tracing → builds MySQL pool → runs migrations → optional file backup → starts server
 
 Key crates (all prefixed `mesosphere-`):
+
 - `application` — `AppConfig` (env-based) and `AppState` (shared state)
 - `authentication` — `require_api_key` middleware
 - `relational` — function execution and storage (routes, repos, models)

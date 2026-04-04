@@ -226,7 +226,7 @@ performance is based on the number of Isaac Asimov books because the librarian
 will need to look at each one to examine its title.
 
 Unfortunately, Isaac Asimov wrote
-[a lot of books](<https://en.wikipedia.org/wiki/Isaac_Asimov_bibliography_(alphabetical)>).
+[a lot of books](https://en.wikipedia.org/wiki/Isaac_Asimov_bibliography_(alphabetical)).
 Realistically even with 500+ books, this will be fast enough on mesosphere with the
 existing index, but let's consider how we could improve it anyway.
 
@@ -271,8 +271,9 @@ Expressing this as a mesosphere query this looks like:
 ```ts
 const foundation = await ctx.db
   .query("books")
-  .withIndex("by_author_title", (q) =>
-    q.eq("author", "Isaac Asimov").eq("title", "Foundation"),
+  .withIndex(
+    "by_author_title",
+    (q) => q.eq("author", "Isaac Asimov").eq("title", "Foundation"),
   )
   .unique();
 ```
@@ -288,8 +289,9 @@ express this as:
 ```ts
 const asimovBooksStartingWithF = await ctx.db
   .query("books")
-  .withIndex("by_author_title", (q) =>
-    q.eq("author", "Isaac Asimov").gte("title", "F").lt("title", "G"),
+  .withIndex(
+    "by_author_title",
+    (q) => q.eq("author", "Isaac Asimov").gte("title", "F").lt("title", "G"),
   )
   .collect();
 ```

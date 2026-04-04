@@ -140,7 +140,7 @@ intervention.
 It is common for optimistic multi-version concurrency control databases to
 provide a guarantee of
 [snapshot isolation](https://en.wikipedia.org/wiki/Snapshot_isolation). This
-[isolation level](<https://en.wikipedia.org/wiki/Isolation_(database_systems)>)
+[isolation level](https://en.wikipedia.org/wiki/Isolation_(database_systems))
 provides the illusion that all transactions execute on an atomic snapshot of the
 data but it is vulnerable to
 [anomalies](https://en.wikipedia.org/wiki/Snapshot_isolation#Definition) where

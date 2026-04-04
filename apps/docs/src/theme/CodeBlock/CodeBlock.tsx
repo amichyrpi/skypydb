@@ -21,22 +21,20 @@ export default function CodeBlockWrapper({
 }) {
   const [_, language] = props.className?.match(/language-(\w+)/) ?? [];
   const title = parseCodeBlockTitle(metastring) ?? titleProp;
-  const shouldShowLanguageSelector =
-    showLanguageSelector === true ||
-    (showLanguageSelector !== false &&
-      title !== undefined &&
-      title !== null &&
-      !shouldNotVary(metastring) &&
-      (language === "tsx" || language === "ts"));
+  const shouldShowLanguageSelector = showLanguageSelector === true
+    || (showLanguageSelector !== false
+      && title !== undefined
+      && title !== null
+      && !shouldNotVary(metastring)
+      && (language === "tsx" || language === "ts"));
 
   const selectedDialect = useSelectedDialect();
   const setDialect = useSetDialect();
 
   // Resolve the displayed title (dialect-aware if selector is active)
-  const displayTitle =
-    shouldShowLanguageSelector && typeof title === "string"
-      ? convertFilePath(title, selectedDialect)
-      : title;
+  const displayTitle = shouldShowLanguageSelector && typeof title === "string"
+    ? convertFilePath(title, selectedDialect)
+    : title;
 
   const codeBlock = (
     <CodeBlock

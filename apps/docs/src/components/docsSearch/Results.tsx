@@ -1,7 +1,4 @@
-import {
-  DotsHorizontalIcon,
-  QuestionMarkCircledIcon,
-} from "@radix-ui/react-icons";
+import { DotsHorizontalIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useState } from "react";
 import ResultList from "./ResultList";
 import { AlgoliaResult, Result } from "./types";
@@ -58,8 +55,8 @@ export default function Results({ query }: ResultsProps) {
   // Deduplicate results by URL and filter out entries without a title
   const combinedResults = algoliaResults.reduce<Result[]>((acc, result) => {
     if (
-      result.title &&
-      !acc.some((existingResult) => existingResult.url === result.url)
+      result.title
+      && !acc.some((existingResult) => existingResult.url === result.url)
     ) {
       acc.push(result);
     }

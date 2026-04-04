@@ -1,5 +1,5 @@
-import React, { type ReactNode } from "react";
 import { processAdmonitionProps } from "@docusaurus/theme-common";
+import React, { type ReactNode } from "react";
 import styles from "./styles.module.css";
 
 /** Lightbulb icon used for note and tip admonitions. */

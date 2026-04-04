@@ -20,11 +20,7 @@ export function StepsList({ children }: { children: ReactNode }) {
 function parseInlineCode(text: string): ReactNode[] {
   const parts = text.split(/(`[^`]+`)/g);
   return parts.map((part, i) =>
-    part.startsWith("`") && part.endsWith("`") ? (
-      <code key={i}>{part.slice(1, -1)}</code>
-    ) : (
-      part
-    ),
+    part.startsWith("`") && part.endsWith("`") ? <code key={i}>{part.slice(1, -1)}</code> : part
   );
 }
 
@@ -38,8 +34,7 @@ export function Step({
   title: ReactNode;
   stepNumber?: number;
 }) {
-  const renderedTitle =
-    typeof title === "string" ? parseInlineCode(title) : title;
+  const renderedTitle = typeof title === "string" ? parseInlineCode(title) : title;
 
   return (
     <li className="mesosphere-step">

@@ -116,7 +116,7 @@
   --ifm-menu-color-background-active: rgb(222, 226, 234);
   --mesosphere-active-background: rgb(222, 226, 234);
   /* Copy of the sidebar chevron/arrow svg to make it smaller and darker */
-  --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="-12 -12 48 48"><path fill="rgb(28, 30, 33)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path></svg>');
+  --ifm-menu-link-sublist-icon: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16px\" height=\"16px\" viewBox=\"-12 -12 48 48\"><path fill=\"rgb(28, 30, 33)\" d=\"M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z\"></path></svg>");
   --mesosphere-sidebar-icon-filter: none;
   --mesosphere-toc-background-color: rgba(255, 255, 255, 1);
   --ifm-menu-link-padding-vertical: 0.4375rem;
@@ -139,9 +139,23 @@
   --ifm-code-font-size: 95%;
   --ifm-font-weight-semibold: 400;
   --ifm-font-family-base:
-    "SF Pro Display", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
-    Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica,
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    "SF Pro Display",
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    Noto Sans,
+    sans-serif,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Helvetica,
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol";
 
   /* Footer */
   --ifm-footer-background-color: var(--ifm-background-color);
@@ -335,7 +349,7 @@ article .markdown a {
   transition:
     color var(--ifm-transition-fast) var(--ifm-transition-timing-default),
     text-decoration-color var(--ifm-transition-fast)
-      var(--ifm-transition-timing-default);
+    var(--ifm-transition-timing-default);
   text-underline-position: under;
   text-decoration-thickness: 1px;
 }
@@ -613,8 +627,16 @@ a.pagination-nav__link .pagination-nav__label:hover {
   --ifm-h1-font-size: 2rem;
   margin-top: 1.25rem;
   --ifm-heading-font-family:
-    "SF Pro Display", system-ui, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    "SF Pro Display",
+    system-ui,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol";
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -631,31 +653,25 @@ h2,
 h3,
 h4 {
   --ifm-heading-font-family:
-    "SF Pro Display", system-ui, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-h2.text--truncate {
-  font-family:
     "SF Pro Display",
     system-ui,
-    -apple-system,
-    Segoe UI,
-    Roboto,
-    Ubuntu,
-    Cantarell,
-    Noto Sans,
-    sans-serif,
-    BlinkMacSystemFont,
     "Segoe UI",
+    Roboto,
     Helvetica,
     Arial,
     sans-serif,
     "Apple Color Emoji",
     "Segoe UI Emoji",
     "Segoe UI Symbol";
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h2.text--truncate {
+  font-family:
+    "SF Pro Display", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+    Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   letter-spacing: 0;
 }
 
@@ -1126,8 +1142,8 @@ main article > div {
 @media (min-width: 997px) {
   .mesosphere-full-width {
     width: calc(
-      min(var(--ifm-container-width-xl), 100vw - var(--doc-sidebar-width)) - 4 *
-        var(--mesosphere-container-padding-horizontal)
+      min(var(--ifm-container-width-xl), 100vw - var(--doc-sidebar-width)) -
+        4 * var(--mesosphere-container-padding-horizontal)
     );
     z-index: 100;
     position: relative;
@@ -1175,11 +1191,8 @@ Keep this scoped to code blocks so inline custom copy buttons remain module-driv
 }
 
 /* Center content with side padding like Clerk docs, except quickstart and API pages which need full width */
-html:not([class*="docs-doc-id-quickstart/"]):not(
-    [class*="docs-doc-id-management-api/"]
-  ):not([class*="docs-doc-id-deployment-api/"])
-  main
-  > .container
+html:not([class*="docs-doc-id-quickstart/"]):not([class*="docs-doc-id-management-api/"]):not([class*="docs-doc-id-deployment-api/"])
+  main > .container
   > .row
   .col {
   max-width: 960px !important;

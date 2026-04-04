@@ -55,7 +55,7 @@ export default function ButtonCta(props: ButtonProps) {
   return (
     <button
       className={classes}
-      style={{ fontFamily: '"SF Pro Display", sans-serif' }}
+      style={{ fontFamily: "\"SF Pro Display\", sans-serif" }}
       {...(rest as ButtonElementProps)}
     >
       {children}

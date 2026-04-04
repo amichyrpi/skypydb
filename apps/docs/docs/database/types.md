@@ -50,7 +50,7 @@ and `_creationTime` fields. Use
 arbitrary values.
 
 ```ts
-import { getmesosphereSize, getDocumentSize } from "mesosphere/values";
+import { getDocumentSize, getmesosphereSize } from "mesosphere/values";
 
 // Includes the size of the system fields added during `db.insert`.
 const bytes = getDocumentSize(doc);

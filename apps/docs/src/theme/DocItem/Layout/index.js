@@ -1,18 +1,18 @@
-import React from "react";
-import clsx from "clsx";
-import { useWindowSize } from "@docusaurus/theme-common";
 import { useDoc } from "@docusaurus/plugin-content-docs/client";
-import DocItemPaginator from "@theme/DocItem/Paginator";
-import DocVersionBanner from "@theme/DocVersionBanner";
-import DocVersionBadge from "@theme/DocVersionBadge";
-import DocItemFooter from "@theme/DocItem/Footer";
-import DocItemTOCMobile from "@theme/DocItem/TOC/Mobile";
-import DocItemTOCDesktop from "@theme/DocItem/TOC/Desktop";
-import DocItemContent from "@theme/DocItem/Content";
-import DocBreadcrumbs from "@theme/DocBreadcrumbs";
-import ContentVisibility from "@theme/ContentVisibility";
-import Footer from "@theme-original/Footer";
+import { useWindowSize } from "@docusaurus/theme-common";
 import { EditPageOnGithub } from "@site/src/components/EditPageOnGithub";
+import Footer from "@theme-original/Footer";
+import ContentVisibility from "@theme/ContentVisibility";
+import DocBreadcrumbs from "@theme/DocBreadcrumbs";
+import DocItemContent from "@theme/DocItem/Content";
+import DocItemFooter from "@theme/DocItem/Footer";
+import DocItemPaginator from "@theme/DocItem/Paginator";
+import DocItemTOCDesktop from "@theme/DocItem/TOC/Desktop";
+import DocItemTOCMobile from "@theme/DocItem/TOC/Mobile";
+import DocVersionBadge from "@theme/DocVersionBadge";
+import DocVersionBanner from "@theme/DocVersionBanner";
+import clsx from "clsx";
+import React from "react";
 import styles from "./styles.module.css";
 
 /** Determine whether a mobile or desktop TOC should be rendered */
@@ -22,10 +22,7 @@ function useDocTOC() {
   const hidden = frontMatter.hide_table_of_contents;
   const canRender = !hidden && toc.length > 0;
   const mobile = canRender ? <DocItemTOCMobile /> : undefined;
-  const desktop =
-    canRender && (windowSize === "desktop" || windowSize === "ssr") ? (
-      <DocItemTOCDesktop />
-    ) : undefined;
+  const desktop = canRender && (windowSize === "desktop" || windowSize === "ssr") ? <DocItemTOCDesktop /> : undefined;
   return {
     hidden,
     mobile,

@@ -158,14 +158,14 @@ export function filterSidebar(sidebar: any[], framework: string): any[] {
     // Quickstarts category: pull the matching child out of the folder and
     // label it "X Quickstart" so it appears as a plain link in the sidebar.
     if (
-      hasClass(item.className, "mesosphere-sidebar-quickstart") &&
-      item.items
+      hasClass(item.className, "mesosphere-sidebar-quickstart")
+      && item.items
     ) {
       if (targetQuickstart) {
         const match = item.items.find(
           (child: any) =>
-            child.docId === targetQuickstart ||
-            child.href?.endsWith(`/${targetQuickstart}`),
+            child.docId === targetQuickstart
+            || child.href?.endsWith(`/${targetQuickstart}`),
         );
         if (match) {
           acc.push({ ...match, label: `${match.label} Quickstart` });
@@ -207,8 +207,7 @@ const FrameworkContext = createContext<FrameworkContextValue>({
  * dropdown always reflects the page the user is currently reading.
  */
 export function FrameworkProvider({ children }: { children: React.ReactNode }) {
-  const [selectedFramework, setSelectedFrameworkState] =
-    useState<string>("nextjs");
+  const [selectedFramework, setSelectedFrameworkState] = useState<string>("nextjs");
   const { pathname } = useLocation();
 
   // Restore the persisted selection after the first client-side render.

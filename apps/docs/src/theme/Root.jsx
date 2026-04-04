@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import UsersAnalytics from "../components/UsersAnalytics/UsersAnalytics";
 import { Toaster } from "sonner";
+import UsersAnalytics from "../components/UsersAnalytics/UsersAnalytics";
 import { FrameworkProvider } from "../context/FrameworkContext";
 
 import "@fontsource/inter/300.css";

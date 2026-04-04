@@ -25,7 +25,7 @@ export default function Button(props: ButtonProps) {
       <a
         href={href}
         className={classes}
-        style={{ fontFamily: '"SF Pro Display", sans-serif' }}
+        style={{ fontFamily: "\"SF Pro Display\", sans-serif" }}
         target={target}
         rel={rel}
         {...anchorProps}
@@ -38,7 +38,7 @@ export default function Button(props: ButtonProps) {
   return (
     <button
       className={classes}
-      style={{ fontFamily: '"SF Pro Display", sans-serif' }}
+      style={{ fontFamily: "\"SF Pro Display\", sans-serif" }}
       {...(rest as ButtonElementProps)}
     >
       {children}

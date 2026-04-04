@@ -1,9 +1,9 @@
 import Link from "@docusaurus/Link";
-import { CopyPageAsMarkdown } from "@site/src/components/CopyPageAsMarkdown";
 import { useSidebarBreadcrumbs } from "@docusaurus/plugin-content-docs/client";
 import { ThemeClassNames } from "@docusaurus/theme-common";
 import { useHomePageRoute } from "@docusaurus/theme-common/internal";
 import { translate } from "@docusaurus/Translate";
+import { CopyPageAsMarkdown } from "@site/src/components/CopyPageAsMarkdown";
 import HomeBreadcrumbItem from "@theme/DocBreadcrumbs/Items/Home";
 import clsx from "clsx";
 import React from "react";
@@ -19,13 +19,13 @@ function BreadcrumbsItemLink({ children, href, isLast }) {
       </span>
     );
   }
-  return href ? (
-    <Link className={className} href={href} itemProp="item">
-      <span itemProp="name">{children}</span>
-    </Link>
-  ) : (
-    <span className={className}>{children}</span>
-  );
+  return href
+    ? (
+      <Link className={className} href={href} itemProp="item">
+        <span itemProp="name">{children}</span>
+      </Link>
+    )
+    : <span className={className}>{children}</span>;
 }
 
 /** Single breadcrumb list item with optional Schema.org microdata */
@@ -96,14 +96,16 @@ export default function DocBreadcrumbs() {
 
   const showBreadcrumbs = breadcrumbs && breadcrumbs.length >= 2;
 
-  return showBreadcrumbs ? (
-    <div className="mb-3 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-      <DocBreadcrumbsInner />
-      <CopyPageAsMarkdown />
-    </div>
-  ) : (
-    <div className="flex justify-end sm:block sm:float-right">
-      <CopyPageAsMarkdown />
-    </div>
-  );
+  return showBreadcrumbs
+    ? (
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+        <DocBreadcrumbsInner />
+        <CopyPageAsMarkdown />
+      </div>
+    )
+    : (
+      <div className="flex justify-end sm:block sm:float-right">
+        <CopyPageAsMarkdown />
+      </div>
+    );
 }

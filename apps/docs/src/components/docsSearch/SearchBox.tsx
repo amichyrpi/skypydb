@@ -40,7 +40,7 @@ export default function SearchBox({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter") {
         const linkElement = document.querySelector(
-          '.js-hitList-item[aria-selected="true"] a',
+          ".js-hitList-item[aria-selected=\"true\"] a",
         );
         if (linkElement) {
           const url = linkElement.getAttribute("href");
@@ -67,7 +67,7 @@ export default function SearchBox({
       <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-neutral-n7 pointer-events-none" />
       <input
         className="w-full h-full bg-neutral-n2 dark:bg-neutral-n13 border-none text-sm text-neutral-n13 dark:text-white pl-[42px] pr-[42px] focus:outline-hidden"
-        style={{ fontFamily: '"SF Pro Display", sans-serif' }}
+        style={{ fontFamily: "\"SF Pro Display\", sans-serif" }}
         type="text"
         placeholder="Search documentation"
         value={value}

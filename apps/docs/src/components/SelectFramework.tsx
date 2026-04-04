@@ -1,6 +1,6 @@
 import useBaseUrl from "@docusaurus/useBaseUrl";
-import React, { useEffect, useRef, useState } from "react";
 import { useFramework } from "@site/src/context/FrameworkContext";
+import React, { useEffect, useRef, useState } from "react";
 
 /** A single framework option shown in the dropdown. */
 interface Framework {
@@ -82,8 +82,7 @@ export default function SelectFramework({ onChange }: SelectFrameworkProps) {
 
   // Derive the full Framework object from the context ID, falling back to the
   // first entry if the stored ID is somehow not found in the list.
-  const selected =
-    ALL_FRAMEWORKS.find((f) => f.id === selectedFramework) ?? ALL_FRAMEWORKS[0];
+  const selected = ALL_FRAMEWORKS.find((f) => f.id === selectedFramework) ?? ALL_FRAMEWORKS[0];
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -100,8 +99,8 @@ export default function SelectFramework({ onChange }: SelectFrameworkProps) {
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
+        containerRef.current
+        && !containerRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -126,7 +125,7 @@ export default function SelectFramework({ onChange }: SelectFrameworkProps) {
       <span
         className="mb-1.5 block px-2 text-xs font-medium text-neutral-n10 dark:text-neutral-n7"
         aria-label="Select your Framework"
-        style={{ fontFamily: '"SF Pro Display", sans-serif' }}
+        style={{ fontFamily: "\"SF Pro Display\", sans-serif" }}
       >
         Select your Framework
       </span>

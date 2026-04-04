@@ -1,10 +1,6 @@
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useDoc } from "@docusaurus/plugin-content-docs/client";
-import {
-  CheckIcon,
-  GitHubLogoIcon,
-  ExternalLinkIcon,
-} from "@radix-ui/react-icons";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import { CheckIcon, ExternalLinkIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import React, { useCallback, useRef, useState } from "react";
 

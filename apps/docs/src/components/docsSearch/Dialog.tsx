@@ -74,7 +74,7 @@ const Dialog = ({ open, onClose }: Props) => {
   const dialogContent = open && (
     <div
       className="h-screen left-0 top-0 overflow-y-auto fixed w-screen z-[1000] md:flex md:justify-center"
-      style={{ fontFamily: '"SF Pro Display", sans-serif' }}
+      style={{ fontFamily: "\"SF Pro Display\", sans-serif" }}
     >
       <div
         className={cn(

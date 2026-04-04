@@ -83,8 +83,7 @@ const messages = await ctx.db
     q
       .eq("channel", channel)
       .gt("_creationTime", Date.now() - 2 * 60000)
-      .lt("_creationTime", Date.now() - 60000),
-  )
+      .lt("_creationTime", Date.now() - 60000))
   .collect();
 ```
 
@@ -113,8 +112,9 @@ by `_creationTime`. If you were to use `by_channel_user` like this:
 ```ts
 const messages = await ctx.db
   .query("messages")
-  .withIndex("by_channel_user", (q) =>
-    q.eq("channel", channel).eq("user", user),
+  .withIndex(
+    "by_channel_user",
+    (q) => q.eq("channel", channel).eq("user", user),
   )
   .collect();
 ```
@@ -148,8 +148,7 @@ const messages = await ctx.db
   .withIndex("by_channel", (q) =>
     q
       .gt("_creationTime", Date.now() - 2 * 60000)
-      .lt("_creationTime", Date.now() - 60000),
-  )
+      .lt("_creationTime", Date.now() - 60000))
   .collect();
 ```
 
@@ -174,8 +173,7 @@ const messages = await ctx.db
     q
       .eq("channel", channel)
       .gt("_creationTime", Date.now() - 2 * 60000)
-      .lt("_creationTime", Date.now() - 60000),
-  )
+      .lt("_creationTime", Date.now() - 60000))
   .collect();
 ```
 

@@ -5,23 +5,23 @@ declare module "*.svg" {
 
 import Link from "@docusaurus/Link";
 import { ReactNode } from "@mdx-js/react/lib";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import BunLogo from "@site/static/img/framework-logo/bun.svg";
+import DenoLogo from "@site/static/img/framework-logo/deno.svg";
 import ExpoLogo from "@site/static/img/framework-logo/expo.svg";
-import ScriptTagLogo from "@site/static/img/framework-logo/script-tag.svg";
+import HonoLogo from "@site/static/img/framework-logo/hono.svg";
 import JsLogo from "@site/static/img/framework-logo/js.svg";
 import NextJSLogo from "@site/static/img/framework-logo/nextjs.svg";
-import HonoLogo from "@site/static/img/framework-logo/hono.svg";
-import DenoLogo from "@site/static/img/framework-logo/deno.svg";
 import NodeLogo from "@site/static/img/framework-logo/node.svg";
 import NuxtLogo from "@site/static/img/framework-logo/nuxt.svg";
 import PythonLogo from "@site/static/img/framework-logo/python.svg";
 import ReactLogo from "@site/static/img/framework-logo/react.svg";
 import RemixLogo from "@site/static/img/framework-logo/remix.svg";
 import RustLogo from "@site/static/img/framework-logo/rust.svg";
+import ScriptTagLogo from "@site/static/img/framework-logo/script-tag.svg";
 import SvelteLogo from "@site/static/img/framework-logo/svelte.svg";
 import TanStackLogo from "@site/static/img/framework-logo/tanstack.svg";
 import VueLogo from "@site/static/img/framework-logo/vue.svg";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import Heading from "@theme/Heading";
 import React from "react";
 
@@ -65,9 +65,7 @@ export function DocslinksList(props: { items: Item[] }) {
   const { items } = props;
   return (
     <div className="qs-cards">
-      {items.map((item, index) => (
-        <DocsLink key={index} item={item} />
-      ))}
+      {items.map((item, index) => <DocsLink key={index} item={item} />)}
     </div>
   );
 }
@@ -84,12 +82,10 @@ export function DocsLink({
   return (
     <Link
       href={item.href}
-      className={
-        "card" +
-        (item.invertIcon ? " mesosphere-invert-icon" : "") +
-        " " +
-        (className ?? "")
-      }
+      className={"card"
+        + (item.invertIcon ? " mesosphere-invert-icon" : "")
+        + " "
+        + (className ?? "")}
     >
       <div className="card-hover-border" />
       {icon}

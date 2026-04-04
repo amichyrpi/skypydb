@@ -1,5 +1,5 @@
-import posthog from "posthog-js";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import posthog from "posthog-js";
 import { useEffect } from "react";
 import { AnalyticsCookies } from "./_AnalyticsCookies";
 

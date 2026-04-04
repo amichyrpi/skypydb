@@ -19,8 +19,7 @@ export function AnalyticsCookies() {
       return;
     }
 
-    const isMesosphere =
-      host === "usemesosphere.com" || host.endsWith(".usemesosphere.com");
+    const isMesosphere = host === "usemesosphere.com" || host.endsWith(".usemesosphere.com");
 
     setCookie(COOKIES_NAME, value, {
       domain: isMesosphere ? ".usemesosphere.com" : undefined,

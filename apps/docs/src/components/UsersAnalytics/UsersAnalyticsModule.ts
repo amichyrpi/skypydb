@@ -1,5 +1,5 @@
-import posthog from "posthog-js";
 import ExecutionEnvironment from "@docusaurus/ExecutionEnvironment";
+import posthog from "posthog-js";
 
 declare global {
   interface Window {
@@ -10,7 +10,7 @@ declare global {
 }
 
 // Return null during SSR; register route-change handler in the browser
-export default (function () {
+export default (function() {
   if (!ExecutionEnvironment.canUseDOM) {
     return null;
   }

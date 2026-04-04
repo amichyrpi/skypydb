@@ -16,9 +16,7 @@ export function DocslinksList(props: { items: Item[] }) {
   const { items } = props;
   return (
     <div className="cards">
-      {items.map((item, index) => (
-        <DocsLink key={index} item={item} />
-      ))}
+      {items.map((item, index) => <DocsLink key={index} item={item} />)}
     </div>
   );
 }
@@ -36,12 +34,10 @@ export function DocsLink({
   return (
     <Link
       href={item.href}
-      className={
-        "card" +
-        (item.invertIcon ? " mesosphere-invert-icon" : "") +
-        " " +
-        (className ?? "")
-      }
+      className={"card"
+        + (item.invertIcon ? " mesosphere-invert-icon" : "")
+        + " "
+        + (className ?? "")}
     >
       {icon}
       <div>

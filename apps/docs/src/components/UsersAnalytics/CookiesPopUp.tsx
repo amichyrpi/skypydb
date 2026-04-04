@@ -1,6 +1,6 @@
 import useIsBrowser from "@docusaurus/useIsBrowser";
-import { AnalyticsCookies } from "@site/src/components/UsersAnalytics/_AnalyticsCookies";
 import Button from "@site/src/components/Button";
+import { AnalyticsCookies } from "@site/src/components/UsersAnalytics/_AnalyticsCookies";
 import React from "react";
 
 /** Cookie consent banner with Accept / Reject buttons */

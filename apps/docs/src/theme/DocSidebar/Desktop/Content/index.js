@@ -1,14 +1,11 @@
 import { ThemeClassNames } from "@docusaurus/theme-common";
-import {
-  useAnnouncementBar,
-  useScrollPosition,
-} from "@docusaurus/theme-common/internal";
+import { useAnnouncementBar, useScrollPosition } from "@docusaurus/theme-common/internal";
 import { translate } from "@docusaurus/Translate";
+import SelectFramework from "@site/src/components/SelectFramework";
+import { filterSidebar, useFramework } from "@site/src/context/FrameworkContext";
 import DocSidebarItems from "@theme/DocSidebarItems";
 import clsx from "clsx";
 import React, { useState } from "react";
-import SelectFramework from "@site/src/components/SelectFramework";
-import { useFramework, filterSidebar } from "@site/src/context/FrameworkContext";
 import styles from "./styles.module.css";
 
 /** Show the announcement bar only when the page is scrolled to the top */

@@ -15,10 +15,9 @@ export function CopyPageAsMarkdown() {
   const pathWithoutTrailingSlash = location.pathname.endsWith("/")
     ? location.pathname.slice(0, -1)
     : location.pathname;
-  const markdownUrl =
-    pathWithoutTrailingSlash === "/home"
-      ? "/llms.txt"
-      : `${pathWithoutTrailingSlash}.md`;
+  const markdownUrl = pathWithoutTrailingSlash === "/home"
+    ? "/llms.txt"
+    : `${pathWithoutTrailingSlash}.md`;
 
   useEffect(() => {
     const fetchMarkdown = async () => {

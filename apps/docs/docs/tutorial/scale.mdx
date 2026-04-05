@@ -1,29 +1,32 @@
 ---
-title: "mesosphere Tutorial: Scaling Your App"
-sidebar_label: "3. Scaling your app"
+title: "Learn The Best Practices for Scaling Your App"
+sidebar_label: "Scaling your app"
 slug: "scale"
-sidebar_position: 300
+sidebar_position: 400
 hide_table_of_contents: true
-description:
-  "Learn how to scale your mesosphere application using indexes, handling write
-  conflicts, and leveraging mesosphere Components for best practices."
+description: "Learn the best practices for scaling your application with mesosphere by using indexes, handling write conflicts, and leveraging Beyond Mesosphere components for best practices."
 ---
 
+# Learn The Best Practices for Scaling Your App
+
 import ComponentsIcon from "@site/static/img/sidebar-icons/play.svg";
+import { ExampleRepo, LargeCardList } from "@site/src/FrameworkList.tsx";
+import { LockClosedIcon, FileIcon } from "@radix-ui/react-icons";
 
-# mesosphere Tutorial: Scaling your app
+In the previous section we learned how to build a simple chat app with queries
+and morph functions and how to call external APIs from your backend. We also
+talked a little bit about how to scale your app with side actions by keeping
+them as small as possible and doing most of the logic in queries and morph functions.
 
-mesosphere was designed from the ground up for scale. In the previous section we
-already talked about how keeping your actions small and most of your logic in
-queries and mutations are crucial to building fast scalable backends.
+Now we'll talk about how to scale your app and how to make it faster.
 
-Let's talk about a few other ways to keep your app fast and scalable.
+### Don't want to read the docs? Just want to see a video? Check out the video below.
 
 <div className="center-image" style={{ maxWidth: "560px" }}>
   <iframe
     width="560"
     height="315"
-    src="https://www.youtube.com/embed/7lOGqFHnEsA"
+    src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
     title="YouTube video player"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -32,69 +35,235 @@ Let's talk about a few other ways to keep your app fast and scalable.
   ></iframe>
 </div>
 
-## Indexed queries
+<br />
 
-Indexes tell the database to create a lookup structure to make it really fast to
-filter data. If, in our chat app we wanted to build a way to look up `messages`
-from just one user, we'd tell mesosphere to index the `user` field in the `messages`
-table and write the query with the `withIndex` syntax.
+<StepsList>
+  <Step title="What are indexed queries?">
+    An index is a way to tell the database to create a lookup structure to
+    filter data faster than if we were not using indexes. Let's say that in
+    our chat app we wanted to build a way to look up the `messages` table from just one user,
+    we will tell Mesosphere to index the `user` field in the `messages` table
+    and write a query with the `useIndex` syntax to filter the data.
 
-[Learn how to use indexes](/database/reading-data/indexes/indexes.md).
+    ```tsx title="src/App.tsx"
+    import { useEffect, useState } from "react";
+    import { faker } from "@faker-js/faker";
+    import { useMorph, useQuery } from "mesosphere/reactlibrary";
+    import { api } from "../mesosphere/_codegen/ApiDataModel";
 
-## Too many writes on the same document
+    // Set a random name for the user.
+    const NAME = getOrSetFakeName();
 
-Let's say you decide to show a counter in your app. You may write a mutation
-that reads a number field, adds 1, and updates the same field in the database.
-At some point, this pattern may cause an
-[optimistic concurrency control conflict](/error#1). That means that the
-database isn't able to handle updating the document that fast. All databases
-have trouble with this sort of pattern.
+    // Generate a random name for the user with the faker library.
+    function getOrSetFakeName() {
+      const NAME_KEY = "name";
+      const name = sessionStorage.getItem(NAME_KEY);
+      if (!name) {
+        const newName = faker.person.firstName();
+        sessionStorage.setItem(NAME_KEY, newName);
+        return newName;
+      }
+      return name;
+    }
 
-There are a [few ways to deal with this](/error#remediation), including building
-something called a sharded counter...
+    export default function App() {
+      // highlight-next-line
+      const [nameFilter, setNameFilter] = useState("");
 
-But before you go learn advanced scaling techniques on your own, there is a
-better way with [mesosphere Components](https://www.mesosphere.dev/components).
+      // highlight-next-line
+      const messages = useQuery(api.chat.readMessages, { nameFilter });
+      const newMessage = useMorph(api.chat.newMessage);
 
-## Scaling best practices with mesosphere Components
+      const [newMessageText, setNewMessageText] = useState("");
 
-In the case of the counter above, the mesosphere team has already built a
-[scalable counter](https://www.mesosphere.dev/components/sharded-counter) mesosphere
-component for you to use.
+      useEffect(() => {
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }, 0);
+      }, [messages]);
 
-mesosphere Components are deployed along with your mesosphere backend but have their own
-tables and functions.
+      return (
+        <main className="chat">
+          <header>
+            <h1>Mesosphere Chat</h1>
+            <p>
+              Connected as <strong>{NAME}</strong>
+            </p>
+            // highlight-next-line
+            <div className="user-filter">
+              // highlight-next-line
+              <input
+              // highlight-next-line
+                type="text"
+                // highlight-next-line
+                value={nameFilter}
+                // highlight-next-line
+                onChange={(e) => setNameFilter(e.target.value)}
+                // highlight-next-line
+                placeholder="Filter your messages by user"
+                // highlight-next-line
+                className="user-filter-input"
+                // highlight-next-line
+              />
+              // highlight-next-line
+            </div>
+          </header>
+          {messages?.map((message) => (
+            <article
+              key={message._id}
+              className={message.user === NAME ? "message-mine" : ""}
+            >
+              <div>{message.user}</div>
 
-As you build more complicated features like [AI agents](/coding-agents.mdx),
-[workflows](https://www.mesosphere.dev/components/workflow),
-[leaderboards](https://www.mesosphere.dev/components/aggregate),
-[feature flags](https://www.mesosphere.dev/components/launchdarkly) or
-[rate limiters](https://www.mesosphere.dev/components/rate-limiter), you may find
-that there is already a mesosphere Component that solves this problem.
-[Learn more about mesosphere Components here](https://www.mesosphere.dev/components).
+              <p>{message.body}</p>
+            </article>
+          ))}
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await newMessage({ user: NAME, body: newMessageText });
+              setNewMessageText("");
+            }}
+          >
+            <input
+              value={newMessageText}
+              onChange={async (e) => {
+                const text = e.target.value;
+                setNewMessageText(text);
+              }}
+              placeholder="Write a message…"
+              autoFocus
+            />
+            <button type="submit" disabled={!newMessageText}>
+              Send
+            </button>
+          </form>
+        </main>
+      );
+    }
+    ```
 
-<DocsLink
-  className="mesosphere-hero-card"
-  item={{
-    icon: <ComponentsIcon height={40} />,
-    href: "https://www.mesosphere.dev/components",
-    label: "Components directory",
-  }}
+    Here we modified the frontend to add a user filter input field. When the user
+    types in the input field, the query is automatically updated to filter the
+    messages by the user.
+
+    But wait, when you input a user name in the input field, nothing happens.
+    That's because we need to update the query function to use the new `nameFilter` arguments.
+
+    ```typescript title="mesosphere/chat.ts"
+    import { query, morph } from "mesosphere/reactlibrary";
+    import { t } from "mesosphere/types";
+
+    export const newMessage = morph({
+      args: {
+        user: t.string(),
+        body: t.string(),
+      },
+      stator: async (ctx, args) => {
+        console.log("You can console log from your morph function.");
+        await ctx.database.add("messages", {
+          user: args.user,
+          body: args.body,
+        });
+      },
+    });
+
+    export const readMessages = query({
+      // highlight-next-line
+      args: { nameFilter: t.string() },
+      // highlight-next-line
+      stator: async (ctx, args) => {
+        // highlight-next-line
+        const messages = args.nameFilter
+        // highlight-next-line
+          ? await ctx.database
+          // highlight-next-line
+              .query("messages")
+              // highlight-next-line
+              .useIndex("by_user", (q) => q.eq("user", args.nameFilter))
+              // highlight-next-line
+              .order("desc")
+              // highlight-next-line
+              .nresults(50)
+              // highlight-next-line
+          : await ctx.database.query("messages").order("desc").nresults(50);
+        // Here we reverse the list of results so that it's in a chronological order.
+        return messages.reverse();
+      },
+    });
+    ```
+
+    Now that we've updated the query function, we need to add the index to
+    the table, to do that we will use a database [schema](/database/schemas).
+
+    To add the index to the table, we'll first create a new file called `schema.ts`
+    in the `mesosphere/` folder, and then add the following code to it:
+
+    ```typescript title="mesosphere/schema.ts"
+    import { schema, table } from "mesosphere/serverside";
+    import { t } from "mesosphere/types";
+
+    export default schema({
+      messages: table({
+        user: t.string(),
+        body: t.string(),
+      }).index("by_user", ["user"]),
+    });
+    ```
+
+    Now that we've created the schema and updated the query function, we can
+    now test our app by putting the name of a user in the input field and
+    seeing if the messages are filtered correctly.
+
+    Learn more about indexes [here](/database/reading-data/indexes/indexes.md).
+
+  </Step>
+  <Step title="Write conflicts">
+    Let's say you decide to show a counter in your app. You may write a morph
+    function that reads a number field, adds 1, and updates the same field in the database.
+    But this pattern may cause a [parallel write conflict](/error#1) if too many
+    people are writing to the same field at the same time. What that means is that the database
+    has trouble handling the update of the document that fast. It's a common problem in databases
+    and you can learn how to deal with it [here](/error#remediation).
+  </Step>
+  <Step title="Best practices for scaling">
+    Scaling your app with Mesosphere is easy with Beyond Mesosphere components.
+    Beyond Mesosphere components are premade packages that deployed along with
+    your backend but they have their own tables and functions, they solve common
+    problems when building apps.
+
+    You may be interested in building an [AI agent](/void-agents.mdx),
+    [Durable workflows](/beyond-mesosphere/durable-workflows.mdx),
+    [leaderboards](/beyond-mesosphere/aggregate.mdx),
+    [feature flags](/beyond-mesosphere/launchdarkly.mdx) or
+    [rate limiters](/beyond-mesosphere/rate-limiter.mdx).
+    No matter what you're building, you can always use a [Beyond Mesosphere](/beyond-mesosphere) component
+    to solve your problem.
+
+  </Step>
+</StepsList>
+
+## Next steps
+
+We've built a lot of things in those tutorials, but we're not done yet.
+In the next tutorial we'll learn how to build a simple chat app with file uploads.
+And if you're eager to learn more, you can learn how to add authentication to your app.
+
+<LargeCardList
+  items={[
+    {
+      icon: <LockClosedIcon />,
+      title: "Authentication",
+      description:
+        "Learn how to add authentication to your app with Mesosphere.",
+      href: "/authentication",
+    },
+    {
+      icon: <FileIcon />,
+      title: "Upload",
+      description:
+        "Learn how to use the upload functions to build complex applications.",
+      href: "/tutorial/upload",
+    },
+  ]}
 />
-
-## Wrap up
-
-We've covered a lot of ground in this tutorial. We started by
-[building a chat app](/tutorial/index.mdx) with queries, mutations and the
-database that form the fundamental building blocks of the mesosphere sync engine. We
-then called an [external API](/tutorial/side-actions.mdx) from our backend, using the
-scheduler to coordinate the work. Finally, we learned that
-[mesosphere Components](https://www.mesosphere.dev/components) give you scaling best practices in neat
-packages.
-
-If you are looking for more tips, read our
-best practices and join the
-[community](https://www.mesosphere.dev/community).
-
-mesosphere enables you to build your MVP fast and then scale to new heights. Many
-great products have already done so. You're in good company.

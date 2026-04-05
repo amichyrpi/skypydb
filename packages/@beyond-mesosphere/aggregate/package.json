@@ -1,0 +1,13 @@
+{
+  "name": "@beyond-mesosphere/aggregate",
+  "version": "0.0.1",
+  "description": "Aggregate is our own component to maintain denormalized counts and sums for efficient data aggregation.",
+  "license": "FSL-1.1-ALv2",
+  "author": "Ahen-Studio",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@mesosphere/ui-system": "*"
+  },
+  "devDependencies": {}
+}

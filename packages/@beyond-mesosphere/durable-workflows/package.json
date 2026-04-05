@@ -1,0 +1,13 @@
+{
+  "name": "@beyond-mesosphere/durable-workflows",
+  "version": "0.0.1",
+  "description": "Durable Workflows is our own component for building durable workflows in Mesosphere.",
+  "license": "FSL-1.1-ALv2",
+  "author": "Ahen-Studio",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@mesosphere/ui-system": "*"
+  },
+  "devDependencies": {}
+}

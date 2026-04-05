@@ -11,7 +11,6 @@ description: "Learn how to build a real-time simple chat app with Mesosphere usi
 # Learn How To Build A Simple Chat App
 
 import { ExampleRepo, LargeCardList } from "@site/src/FrameworkList.tsx";
-import Link from "@docusaurus/Link";
 import { PlayIcon, FileIcon } from "@radix-ui/react-icons";
 
 <ExampleRepo
@@ -33,6 +32,8 @@ import { PlayIcon, FileIcon } from "@radix-ui/react-icons";
     allowfullscreen
   ></iframe>
 </div>
+
+<br />
 
 <StepsList>
   <Step title="Clone our example repo">
@@ -106,7 +107,7 @@ import { PlayIcon, FileIcon } from "@radix-ui/react-icons";
     Start by **adding the following code to your `chat.ts` file.**
 
     ```typescript title="mesosphere/chat.ts"
-    import { morph, stator } from "mesosphere/reactlibrary";
+    import { morph } from "mesosphere/reactlibrary";
     import { t } from "mesosphere/types";
 
     export const newMessage = morph({
@@ -244,11 +245,11 @@ import { PlayIcon, FileIcon } from "@radix-ui/react-icons";
   <Step title="Create a `query` function">
     **Update your `mesosphere/chat.ts` file just like this:**
 
-    ```tsx title="mesosphere/chat.ts"
+    ```typescript title="mesosphere/chat.ts"
     // highlight-next-line
     // Update your import like this:
     // highlight-next-line
-    import { query, morph, stator } from "mesosphere/reactlibrary";
+    import { query, morph } from "mesosphere/reactlibrary";
     import { t } from "mesosphere/types";
 
     export const newMessage = morph({

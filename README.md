@@ -1,6 +1,6 @@
 <div align="center">
- <img alt="mesosphere-backend" width="auto" height="auto" src="./apps/docs/static/img/mesosphere-light.svg#gh-light-mode-only">
- <img alt="mesosphere-backend" width="auto" height="auto" src="./apps/docs/static/img/mesosphere-dark.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="800" src="./apps/docs/static/img/mesosphere-light.svg#gh-light-mode-only">
+ <img alt="mesosphere-backend" width="800" src="./apps/docs/static/img/mesosphere-dark.svg#gh-dark-mode-only">
 </div>
 
 <p align="center">

@@ -9,255 +9,262 @@ description: "Learn how to call external APIs using mesosphere actions and the s
 
 # Learn How To Call External Services In Your App
 
-In the [previous step](/tutorial/index.mdx), you built a fully self-contained
-chat app. Data in, data out.
+import { LargeCardList } from "@site/src/FrameworkList.tsx";
+import { LockClosedIcon, PlayIcon, FileIcon } from "@radix-ui/react-icons";
 
-In order to power the automatic reactivity we just saw while providing strong
-database transactions, query and mutation functions in mesosphere are not allowed to
-make `fetch` calls to the outside world.
+Our query and morph functions are great, but they can't make `fetch` calls to
+the internet because they need to be reactive and transactional.
+Real apps are not this simple, they often need to call external APIs directly
+from the backend such as OpenAI APIs or Claude APIs, in Mesosphere you can call these APIs using our **side action** functions.
 
-Real apps aren't this simple. They often need to talk to the rest of the
-internet directly from the backend. mesosphere lets you do this too via **action**
-functions.
+In this section, you'll learn how to call external APIs using Mesosphere side actions and
+the scheduler to integrate Wikipedia summaries into your application.
 
-Action functions let the sync engine access the external world by scheduling out
-work that can then write data back via mutations.
-
-Let's make our chat app a bit smarter by letting anyone in the chat get the
-Wikipedia summary of a topic using the Wikipedia API.
+### Don't want to read the docs? Just want to see a video? Check out the video below.
 
 <div className="center-image" style={{ maxWidth: "560px" }}>
   <iframe
     width="560"
     height="315"
-    src="https://www.youtube.com/embed/0bn9RcwOwOQ?si=C5Gvz2Us2H1KIAQu"
+    src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
     title="YouTube video player"
-    style={{ border: "none" }}
+    frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    referrerPolicy="strict-origin-when-cross-origin"
-    allowFullScreen
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen
   ></iframe>
 </div>
 
-## Your first `action`
+<br />
 
-**Add the following action to your `mesosphere/chat.ts` file.**
+<StepsList>
+  <Step title="Create a `side action` function">
+    **Update your `mesosphere/chat.ts` file just like this:**
 
-```typescript
-// highlight-next-line
-// Update your server import like this:
-// highlight-next-line
-import { query, mutation, internalAction } from "./_generated/server";
-
-//...
-
-// highlight-next-line
-export const getWikipediaSummary = internalAction({
-  // highlight-next-line
-  args: { topic: v.string() },
-  // highlight-next-line
-  handler: async (ctx, args) => {
+    ```typescript title="mesosphere/chat.ts"
     // highlight-next-line
-    const response = await fetch(
-      // highlight-next-line
-      "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=" +
-        // highlight-next-line
-        args.topic,
-      // highlight-next-line
-    );
+    // Update your import like this:
     // highlight-next-line
+    import { query, morph, closeSideAction } from "mesosphere/reactlibrary";
+    import { t } from "mesosphere/types";
 
-    // highlight-next-line
-    return getSummaryFromJSON(await response.json());
-    // highlight-next-line
-  },
-  // highlight-next-line
-});
-// highlight-next-line
+    export const newMessage = morph({
+      args: {
+        user: t.string(),
+        body: t.string(),
+      },
+      stator: async (ctx, args) => {
+        console.log("You can console log from your morph function.");
+        await ctx.database.add("messages", {
+          user: args.user,
+          body: args.body,
+        });
+      },
+    });
 
-// highlight-next-line
-function getSummaryFromJSON(data: any) {
-  // highlight-next-line
-  const firstPageId = Object.keys(data.query.pages)[0];
-  // highlight-next-line
-  return data.query.pages[firstPageId].extract;
-  // highlight-next-line
-}
-```
-
-Let's walk through it:
-
-1. First, we created a new mesosphere action function called `getWikipediaSummary`.
-   We used `internalAction` because we want this function to be private to the
-   mesosphere backend and not exposed as a public API. This function does a simple
-   fetch to the Wikipedia API with our topic.
-1. Next, we have a helper TypeScript function called `getSummaryFromJSON` to
-   pull out the summary text from the JSON response.
-1. The `getWikipediaSummary` function calls our helper function like any other
-   TypeScript function.
-
-This is great and all, but how do I use it?
-
-To quickly test this function in the mesosphere dashboard, go to
-[https://dashboard.mesosphere.dev](https://dashboard.mesosphere.dev/deployment/functions)
-and navigate to your project. Click on the Functions in the left nav, and then
-click on the `getWikipediaSummary` function. Click "Run Function".
-
-The function runner UI will pop up. Try making a few searches.
-
-<video autoPlay playsInline muted loop width="100%">
-  <source src="/img/tutorial/tut_dashboard_action.mp4" type="video/mp4" />
-  Running a few Wikipedia queries
-</video>
-
-## Hooking it up to your app
-
-It's awesome that we can call Wikipedia, but we still need to show up in our
-chat. So, let's hook it all up.
-
-**Update your existing `sendMessage` mutation like this:**
-
-```typescript
-// highlight-next-line
-// Import the api reference
-// highlight-next-line
-import { api, internal } from "./_generated/api";
-
-//...
-
-export const sendMessage = mutation({
-  args: {
-    user: v.string(),
-    body: v.string(),
-  },
-  handler: async (ctx, args) => {
-    console.log("This TypeScript function is running on the server.");
-    await ctx.db.insert("messages", {
-      user: args.user,
-      body: args.body,
+    // Add the query function to the file:
+    export const readMessages = query({
+      args: {},
+      stator: async (ctx) => {
+        // Here we query the most recent 50 messages from newest to oldest.
+        const messages = await ctx.database.query("messages").order("desc").nresults(50);
+        // Here we reverse the list of results so that it's in a chronological order.
+        return messages.reverse();
+      },
     });
 
     // highlight-next-line
-    // Add the following lines:
+    // Add the following side action function to the file:
     // highlight-next-line
-    if (args.body.startsWith("/wiki")) {
+    export const fetchWikipediaSummary = closeSideAction({
       // highlight-next-line
-      // Get the string after the first space
+      args: { subject: t.string() },
       // highlight-next-line
-      const topic = args.body.slice(args.body.indexOf(" ") + 1);
-      // highlight-next-line
-      await ctx.scheduler.runAfter(0, internal.chat.getWikipediaSummary, {
+      stator: async (ctx, args) => {
         // highlight-next-line
-        topic,
+        const response = await fetch(
+          // highlight-next-line
+          "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=" +
+            // highlight-next-line
+            args.subject,
+          // highlight-next-line
+        );
         // highlight-next-line
-      });
+        return fetchSummaryFromJSON(await response.json());
+        // highlight-next-line
+      },
+    });
+
+    // highlight-next-line
+    function fetchSummaryFromJSON(data: any) {
+      // highlight-next-line
+      const firstPageId = Object.keys(data.query.pages)[0];
+      // highlight-next-line
+      return data.query.pages[firstPageId].extract;
       // highlight-next-line
     }
-  },
-});
-```
+    ```
 
-Wait a second! What's with this `ctx.scheduler` stuff? mesosphere comes with a
-powerful durable function scheduler. It's a fundamental part of the sync engine,
-and it's the way you coordinate asynchronous functions in mesosphere.
+    Let's dissect this code:
 
-In the case of mutations, it's the only way to call an action to fetch from the
-outside world. The really cool part is, if for some reason your mutation throws
-an exception, then nothing is scheduled. This is because mutations are
-transactions, and scheduling is just a write in the database to tell mesosphere to
-run this function at a future time.
+    **What you add**
 
-Ok so, we can schedule our action, but we still need to write the summary back
-to the chat.
+    1. You created a new Mesosphere side action function called `fetchWikipediaSummary`.
+       We used `closeSideAction` because we don't want this function to be exposed as a public API.
+       The purpose of this function is to fetch the summary text from the Wikipedia API with our subject.
+    2. You created a TypeScript helper function called `fetchSummaryFromJSON` to
+       pull out the summary text from the JSON response from the Wikipedia API.
+    3. `fetchWikipediaSummary` calls our helper function.
 
-**Let's go back and update our `getWikipediaSummary` action:**
+  </Step>
+  <Step title="What is a scheduler?">
+    The `scheduler` is a powerful feature of Mesosphere that allows you to run functions
+    at a specific time in the future. It's a fundamental part of the Mesosphere sync engine,
+    and it enables you to coordinate asynchronous functions in Mesosphere.
 
-```typescript
-export const getWikipediaSummary = internalAction({
-  args: { topic: v.string() },
-  handler: async (ctx, args) => {
-    const response = await fetch(
-      "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=" +
-        args.topic,
-    );
+    For a `morph` function, the scheduler is the only way to call an action to fetch from the outside world.
+    And since it's a `morph` function, if the function throws an exception, then nothing is scheduled.
+    This is because morph functions are transactions, and scheduling is just a way to tell Mesosphere
+    to run this function at a future time.
+    
+    In the next section, we call the scheduler with the `ctx.scheduler.runAfter` function.
+
+  </Step>
+  <Step title="Connect your `side action` function to your app">
+    Now that you know what a scheduler is, you can connect your `side action` function to your app.
+    You'll need to update your `newMessage` function and your `fetchWikipediaSummary` function.
+
+    **Update your `mesosphere/chat.ts` file just like this:**
+
+    ```typescript title="mesosphere/chat.ts"
+    // highlight-next-line
+    // Update your import like this:
+    // highlight-next-line
+    import { query, morph, closeSideAction } from "mesosphere/reactlibrary";
+    import { api, closeFunction } from "./mesosphere/_codegen/ApiDataModel";
+    import { t } from "mesosphere/types";
+
+    export const newMessage = morph({
+      args: {
+        user: t.string(),
+        body: t.string(),
+      },
+      stator: async (ctx, args) => {
+        console.log("You can console log from your morph function.");
+        await ctx.database.add("messages", {
+          user: args.user,
+          body: args.body,
+        });
+        // highlight-next-line
+        // Add the following lines to your newMessage function:
+        // highlight-next-line
+        if (args.body.startsWith("/wiki")) {
+          // highlight-next-line
+          // Get the string after the first space
+          // highlight-next-line
+          const subject = args.body.slice(args.body.indexOf(" ") + 1);
+          // highlight-next-line
+          await ctx.scheduler.runAfter(0, closeFunction.chat.fetchWikipediaSummary, {
+            // highlight-next-line
+            subject,
+            // highlight-next-line
+          });
+          // highlight-next-line
+        }
+      },
+    });
+
+    // Add the query function to the file:
+    export const readMessages = query({
+      args: {},
+      stator: async (ctx) => {
+        // Here we query the most recent 50 messages from newest to oldest.
+        const messages = await ctx.database.query("messages").order("desc").nresults(50);
+        // Here we reverse the list of results so that it's in a chronological order.
+        return messages.reverse();
+      },
+    });
 
     // highlight-next-line
-    // Replace the `return ...` with the following.
+    // Add the following side action function to the file:
     // highlight-next-line
-    const summary = getSummaryFromJSON(await response.json());
-    // highlight-next-line
-    await ctx.scheduler.runAfter(0, api.chat.sendMessage, {
+    export const fetchWikipediaSummary = closeSideAction({
       // highlight-next-line
-      user: "Wikipedia",
+      args: { subject: t.string() },
       // highlight-next-line
-      body: summary,
+      stator: async (ctx, args) => {
+        // highlight-next-line
+        const response = await fetch(
+          // highlight-next-line
+          "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=" +
+            // highlight-next-line
+            args.subject,
+          // highlight-next-line
+        );
+        // highlight-next-line
+        const summary = fetchSummaryFromJSON(await response.json());
+        // highlight-next-line
+        await ctx.scheduler.runAfter(0, api.chat.newMessage, {
+          // highlight-next-line
+          user: "Wikipedia",
+          // highlight-next-line
+          body: summary,
+          // highlight-next-line
+        });
+        // highlight-next-line
+      },
       // highlight-next-line
     });
-  },
-});
-```
 
-Just like scheduling the action, we're now scheduling our `sendMessage` mutation
-to send the result of our Wikipedia lookup to our chat.
+    function fetchSummaryFromJSON(data: any) {
+      const firstPageId = Object.keys(data.query.pages)[0];
+      return data.query.pages[firstPageId].extract;
+    }
+    ```
 
-Go ahead, now play with your app!
+    Everything is done, you can now send a message with the `/wiki`
+    command to get the summary of your chosen subject from Wikipedia.
 
-<video autoPlay playsInline muted loop width="100%">
-  <source src="/img/tutorial/tut_wikipedia.mp4" type="video/mp4" />
-  Chat with Wikipedia
-</video>
+  </Step>
+  <Step title="Side actions best practices">
+    Side actions let you call external APIs like AI APIs but they are not
+    made to do all the heavy lifting of your app. They are meant to be used
+    for non deterministic tasks like making external `fetch` calls. For
+    side actions to be useful, you need to keep them as small as possible
+    to scale correctly on your apps.
 
-## The scheduler, actions, and the sync engine
+  </Step>
+</StepsList>
 
-<div className="center-image" style={{ maxWidth: "900px" }}></div>
+## Next steps
 
-Queries and mutations are the only ways to interact with the database and the
-scheduler enables building sophisticated workflows with actions in between.
+Now that you've built a simple chat app and learned how to call external services,
+you can go on to build more complex apps. Learn how to use our upload functions to
+build complex applications, learn how to add authentication to your app and learn
+the best practices for scaling your app for success.
 
-[Actions](/functions/actions.mdx) are normal serverless functions like AWS
-Lambda and Google Cloud Run. They help model flows like calling AI APIs and
-using the Vector Store. They serve as an escape hatch. They deal with the
-reality of the messy outside world with few guarantees.
-
-Actions are not part of the sync engine. To talk to the database they have to
-talk through query and mutation functions. This restriction lets mesosphere enforce
-transactional guarantees in the database and keep the sync engine fast and
-nimble.
-
-The best way to structure your application for scale is to minimize the work
-that happens in an action. Only the part that needs the
-[non-determinism](https://en.wikipedia.org/wiki/Deterministic_algorithm), like
-making the external `fetch` call should use them. Keeping them as small as
-possible is the most scalable way to build mesosphere apps, enabling the highest
-throughput.
-
-The scheduler allows your app to keep most of its important logic in queries and
-mutations and structure your code as workflows in and out of actions.
-
-## What you built
-
-In this section of the tutorial, you built an action to talk to the outside
-world and used the scheduler to trigger this work.
-
-You learned that keeping our actions small and keeping most of our work in
-queries and mutations are fundamental to building scalable mesosphere backends.
-
-## Next up
-
-You've now learned the most important concepts in mesosphere. As a full-featured
-backend, mesosphere is capable of many things such as [authentication](/authentication.mdx),
-[file storage](/file-upload.mdx) and [search](/vector.mdx). You can add those
-features as needed by following the documentation.
-
-We touched a little bit on setting your app up for success. As your application
-scales, you will run into new challenges. Let's learn how to deal with some of
-these challenges in the [next section →](/tutorial/scale.mdx).
-
-<DocsLink
-  className="mesosphere-hero-card"
-  item={{
-    href: "/tutorial/scale",
-    docId: "tutorial/scale",
-    label: "Scaling your app",
-  }}
+<LargeCardList
+  items={[
+    {
+      icon: <LockClosedIcon />,
+      title: "Authentication",
+      description:
+        "Learn how to add authentication to your app with Mesosphere.",
+      href: "/authentication",
+    },
+    {
+      icon: <PlayIcon />,
+      title: "Scaling your app",
+      description:
+        "Learn the best practices for scaling your app with Mesosphere.",
+      href: "/tutorial/scale",
+    },
+    {
+      icon: <FileIcon />,
+      title: "Upload",
+      description:
+        "Learn how to use the upload functions to build complex applications.",
+      href: "/tutorial/upload",
+    },
+  ]}
 />

@@ -1,0 +1,13 @@
+{
+  "name": "@beyond-mesosphere/action-caching",
+  "version": "0.0.1",
+  "description": "Action Caching is our own submodule for caching side actions results.",
+  "license": "FSL-1.1-ALv2",
+  "author": "Ahen-Studio",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@mesosphere/ui-system": "*"
+  },
+  "devDependencies": {}
+}

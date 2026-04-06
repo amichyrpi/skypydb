@@ -1,0 +1,13 @@
+{
+  "name": "@beyond-mesosphere/workpool",
+  "version": "0.0.1",
+  "description": "WorkPool is our own submodule for managing parallel execution of side actions and morph functions.",
+  "license": "FSL-1.1-ALv2",
+  "author": "Ahen-Studio",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@mesosphere/ui-system": "*"
+  },
+  "devDependencies": {}
+}

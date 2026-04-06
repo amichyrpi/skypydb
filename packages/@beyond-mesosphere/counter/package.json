@@ -1,0 +1,13 @@
+{
+  "name": "@beyond-mesosphere/counter",
+  "version": "0.0.1",
+  "description": "Counter is our own submodule for distributing scalable counters in your application.",
+  "license": "FSL-1.1-ALv2",
+  "author": "Ahen-Studio",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@mesosphere/ui-system": "*"
+  },
+  "devDependencies": {}
+}

@@ -90,6 +90,7 @@
 /* You can override the default Infima variables here. */
 :root {
   --mesosphere-opaque-background-color: white;
+  --ifm-navbar-background-color: white;
   --ifm-color-primary: #6252d9;
   --ifm-color-primary-dark: #4633cc;
   --ifm-color-primary-darker: #4633cc;
@@ -229,6 +230,18 @@ for when the whole page is scrolled down */
 /* Adds border to top navbar (original has drop shadow) */
 .navbar {
   border-bottom: 1px solid var(--ifm-toc-border-color);
+  position: sticky !important;
+  top: 0.5rem !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+html:not([data-theme="dark"]) .navbar {
+  background: #ffffff !important;
+}
+
+html[data-theme="dark"] .navbar {
+  background: rgb(20, 20, 20) !important;
 }
 
 /* START: Icon links in top nav */
@@ -1445,7 +1458,7 @@ a.card:hover .card-hover-border {
 a.large-card:hover .card-arrow,
 a.card:hover .card-arrow {
   transform: translateX(0);
-  stroke: var(--ifm-heading-color);
+  stroke: var(--ifm-font-color-base);
   opacity: 1;
 }
 
@@ -1655,4 +1668,40 @@ html:not([data-theme="dark"]) .tabs-container:has(.theme-code-block) {
   margin: 0;
   border-radius: 0 0 var(--tcb-radius) var(--tcb-radius) !important;
   background-color: transparent !important;
+}
+
+/* ── Rounded site container with gap ── */
+:root {
+  --mesosphere-gap-color: white;
+  --mesosphere-gap-border-color: var(--color-neutral-n4);
+}
+
+html[data-theme="dark"] {
+  --mesosphere-gap-color: black;
+  --mesosphere-gap-border-color: var(--color-neutral-n11);
+}
+
+html {
+  background-color: var(--mesosphere-gap-color);
+}
+
+#__docusaurus {
+  margin: 0.5rem;
+  background-color: var(--ifm-background-color);
+  border-radius: 0.75rem;
+}
+
+/* Fixed overlay: border + rounded corners that never move */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--mesosphere-gap-border-color);
+  box-shadow: 0 0 0 9999px var(--mesosphere-gap-color);
+  pointer-events: none;
+  z-index: 10000;
 }

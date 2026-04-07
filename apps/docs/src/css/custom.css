@@ -969,6 +969,12 @@ body #__docusaurus .theme-doc-sidebar-container {
   min-height: 100vh;
 }
 
+/* Offset sticky sidebar to match the #__docusaurus 0.5rem margin */
+body #__docusaurus .theme-doc-sidebar-container > div {
+  top: 0.5rem;
+  max-height: calc(100vh - 0.5rem);
+}
+
 /* Footer gets same border as top nav */
 footer {
   border-top: 1px solid var(--ifm-toc-border-color);
